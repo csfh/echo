@@ -1,0 +1,26 @@
+/ std/io
+/ std/str
+/ std/list
+
+$ even = (n) {
+    ^ n % 2 == 0
+}
+
+$ ys = list.filter([1, 2, 3, 4], even)
+io.print(str.from_int(list.len(ys)))
+| list.get(ys, 0) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| list.get(ys, 1) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}

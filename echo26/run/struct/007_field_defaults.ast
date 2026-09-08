@@ -1,0 +1,45 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct user
+    bind_dollar
+      name name
+    bind_tilde
+      name visits
+      number 0
+    bind_tilde
+      name active
+      bool true
+  bind_dollar
+    name u
+    struct_lit user
+      field name
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      field name
+        name u
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field visits
+          name u
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field active
+          name u

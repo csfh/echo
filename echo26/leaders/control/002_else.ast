@@ -1,0 +1,8 @@
+file
+  if
+    name ready
+    return
+      number 1
+  else
+    return
+      number 0

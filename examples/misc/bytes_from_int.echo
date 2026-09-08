@@ -1,0 +1,23 @@
+; bytes.from_int little-endian. Run: xo run examples/misc/bytes_from_int.echo
+/ std/io
+/ std/str
+/ std/bytes
+
+$ b = bytes.from_int(0x0102)
+io.print(str.from_int(bytes.len(b)))
+| bytes.get(b, 0) {
+    $ x {
+        io.print(str.from_int(x))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| bytes.get(b, 1) {
+    $ x {
+        io.print(str.from_int(x))
+    }
+    ! e {
+        io.print(e)
+    }
+}

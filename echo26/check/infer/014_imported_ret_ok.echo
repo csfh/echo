@@ -1,0 +1,5 @@
+/ std/io
+/ std/str
+
+io.print(str.from_int(1))
+io.print(str.from_int(2))

@@ -1,0 +1,34 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg log
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field kv
+          name log
+        list
+          string_rich
+          string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name str
+          call
+            field kv
+              name log
+            list

@@ -1,0 +1,26 @@
+; Hash table CRUD.
+/ std/io
+/ std/str
+/ std/collections/hash_table
+
+$ t = hash_table.make()
+t.put(7, 42)
+t.put(8, 99)
+io.print(str.from_int(t.len()))
+| t.get(7) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss")
+    }
+}
+| t.remove(8) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss")
+    }
+}
+io.print(str.from_int(t.has(8)))

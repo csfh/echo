@@ -1,0 +1,12 @@
+; Missing path → io err.
+/ std/io
+/ std/bufio
+
+| bufio.read_lines("/tmp/echo26_bufio_absent") {
+    $ ls {
+        io.print("ok")
+    }
+    ! e {
+        io.print(e)
+    }
+}

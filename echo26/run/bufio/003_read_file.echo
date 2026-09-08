@@ -1,0 +1,40 @@
+; Whole-file lines via std/fs.
+/ std/io
+/ std/str
+/ std/list
+/ std/fs
+/ std/bufio
+
+$ p = fs.join("/tmp", "echo26_bufio_003.txt")
+| fs.write(p, "a\nb") {
+    $ ok {
+        io.print("write")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| bufio.read_lines(p) {
+    $ ls {
+        io.print(str.from_int(list.len(ls)))
+        | list.get(ls, 0) {
+            $ a {
+                io.print(a)
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(p) {
+    $ ok {
+        io.print("rm")
+    }
+    ! e {
+        io.print(e)
+    }
+}

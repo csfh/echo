@@ -1,0 +1,10 @@
+file
+  bind_hash
+    name Q
+    object
+      field a
+        number 1
+  bind_hash
+    name B
+    field b
+      name Q

@@ -1,0 +1,49 @@
+# --- Rust / Cargo ---
+/target/
+**/*.rs.bk
+*.pdb
+
+# --- Echo toolchain local state ---
+.xo/
+/test-results/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# --- Env / secrets (never commit) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Coverage / profiling ---
+coverage/
+*.profraw
+*.profdata
+lcov.info
+
+# --- Logs ---
+*.log
+logs/
+
+# --- www (Vite) — also see www/.gitignore ---
+www/node_modules/
+www/dist/
+www/dist-ssr/
+
+# tree-sitter package: keep generated `src/` tracked so hosts (Zed, etc.) can
+# fetch a complete grammar from GitHub without running `tree-sitter generate`.
+# Still ignore local tooling noise:
+grammars/tree-sitter-echo/bindings/
+grammars/tree-sitter-echo/node_modules/
+grammars/tree-sitter-echo/.build/
+

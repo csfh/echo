@@ -1,0 +1,22 @@
+/ std/io
+/ std/str
+/ std/encoding/utf8
+
+io.print(str.from_int(utf8.valid(b'hi')))
+io.print(str.from_int(utf8.valid(b"\xff")))
+| utf8.decode(b'hi') {
+    $ t {
+        io.print(t)
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| utf8.decode(b"\xff") {
+    $ t {
+        io.print(t)
+    }
+    ! e {
+        io.print(e)
+    }
+}

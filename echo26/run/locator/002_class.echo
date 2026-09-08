@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+/ std/path
+
+io.print(str.from_int(path.class(p'/home/user')))
+io.print(str.from_int(path.class(p'home/user')))
+io.print(str.from_int(path.class(p"http://xo.run")))
+io.print(str.from_int(path.class("/tmp")))
+io.print(str.from_int(path.class("mailto:x")))
+? path.is_uri(p"http://xo.run") {
+    io.print("uri")
+}
+? path.is_abs(p'/tmp') {
+    io.print("abs")
+}

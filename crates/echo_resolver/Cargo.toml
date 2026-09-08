@@ -1,0 +1,18 @@
+[package]
+name = "echo_resolver"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+echo_ast = { path = "../echo_ast" }
+echo_cache = { path = "../echo_cache" }
+echo_diagnostics = { path = "../echo_diagnostics" }
+echo_fingerprint = { path = "../echo_fingerprint" }
+echo_index = { path = "../echo_index" }
+echo_source = { path = "../echo_source" }
+echo_parser = { path = "../echo_parser" }
+echo_semantics = { path = "../echo_semantics" }
+echo_std = { path = "../echo_std", default-features = false }
+echo_lexer = { path = "../echo_lexer" }

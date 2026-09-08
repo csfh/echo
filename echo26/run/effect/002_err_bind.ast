@@ -1,0 +1,28 @@
+file
+  bind_dollar
+    name f
+    fn
+      error_return
+        number 99
+  bind_dollar
+    name g
+    fn
+      return
+        number 1
+  effect_block
+    bind out
+    block
+      bind_dollar
+        name x
+        call
+          name g
+      bind_dollar
+        name y
+        call
+          name f
+      return
+        binary Add
+          name x
+          name y
+  return
+    name out

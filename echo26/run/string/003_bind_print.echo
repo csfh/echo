@@ -1,0 +1,6 @@
+/ std/io
+
+$ a = 'hi'
+$ b = "there"
+io.print(a)
+io.print(b)

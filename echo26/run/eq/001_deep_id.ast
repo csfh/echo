@@ -1,0 +1,130 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name a
+    list
+      number 1
+      number 2
+  bind_dollar
+    name b
+    list
+      number 1
+      number 2
+  bind_dollar
+    name c
+    name a
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Eq
+          name a
+          name b
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary EqEqEq
+          name a
+          name b
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary EqEqEq
+          name a
+          name c
+  bind_dollar
+    name s1
+    string_pure
+  bind_dollar
+    name s2
+    string_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Eq
+          name s1
+          name s2
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary EqEqEq
+          name s1
+          name s2
+  bind_dollar
+    name p
+    object
+      field x
+        number 1
+      field y
+        number 2
+  bind_dollar
+    name q
+    object
+      field x
+        number 1
+      field y
+        number 2
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Eq
+          name p
+          name q
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary EqEqEq
+          name p
+          name q
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary EqEqEq
+          number 3
+          number 3
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary NotEqEq
+          number 3
+          number 4

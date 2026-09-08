@@ -1,0 +1,12 @@
+/ std/io
+/ std/str
+
+% bag {
+    ~ entries = []
+}
+
+$ m = bag {}
+~ m.entries[] = 10
+~ m.entries[] = 20
+io.print(str.from_int(m.entries[0]))
+io.print(str.from_int(m.entries[1]))

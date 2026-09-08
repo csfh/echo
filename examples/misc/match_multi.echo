@@ -1,0 +1,13 @@
+; Multi-value match arms (deep == any listed expr)
+/ std/io
+/ std/str
+
+$ x = 3
+| x {
+    1, 2, 3 {
+        io.print("hit")
+    }
+    : {
+        io.print("miss")
+    }
+}

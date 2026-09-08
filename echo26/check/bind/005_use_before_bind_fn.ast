@@ -1,0 +1,10 @@
+file
+  bind_dollar
+    name a
+    call
+      name b
+  bind_dollar
+    name b
+    fn
+      return
+        number 1

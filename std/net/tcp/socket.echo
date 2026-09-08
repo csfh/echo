@@ -1,0 +1,74 @@
+; TCP free protocol surface over `runtime.tcp_*`.
+; Part of folder module `std/net/tcp` (with conn.echo + listener.echo).
+; Reifies opaque handles into % listener / % conn — pass those structs by ref.
+
+/ runtime
+/ ./conn
+/ ./listener
+
+; listen(addr) -> listener (handle 0 / open _ on failure)
+$ listen = (addr) {
+    $ h = runtime.tcp_listen(addr)
+    ? h == 0 {
+        ^ listener {
+            addr: addr,
+            handle: 0,
+            open: _
+        }
+    }
+    ^ listener {
+        addr: addr,
+        handle: h,
+        open: |
+    }
+}
+
+; connect(addr) -> conn (handle 0 / open _ on failure)
+$ connect = (addr) {
+    $ h = runtime.tcp_connect(addr)
+    ? h == 0 {
+        ^ conn {
+            remote: addr,
+            handle: 0,
+            open: _
+        }
+    }
+    ^ conn {
+        remote: addr,
+        handle: h,
+        open: |
+    }
+}
+
+; accept(lis) -> conn
+$ accept = (lis) {
+    $ a = runtime.tcp_accept(lis.handle)
+    ? a.conn == 0 {
+        ^ conn {
+            remote: "",
+            handle: 0,
+            open: _
+        }
+    }
+    ^ conn {
+        remote: a.remote,
+        handle: a.conn,
+        open: |
+    }
+}
+
+; Free helpers on .handle (also used when free-fn params lack method typing)
+$ read = (c, limit) {
+    ^ runtime.tcp_read(c.handle, limit)
+}
+
+$ write = (c, data) {
+    ^ runtime.tcp_write(c.handle, data)
+}
+
+$ close = (x) {
+    runtime.tcp_close(x.handle)
+    ^
+}
+
+\ listen, connect, accept, read, write, close

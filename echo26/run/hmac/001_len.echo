@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+/ std/bytes
+/ std/crypto/hmac
+
+| hmac.sha256("k", "m") {
+  $ d { io.print(str.from_int(bytes.len(d))) }
+  ! e { io.print(e) }
+}

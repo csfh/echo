@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+
+% point {
+    $ x
+    $ y
+}
+
+$ p = point { x: 3, y: 4 }
+io.print(str.from_int(p.x))
+io.print(str.from_int(p.y))

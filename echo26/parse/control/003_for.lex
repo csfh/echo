@@ -1,0 +1,9 @@
+leader_star
+ident
+colon
+ident
+l_brace
+leader_caret
+ident
+r_brace
+eof

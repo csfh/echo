@@ -1,0 +1,11 @@
+leader_dollar
+ident
+eq
+number
+leader_dollar
+ident
+eq
+ident
+l_paren
+r_paren
+eof

@@ -1,0 +1,9 @@
+file
+  import
+    seg .
+    seg left
+    seg util
+  import
+    seg .
+    seg right
+    seg util

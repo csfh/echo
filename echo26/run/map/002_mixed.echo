@@ -1,0 +1,26 @@
+; Int 1 and string "1" are distinct keys.
+/ std/io
+/ std/str
+/ std/collections/map
+
+$ m = map.make()
+m.put("a", 1)
+m.put(1, 99)
+io.print(str.from_int(m.len()))
+| m.get("a") {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss a")
+    }
+}
+| m.get(1) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss 1")
+    }
+}
+io.print(str.from_int(m.has("1")))

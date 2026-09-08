@@ -1,0 +1,5 @@
+/ std/io
+/ std/str
+
+# A = 1, B = 2
+io.print(str.from_int(A + B))

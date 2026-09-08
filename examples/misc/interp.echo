@@ -1,0 +1,14 @@
+; Rich string {name} interpolation — not +
+/ std/io
+
+$ n = 7
+$ s = "n={n}!"
+io.print(s)
+$ a = 'same'
+$ b = "same"
+? a == b {
+    io.print('eq ok')
+}
+: {
+    io.print('eq fail')
+}

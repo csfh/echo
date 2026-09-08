@@ -1,0 +1,11 @@
+; In-body ListLit nest: escape into outer holder happens *inside* the if.
+; Demote of xs at if-entry would free xs on exit while holder (root) still holds it.
+/ std/io
+/ std/str
+
+$ xs = [7]
+~ holder = []
+? 1 == 1 {
+    ~ holder = [xs]
+}
+io.print(str.from_int(holder[0][0]))

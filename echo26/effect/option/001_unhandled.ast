@@ -1,0 +1,11 @@
+file
+  bind_dollar
+    name f
+    fn
+      return
+      return
+        number 1
+  bind_dollar
+    name x
+    call
+      name f

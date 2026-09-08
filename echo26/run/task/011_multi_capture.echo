@@ -1,0 +1,10 @@
+/ std/io
+/ std/str
+
+$ a = 10
+$ b = 3
++ job = () [a, b] {
+    ^ a + b
+}
+- v = job
+io.print(str.from_int(v))

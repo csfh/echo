@@ -1,0 +1,6 @@
+file
+  bind_dollar
+    name n
+    binary Div
+      number 6
+      number 2

@@ -1,0 +1,13 @@
+; Explicit `^` of an imported int is not the receiver.
+/ std/io
+/ std/str
+
+% box {
+    $ n = 0
+    $ len_ab = () {
+        ^ str.len("ab")
+    }
+}
+
+$ b = box {}
+io.print(str.from_int(b.len_ab()))

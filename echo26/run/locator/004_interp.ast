@@ -1,0 +1,55 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg path
+  bind_dollar
+    name host
+    string_rich
+  bind_dollar
+    name loc
+    locator_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_locator
+          name str
+        name loc
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field class
+            name path
+          name loc
+  if
+    binary Eq
+      name loc
+      locator_rich
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  bind_dollar
+    name dir
+    locator_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_locator
+          name str
+        locator_rich

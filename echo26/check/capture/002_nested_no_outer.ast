@@ -1,0 +1,15 @@
+file
+  bind_tilde
+    name n
+    number 1
+  bind_dollar
+    name outer
+    fn
+      bind_dollar
+        name inner
+        fn
+          return
+            name n
+      return
+        call
+          name inner

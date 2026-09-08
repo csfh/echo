@@ -1,0 +1,6 @@
+/ std/io
+/ std/log
+
+log.info(1, "hi")
+log.debug(2, "hidden")
+io.print("done")

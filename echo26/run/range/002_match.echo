@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+
+$ n = 5
+| n {
+    1..3 {
+        io.print("lo")
+    }
+    4..6 {
+        io.print("mid")
+    }
+    : {
+        io.print("hi")
+    }
+}

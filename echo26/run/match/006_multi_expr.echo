@@ -1,0 +1,13 @@
+/ std/io
+/ std/str
+
+$ n = 10
+$ m = 5
+| n {
+    m + m, 7 {
+        io.print(str.from_int(1))
+    }
+    : {
+        io.print(str.from_int(0))
+    }
+}

@@ -1,0 +1,8 @@
+file
+  bind_dollar
+    name s
+    string_pure
+  bind_dollar
+    name a
+    width_cast i32
+      name s

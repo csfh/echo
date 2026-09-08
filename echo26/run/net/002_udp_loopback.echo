@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+/ std/net/udp
+
+$ sock = udp.bind("127.0.0.1:39881")
+sock.send_to("hi", "127.0.0.1:39881")
+$ pkt = sock.recv_from(64)
+io.print(str.from_bytes(pkt.data))
+sock.close()

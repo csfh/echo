@@ -1,0 +1,39 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg json
+  match
+    call
+      field parse
+        name json
+      string_pure
+    arm_ok v
+      match
+        call
+          field stringify
+            name json
+          name v
+        arm_ok s
+          expr_stmt
+            call
+              field print
+                name io
+              name s
+        arm_err e
+          expr_stmt
+            call
+              field print
+                name io
+              name e
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

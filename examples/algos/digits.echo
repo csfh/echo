@@ -1,0 +1,63 @@
+; Digit tricks — sum of digits, reverse digits, numeric palindrome.
+; Run: xo run examples/algos/digits.echo
+
+/ std/io
+/ std/str
+
+$ abs = (n) {
+    ? n < 0 {
+        ^ 0 - n
+    }
+    ^ n
+}
+
+$ digit_sum = (n) {
+    ~ x = abs(n)
+    ~ s = 0
+    * x > 0 {
+        ~ s = s + x % 10
+        ~ x = x / 10
+    }
+    ^ s
+}
+
+$ reverse_digits = (n) {
+    ~ neg = n < 0
+    ~ x = abs(n)
+    ~ r = 0
+    * x > 0 {
+        ~ r = r * 10 + x % 10
+        ~ x = x / 10
+    }
+    ? neg {
+        ^ 0 - r
+    }
+    ^ r
+}
+
+$ is_palindrome = (n) {
+    ^ n == reverse_digits(n)
+}
+
+; Digital root: repeated digit_sum until a single digit (equiv. n mod 9).
+$ digital_root = (n) {
+    ~ x = abs(n)
+    ? x == 0 {
+        ^ 0
+    }
+    * x >= 10 {
+        ~ x = digit_sum(x)
+    }
+    ^ x
+}
+
+io.print(str.from_int(digit_sum(12345)))
+io.print(str.from_int(digit_sum(0)))
+io.print(str.from_int(reverse_digits(1234)))
+io.print(str.from_int(reverse_digits(-120)))
+io.print(str.from_int(is_palindrome(12321)))
+io.print(str.from_int(is_palindrome(1234)))
+io.print(str.from_int(digital_root(9999)))
+io.print(str.from_int(digital_root(38)))
+
+\ digit_sum, reverse_digits, is_palindrome, digital_root, abs

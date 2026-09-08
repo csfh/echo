@@ -1,0 +1,12 @@
+; Load local CA PEM used by TLS client tests (file fixture, no network).
+/ std/io
+/ std/str
+/ std/net/tls
+
+$ ca = tls.load_pem("echo26/run/tls/certs/ca.pem")
+? str.len(ca) > 20 {
+    io.print("ca-ok")
+}
+: {
+    io.print("ca-bad")
+}

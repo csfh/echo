@@ -1,0 +1,130 @@
+; std/net/tls — TLS client/server over rustls (blocking sockets).
+; Same ownership law as TCP: % listener / % conn by ref; handle 0 = failure
+; (not result-shaped connect/accept — keeps task fixtures PHI-safe).
+;
+; Public API:
+;   listen(addr) → % listener
+;   accept(lis, cert_pem, key_pem) → % conn
+;   connect(host, port, server_name, ca_pem) → % conn
+;   read/write/close free helpers + methods
+;   load_pem(path) → string (empty on fail)
+;
+; Suite: xo test std/net/tls.echo
+
+/ runtime
+/ std/test
+/ std/str
+/ std/bytes
+/ std/fs
+
+% listener {
+    $ handle
+
+    $ accept = (cert_pem, key_pem) {
+        $ h = runtime.tls_accept(.handle, cert_pem, key_pem)
+        ? h == 0 {
+            ^ conn {
+                handle: 0,
+                open: _
+            }
+        }
+        ^ conn {
+            handle: h,
+            open: |
+        }
+    }
+
+    $ close = () {
+        runtime.tls_close_listener(.handle)
+        ^ .
+    }
+}
+
+% conn {
+    $ handle
+    ~ open = |
+
+    $ read = (limit) {
+        ^ runtime.tls_read(.handle, limit)
+    }
+
+    $ write = (data) {
+        ^ runtime.tls_write(.handle, data)
+    }
+
+    $ close = () {
+        runtime.tls_close(.handle)
+        ~ .open = _
+        ^ .
+    }
+}
+
+$ listen = (addr) {
+    $ h = runtime.tls_listen(addr)
+    ^ listener {
+        handle: h
+    }
+}
+
+$ accept = (lis, cert_pem, key_pem) {
+    $ h = runtime.tls_accept(lis.handle, cert_pem, key_pem)
+    ? h == 0 {
+        ^ conn {
+            handle: 0,
+            open: _
+        }
+    }
+    ^ conn {
+        handle: h,
+        open: |
+    }
+}
+
+$ connect = (host, port, server_name, ca_pem) {
+    $ h = runtime.tls_connect(host, port, server_name, ca_pem)
+    ? h == 0 {
+        ^ conn {
+            handle: 0,
+            open: _
+        }
+    }
+    ^ conn {
+        handle: h,
+        open: |
+    }
+}
+
+$ read = (c, limit) {
+    ^ runtime.tls_read(c.handle, limit)
+}
+
+$ write = (c, data) {
+    ^ runtime.tls_write(c.handle, data)
+}
+
+$ close = (c) {
+    runtime.tls_close(c.handle)
+    ^
+}
+
+$ close_listener = (lis) {
+    runtime.tls_close_listener(lis.handle)
+    ^
+}
+
+; Soft load: empty string on failure.
+$ load_pem = (path) {
+    $ b = runtime.fs_read(path)
+    ? b == 0 {
+        ^ ""
+    }
+    ^ str.from_bytes(b)
+}
+
+test.it("connect_refused", () {
+    $ c = connect("127.0.0.1", 1, "localhost", "-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----\n")
+    test.eq(c.handle, 0)
+    test.false(c.open)
+})
+
+\ listener, conn, listen, accept, connect, read, write, close, close_listener, load_pem

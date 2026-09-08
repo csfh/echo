@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+/ std/os
+? os.pid() > 0 {
+    io.print("ok")
+}
+: {
+    io.print("bad")
+}

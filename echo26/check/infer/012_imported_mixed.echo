@@ -1,0 +1,4 @@
+/ std/io
+
+io.print(1)
+io.print('hi')

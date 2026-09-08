@@ -1,0 +1,85 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg path
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field class
+            name path
+          locator_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field class
+            name path
+          locator_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field class
+            name path
+          locator_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field class
+            name path
+          string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field class
+            name path
+          string_rich
+  if
+    call
+      field is_uri
+        name path
+      locator_rich
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  if
+    call
+      field is_abs
+        name path
+      locator_pure
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich

@@ -1,0 +1,5 @@
+/ std/io
+/ std/str
+/ std/math
+io.print(str.from_int(math.abs_i(-5)))
+io.print(str.from_int(math.max(1, 4)))

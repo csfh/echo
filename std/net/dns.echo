@@ -1,0 +1,26 @@
+; std/net/dns — hostname lookup → list of IP strings.
+/ runtime
+/ std/test
+/ std/list
+/ std/str
+
+$ lookup = (host) {
+    $ addrs = runtime.dns_lookup(host)
+    ? addrs == 0 {
+        ! "dns lookup failed"
+    }
+    ^ addrs
+}
+
+test.it("localhost", () {
+    | lookup("localhost") {
+        $ a {
+            test.true(list.len(a) >= 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+\ lookup

@@ -1,0 +1,329 @@
+; std/bytes — length, indexing, and framing for `b'…'` / `b"…"` values.
+; Privileged std may `/ runtime` and call `runtime.*` (docs/stdlib.md).
+;
+; Public API:
+;   len, is_empty, get, slice, cat, from_int, from_str
+;   contains, starts_with, ends_with
+; `get` / `slice` are **result-shaped**: err is `"out of bounds"`.
+; `get` ok is `ui8` (alias `byte`).
+; `slice` is half-open byte range [start, end).
+; `contains` / `starts_with` / `ends_with` are booleans (empty needle is true).
+;
+; Suite: xo test std/bytes.echo (XO_TEST).
+
+/ runtime
+/ std/test
+/ std/str
+
+$ len = (b) {
+    ^ runtime.bytes_len(b)
+}
+
+$ is_empty = (b) {
+    ^ len(b) == 0
+}
+
+; Bounds-checked index. Runtime get returns -1 for OOB/invalid (single probe;
+; no separate len walk on the hot path).
+$ get = (b, i) {
+    $ x = runtime.bytes_get(b, i)
+    ? x < 0 {
+        ! "out of bounds"
+    }
+    ^ <ui8> x
+}
+
+$ slice = (b, start, end) {
+    $ n = runtime.bytes_len(b)
+    ? start < 0 || end < start || end > n {
+        ! "out of bounds"
+    }
+    ^ runtime.bytes_slice(b, start, end)
+}
+
+$ cat = (a, b) {
+    ^ runtime.bytes_cat(a, b)
+}
+
+; Pack an integer as 8 little-endian bytes (for hashing / framing).
+$ from_int = (n) {
+    ^ runtime.bytes_from_i64(n)
+}
+
+; UTF-8 payload of a string as bytes.
+$ from_str = (s) {
+    ^ runtime.bytes_from_str(s)
+}
+
+; Subsequence search via slice + deep bytes `==` (empty needle is true).
+$ contains = (hay, needle) {
+    $ hn = len(hay)
+    $ nn = len(needle)
+    ? nn == 0 || nn > hn {
+        ^ nn == 0
+    }
+    ~ i = 0
+    $ last = hn - nn
+    * i <= last {
+        | slice(hay, i, i + nn) {
+            $ part {
+                ? part == needle {
+                    ^ 0 == 0
+                }
+            }
+            ! e {}
+        }
+        ~ i = i + 1
+    }
+    ^ 0 == 1
+}
+
+$ starts_with = (b, prefix) {
+    $ n = len(prefix)
+    $ m = len(b)
+    ? n == 0 || n > m {
+        ^ n == 0
+    }
+    | slice(b, 0, n) {
+        $ p {
+            ^ p == prefix
+        }
+        ! e {
+            ^ 0 == 1
+        }
+    }
+}
+
+$ ends_with = (b, suffix) {
+    $ n = len(suffix)
+    $ m = len(b)
+    ? n == 0 || n > m {
+        ^ n == 0
+    }
+    | slice(b, m - n, m) {
+        $ p {
+            ^ p == suffix
+        }
+        ! e {
+            ^ 0 == 1
+        }
+    }
+}
+
+; --- suite (xo test std/bytes.echo) ---
+
+test.it("len", () {
+    test.eq(len(b'hi'), 2)
+    test.true(is_empty(b''))
+    test.false(is_empty(b'x'))
+})
+
+test.it("get_ok", () {
+    | get(b'AB', 1) {
+        $ b {
+            ; `b` is ui8 from get; untagged 66 adopts that width.
+            test.eq(b, 66)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("get_oob", () {
+    | get(b'A', 1) {
+        $ b {
+            test.fail("expected oob")
+        }
+        ! e {
+            test.eq(e, "out of bounds")
+        }
+    }
+})
+
+test.it("from_int_le", () {
+    $ b = from_int(0x0102030405060708)
+    test.eq(len(b), 8)
+    | get(b, 0) {
+        $ x {
+            test.eq(x, 0x08)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | get(b, 7) {
+        $ x {
+            test.eq(x, 0x01)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("slice_cat", () {
+    | slice(b'abcdef', 1, 4) {
+        $ mid {
+            test.eq(len(mid), 3)
+            | get(mid, 0) {
+                $ x {
+                    test.eq(x, 98)
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+            $ ab = cat(b'A', b'B')
+            test.eq(len(ab), 2)
+            | get(ab, 1) {
+                $ y {
+                    test.eq(y, 66)
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("slice_oob", () {
+    | slice(b'ab', 0, 3) {
+        $ x {
+            test.fail("expected oob")
+        }
+        ! e {
+            test.eq(e, "out of bounds")
+        }
+    }
+    | slice(b'ab', 2, 1) {
+        $ x {
+            test.fail("expected oob order")
+        }
+        ! e {
+            test.eq(e, "out of bounds")
+        }
+    }
+    | slice(b'ab', 2, 2) {
+        $ empty {
+            test.true(is_empty(empty))
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("from_str", () {
+    $ b = from_str("Hi")
+    test.eq(len(b), 2)
+    | get(b, 0) {
+        $ x {
+            test.eq(x, 72)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    test.true(is_empty(from_str("")))
+    $ u = from_str("\xc3\xa9")
+    test.eq(len(u), 2)
+    | get(u, 0) {
+        $ x {
+            test.eq(x, 195)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | get(u, 1) {
+        $ x {
+            test.eq(x, 169)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("contains", () {
+    test.true(contains(b'hello', b'ell'))
+    test.false(contains(b'hello', b'xyz'))
+    test.true(contains(b'ab', b''))
+    test.false(contains(b'', b'a'))
+    test.true(contains(b"\xffAB", b"\xff"))
+})
+
+test.it("starts_ends", () {
+    test.true(starts_with(b'foobar', b'foo'))
+    test.false(starts_with(b'foobar', b'bar'))
+    test.true(starts_with(b'ab', b''))
+    test.true(ends_with(b'foobar', b'bar'))
+    test.false(ends_with(b'foobar', b'foo'))
+    test.true(ends_with(b'ab', b''))
+    test.true(ends_with(b"\xffAB", b'AB'))
+})
+
+; str.slice indices are original payload bytes (0xff must not expand first).
+test.it("str_slice_raw_bytes", () {
+    $ raw = b"\xffAB"
+    | str.slice(raw, 1, 3) {
+        $ t {
+            test.eq(t, "AB")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+; Benchmarks: real bytes APIs (build inputs in-body).
+test.bench("cat", () {
+    $ b = cat(b'hello', b'world')
+})
+
+test.bench("from_str", () {
+    $ b = from_str("benchmark payload")
+})
+
+test.bench("contains", () {
+    $ ok = contains(b'the quick brown fox', b'brown')
+})
+
+test.bench("checksum_1k", () {
+    $ b = from_str(str.repeat("x", 1024))
+    ~ s = 0
+    ~ i = 0
+    $ n = len(b)
+    * i < n {
+        | get(b, i) {
+            $ x {
+                ~ s = s + x
+            }
+            ! e {}
+        }
+        ~ i = i + 1
+    }
+})
+
+test.bench("checksum_64k", () {
+    $ b = from_str(str.repeat("x", 65536))
+    ~ s = 0
+    ~ i = 0
+    $ n = len(b)
+    * i < n {
+        | get(b, i) {
+            $ x {
+                ~ s = s + x
+            }
+            ! e {}
+        }
+        ~ i = i + 1
+    }
+})
+
+\ len, is_empty, get, slice, cat, from_int, from_str, contains, starts_with, ends_with

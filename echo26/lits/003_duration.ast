@@ -1,0 +1,16 @@
+file
+  bind_dollar
+    name t
+    duration 5s
+  bind_dollar
+    name u
+    duration 10ms
+  bind_dollar
+    name v
+    duration 100us
+  bind_dollar
+    name w
+    duration 2m
+  bind_dollar
+    name x
+    duration 1h

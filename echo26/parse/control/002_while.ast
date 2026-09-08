@@ -1,0 +1,6 @@
+file
+  loop_while
+    binary Lt
+      name n
+      number 10
+    continue

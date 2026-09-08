@@ -1,0 +1,6 @@
+/ std/io
+/ std/str
+/ ./cfg
+
+io.print(str.from_int(cfg.N))
+

@@ -1,0 +1,15 @@
+file
+  bind_tilde
+    name i
+    number 0
+  loop_while
+    binary Lt
+      name i
+      number 5
+    bind_tilde
+      name i
+      binary Add
+        name i
+        number 1
+  return
+    name i

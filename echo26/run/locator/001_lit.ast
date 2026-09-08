@@ -1,0 +1,70 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name abs
+    locator_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_locator
+          name str
+        name abs
+  bind_dollar
+    name rel
+    locator_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_locator
+          name str
+        name rel
+  bind_dollar
+    name url
+    locator_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_locator
+          name str
+        name url
+  if
+    binary Eq
+      name abs
+      locator_pure
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure
+  if
+    binary Eq
+      name abs
+      locator_pure
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure

@@ -1,0 +1,5 @@
+file
+  bind_hash
+    name A
+    call
+      name f

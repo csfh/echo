@@ -1,0 +1,27 @@
+/ std/io
+/ std/str
+/ std/path
+
+$ abs = p'/home/user'
+io.print(str.from_locator(abs))
+$ rel = p'home/user'
+io.print(str.from_locator(rel))
+$ url = p"http://xo.run"
+io.print(str.from_locator(url))
+$ host = "xo.run"
+io.print(str.from_locator(p"http://{host}"))
+? abs == p'/home/user' {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}
+io.print(str.from_int(path.class(abs)))
+io.print(str.from_int(path.class(rel)))
+io.print(str.from_int(path.class(url)))
+? path.is_uri(url) {
+    io.print('uri')
+}
+? path.is_abs(abs) {
+    io.print('abs')
+}

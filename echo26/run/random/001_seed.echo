@@ -1,0 +1,14 @@
+/ std/io
+/ std/str
+/ std/random
+
+random.seed(42)
+$ a = random.u64()
+random.seed(42)
+$ b = random.u64()
+? a == b {
+    io.print("stable")
+}
+? a != b {
+    io.print("unstable")
+}

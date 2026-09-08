@@ -1,0 +1,18 @@
+; Chunked HTTP head + hex sizes.
+; Run: xo run examples/misc/http_chunked.echo
+
+/ std/io
+/ std/str
+/ std/net/http
+/ std/net/response
+
+$ res = response.response {
+    status: 200,
+    headers: {
+        content_type: "application/x-git-upload-pack-result"
+    },
+    body: "",
+    chunked: |
+}
+io.print(http.format_head(res))
+io.print(http.hex_from_int(255))

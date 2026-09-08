@@ -1,0 +1,25 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg bytes
+  import
+    seg std
+    seg encoding
+    seg hex
+  bind_dollar
+    name b
+    call
+      field from_str
+        name bytes
+      string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field encode
+          name hex
+        name b

@@ -1,0 +1,11 @@
+; Accumulate two byte chunks that split UTF-8 `é`, then parse (handle_connection path).
+/ std/io
+/ std/str
+/ std/bytes
+/ std/net/http
+
+$ headers = b"POST /echo HTTP/1.1\r\nHost: x\r\nContent-Length: 2\r\n\r\n"
+$ c1 = bytes.cat(headers, b"\xc3")
+$ raw = bytes.cat(c1, b"\xa9")
+$ req = http.parse_request(raw)
+io.print(req.body)

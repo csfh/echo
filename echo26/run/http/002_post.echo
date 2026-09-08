@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+/ std/net/http
+
+$ raw = "POST /api HTTP/1.1\r\nContent-Length: 5\r\n\r\nhello"
+$ req = http.parse_request(raw)
+io.print(req.method)
+io.print(req.path)
+io.print(req.body)

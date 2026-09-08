@@ -1,0 +1,13 @@
+/ std/io
+/ std/str
+/ std/path
+
+$ host = "xo.run"
+$ loc = p"http://{host}"
+io.print(str.from_locator(loc))
+io.print(str.from_int(path.class(loc)))
+? loc == p"http://xo.run" {
+    io.print("eq")
+}
+$ dir = p"/tmp"
+io.print(str.from_locator(p"{dir}/echo"))

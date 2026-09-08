@@ -1,0 +1,88 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  bind_dollar
+    name n
+    number 3
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_bytes
+          name str
+        bytes_rich
+  bind_dollar
+    name raw
+    bytes_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_bytes
+          name str
+        bytes_rich
+  bind_dollar
+    name mix
+    bytes_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name bytes
+          name mix
+  match
+    call
+      field get
+        name bytes
+      name mix
+      number 0
+    arm_ok b
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name b
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field get
+        name bytes
+      name mix
+      number 1
+    arm_ok b
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name b
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

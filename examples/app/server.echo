@@ -1,0 +1,22 @@
+; Long-running HTTP server for examples/app routes.
+;
+;   ./target/debug/xo run examples/app/server.echo
+;   curl -s http://127.0.0.1:8080/health
+;
+; Blocks in http.serve accept loop (tasks per connection). Ctrl-C to stop.
+
+/ std/io
+/ std/str
+/ std/net/http
+/ ./config
+/ ./routes
+
+$ app = config.APP_NAME
+$ ver = config.VERSION
+$ host = config.HOST
+$ port = str.from_int(config.PORT)
+$ addr = "{host}:{port}"
+
+io.log("starting {app} {ver} on {addr}")
+$ table = routes.build_routes()
+http.serve(addr, table)

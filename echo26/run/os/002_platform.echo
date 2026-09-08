@@ -1,0 +1,10 @@
+/ std/io
+/ std/os
+
+$ p = os.platform()
+? p == "linux" || p == "macos" || p == "windows" {
+    io.print("ok")
+}
+: {
+    io.print(p)
+}

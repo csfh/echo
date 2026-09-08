@@ -1,0 +1,78 @@
+; Factorial — iterative and recursive.
+; Run: xo run examples/algos/factorial.echo
+
+/ std/io
+/ std/str
+
+$ factorial = (n) {
+    ? n < 0 {
+        ! "factorial of negative"
+    }
+    ~ acc = 1
+    ~ i = 1
+    * i <= n {
+        ~ acc = acc * i
+        ~ i = i + 1
+    }
+    ^ acc
+}
+
+$ factorial_rec = (n) {
+    ? n < 0 {
+        ! "factorial of negative"
+    }
+    ? n <= 1 {
+        ^ 1
+    }
+    | factorial_rec(n - 1) {
+        $ prev {
+            ^ n * prev
+        }
+        ! err {
+            ! err
+        }
+    }
+}
+
+| factorial(0) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| factorial(5) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| factorial(10) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| factorial_rec(6) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| factorial(-1) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+
+\ factorial, factorial_rec

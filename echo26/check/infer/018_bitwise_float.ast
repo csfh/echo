@@ -1,0 +1,6 @@
+file
+  bind_dollar
+    name x
+    binary BitAnd
+      number 1.5
+      number 2

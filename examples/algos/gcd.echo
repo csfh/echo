@@ -1,0 +1,85 @@
+; Euclid GCD, LCM, and Stein binary GCD.
+; Run: xo run examples/algos/gcd.echo
+
+/ std/io
+/ std/str
+/ std/test
+
+$ abs = (n) {
+    ? n < 0 {
+        ^ 0 - n
+    }
+    ^ n
+}
+
+; Classic Euclidean algorithm (iterative).
+$ gcd = (a, b) {
+    ~ x = abs(a)
+    ~ y = abs(b)
+    * y != 0 {
+        $ r = x % y
+        ~ x = y
+        ~ y = r
+    }
+    ^ x
+}
+
+; lcm(a,b) = |a*b| / gcd(a,b)  (0 if either is 0)
+$ lcm = (a, b) {
+    ? a == 0 || b == 0 {
+        ^ 0
+    }
+    $ g = gcd(a, b)
+    ^ abs(a / g * b)
+}
+
+; Stein's algorithm — divide out factors of 2, then subtract.
+$ gcd_binary = (a, b) {
+    ~ u = abs(a)
+    ~ v = abs(b)
+    ? u == 0 {
+        ^ v
+    }
+    ? v == 0 {
+        ^ u
+    }
+    ~ shift = 0
+    * u % 2 == 0 && v % 2 == 0 {
+        ~ u = u / 2
+        ~ v = v / 2
+        ~ shift = shift + 1
+    }
+    * u % 2 == 0 {
+        ~ u = u / 2
+    }
+    * v != 0 {
+        * v % 2 == 0 {
+            ~ v = v / 2
+        }
+        ? u > v {
+            $ t = u
+            ~ u = v
+            ~ v = t
+        }
+        ~ v = v - u
+    }
+    ~ i = 0
+    * i < shift {
+        ~ u = u * 2
+        ~ i = i + 1
+    }
+    ^ u
+}
+
+io.print(str.from_int(gcd(48, 18)))
+io.print(str.from_int(gcd(17, 13)))
+io.print(str.from_int(gcd(0, 5)))
+io.print(str.from_int(lcm(12, 18)))
+io.print(str.from_int(gcd_binary(48, 18)))
+io.print(str.from_int(gcd_binary(1071, 462)))
+
+test.bench("gcd_euclid", () {
+    $ g = gcd(123456789, 987654321)
+})
+
+\ gcd, lcm, gcd_binary, abs

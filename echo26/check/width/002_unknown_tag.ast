@@ -1,0 +1,5 @@
+file
+  bind_dollar
+    name a
+    width_cast u8
+      number 1

@@ -1,0 +1,19 @@
+; Free-fn param monomorphic typing: methods on `% conn` param.
+/ std/io
+/ std/str
+/ std/net/tcp
+
+$ drain = (peer) {
+    $ got = peer.read(64)
+    peer.close()
+    ^ got
+}
+
+$ lis = tcp.listen("127.0.0.1:39882")
+$ client = tcp.connect("127.0.0.1:39882")
+$ server = lis.accept()
+client.write("hi")
+$ data = drain(server)
+io.print(str.from_bytes(data))
+client.close()
+lis.close()

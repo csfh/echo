@@ -1,0 +1,35 @@
+; Map CRUD + from_indexed factory.
+/ std/io
+/ std/str
+/ std/collections/map
+
+$ m = map.make()
+m.put(7, 42)
+m.put(8, 99)
+io.print(str.from_int(m.len()))
+| m.get(7) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss")
+    }
+}
+| m.remove(8) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss")
+    }
+}
+io.print(str.from_int(m.has(8)))
+$ idx = map.from_indexed([10, 20])
+| idx.get(1) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss")
+    }
+}

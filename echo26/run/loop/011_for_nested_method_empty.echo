@@ -1,0 +1,14 @@
+; Method for-in over field list-of-lists + early return (hash_table.is_empty shape).
+% box {
+    ~ buckets = [[], [], []]
+    $ empty = () {
+        * chain : .buckets {
+            * e : chain {
+                ^ 0
+            }
+        }
+        ^ 1
+    }
+}
+$ b = box {}
+^ b.empty()

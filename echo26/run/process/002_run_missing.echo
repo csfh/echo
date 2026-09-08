@@ -1,0 +1,12 @@
+; Spawn of missing binary is a result error.
+/ std/io
+/ std/process
+
+| process.run("__echo26_missing_binary_xyz__", []) {
+    $ code {
+        io.print("ok")
+    }
+    ! err {
+        io.print(err)
+    }
+}

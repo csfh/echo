@@ -1,0 +1,14 @@
+; In-memory object store.
+; Run: xo run examples/misc/store_memory.echo
+
+/ std/io
+/ std/str
+/ std/bytes
+/ std/store
+
+$ s = store.memory()
+$ p = store.put(s, "repos/demo/git/manifest", bytes.from_str("v1"))
+io.print(str.from_int(p.status))
+$ g = store.get(s, "repos/demo/git/manifest")
+io.print(str.from_bytes(g.body))
+store.close(s)

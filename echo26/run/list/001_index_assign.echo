@@ -1,0 +1,10 @@
+/ std/io
+/ std/str
+
+$ xs = [1, 2, 3]
+io.print(str.from_int(xs[0]))
+~ xs[0] = 9
+io.print(str.from_int(xs[0]))
+io.print(str.from_int(xs[1]))
+~ xs[2] = xs[0] + xs[1]
+io.print(str.from_int(xs[2]))

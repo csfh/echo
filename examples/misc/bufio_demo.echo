@@ -1,0 +1,18 @@
+; Line split demo.
+; Run: xo run examples/misc/bufio_demo.echo
+
+/ std/io
+/ std/str
+/ std/list
+/ std/bufio
+
+$ ls = bufio.lines("one\ntwo\nthree")
+io.print(str.from_int(list.len(ls)))
+| list.get(ls, 1) {
+    $ line {
+        io.print(line)
+    }
+    ! e {
+        io.print(e)
+    }
+}

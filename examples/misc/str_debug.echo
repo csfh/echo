@@ -1,0 +1,7 @@
+; str.from_debug. Run: xo run examples/misc/str_debug.echo
+/ std/io
+/ std/str
+
+io.print(str.from_debug(42))
+io.print(str.from_debug("hi"))
+io.print(str.from_debug([1, 2]))

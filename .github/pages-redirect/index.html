@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Echo</title>
+    <meta http-equiv="refresh" content="0; url=https://xo.run/" />
+    <link rel="canonical" href="https://xo.run/" />
+    <script>
+      (function () {
+        var dest = "https://xo.run";
+        var path = location.pathname.replace(/^\/echo\/?/, "/");
+        if (path === "/") {
+          location.replace(dest + "/" + location.search + location.hash);
+          return;
+        }
+        location.replace(dest + path + location.search + location.hash);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>The Echo site is at <a href="https://xo.run/">https://xo.run/</a>.</p>
+  </body>
+</html>

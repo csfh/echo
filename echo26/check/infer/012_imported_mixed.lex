@@ -1,0 +1,17 @@
+leader_slash
+ident
+slash
+ident
+ident
+dot
+ident
+l_paren
+number
+r_paren
+ident
+dot
+ident
+l_paren
+string_pure
+r_paren
+eof

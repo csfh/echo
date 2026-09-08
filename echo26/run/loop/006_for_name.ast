@@ -1,0 +1,19 @@
+file
+  bind_dollar
+    name xs
+    list
+      number 10
+      number 20
+      number 12
+  bind_tilde
+    name sum
+    number 0
+  loop_for x
+    name xs
+    bind_tilde
+      name sum
+      binary Add
+        name sum
+        name x
+  return
+    name sum

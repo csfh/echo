@@ -1,0 +1,40 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name load
+    fn
+      param n
+      if
+        binary Lt
+          name n
+          number 0
+        error_return
+          number 1
+      return
+        name n
+  bind_dollar
+    name f
+    name load
+  effect_block
+    bind out
+    block
+      bind_dollar
+        name x
+        call
+          name f
+          number 9
+      return
+        name x
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name out

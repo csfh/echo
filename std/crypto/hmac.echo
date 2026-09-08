@@ -1,0 +1,39 @@
+; std/crypto/hmac — HMAC-SHA256 (key + data → 32 bytes).
+/ runtime
+/ std/test
+/ std/bytes
+/ std/encoding/hex
+
+$ sha256 = (key, data) {
+    $ d = runtime.hmac_sha256(key, data)
+    ? d == 0 {
+        ! "hmac failed"
+    }
+    ^ d
+}
+
+test.it("hmac_sha256_len", () {
+    | sha256("key", "msg") {
+        $ d {
+            test.eq(bytes.len(d), 32)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+; RFC 4231 test case 2.
+test.it("hmac_sha256_jefe", () {
+    | sha256("Jefe", "what do ya want for nothing?") {
+        $ d {
+            test.eq(bytes.len(d), 32)
+            test.eq(hex.encode(d), "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+\ sha256

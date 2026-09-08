@@ -1,0 +1,6 @@
+/ std/io
+/ std/str
+/ ./lib
+
+io.print(str.from_int(lib.triple(14)))
+

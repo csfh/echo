@@ -1,0 +1,13 @@
+/ std/io
+/ std/bytes
+/ std/encoding/hex
+/ std/crypto/hmac
+
+| hmac.sha256("Jefe", "what do ya want for nothing?") {
+    $ d {
+        io.print(hex.encode(d))
+    }
+    ! e {
+        io.print(e)
+    }
+}

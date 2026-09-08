@@ -1,0 +1,25 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg time
+  match
+    call
+      field parse
+        name time
+      string_rich
+      string_rich
+    arm_ok t
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

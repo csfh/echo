@@ -1,0 +1,73 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg reflect
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field kind
+            name reflect
+          number 42
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field kind_name
+          name reflect
+        number 42
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field kind_name
+          name reflect
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Eq
+          call
+            field kind
+              name reflect
+            string_rich
+          field KIND_STRING
+            name reflect
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field is_int
+            name reflect
+          number 42
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field is_string
+            name reflect
+          number 42

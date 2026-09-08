@@ -1,0 +1,16 @@
+{
+  "name": "tree-sitter-echo",
+  "version": "0.0.1",
+  "description": "Echo grammar for tree-sitter (generated from echo_syntax)",
+  "main": "bindings/node",
+  "keywords": ["parser", "lexer", "echo", "tree-sitter"],
+  "license": "MIT",
+  "tree-sitter": [
+    {
+      "scope": "source.echo",
+      "file-types": ["echo"],
+      "highlights": ["queries/highlights.scm"],
+      "injection-regex": "^echo$"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+/ std/io
+/ std/str
+/ ./math
+$ s = math.add(2, 3)
+io.print(str.from_int(s))
+$ p = math.mul(2, 3)
+io.print(str.from_int(p))

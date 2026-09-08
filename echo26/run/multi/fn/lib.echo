@@ -1,0 +1,4 @@
+$ triple = (x) {
+    ^ x + x + x
+}
+\ triple

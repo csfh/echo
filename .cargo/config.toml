@@ -1,0 +1,21 @@
+[build]
+jobs = 32
+rustc-wrapper = "sccache"
+
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "link-arg=-fuse-ld=mold"]
+
+# Official LLVM Windows tarballs define malloc/free/realloc via rpmalloc in
+# LLVMSupport.lib (static /MT). rustc uses UCRT (/MD). Without these flags,
+# linking xo.exe (and any llvm-sys test harness) fails LNK2005 / LNK1169.
+# `crates/xo/build.rs` emits the same args so `cargo build -p xo` still links
+# if RUSTFLAGS replaces this table.
+[target.x86_64-pc-windows-msvc]
+rustflags = [
+    "-C", "link-arg=/FORCE:MULTIPLE",
+    "-C", "link-arg=/NODEFAULTLIB:libcmt",
+]
+
+[alias]
+fmt-check = "fmt --all -- --check"

@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+
+$ p = { x: 1, nested: { y: 2 } }
+io.print(str.from_int(p.nested.y))
+~ p.nested.y = 9
+io.print(str.from_int(p.nested.y))
+~ p.nested.y = p.nested.y + 1
+io.print(str.from_int(p.nested.y))

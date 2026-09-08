@@ -1,0 +1,7 @@
+/ std/io
+/ std/str
+
+- n = {
+    ^ 41
+}
+io.print(str.from_int(n))

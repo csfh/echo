@@ -1,0 +1,15 @@
+file
+  bind_dollar
+    name xs
+    list
+      number 7
+      number 8
+      number 9
+  return
+    binary Add
+      index
+        name xs
+        number 0
+      index
+        name xs
+        number 2

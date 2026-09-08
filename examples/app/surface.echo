@@ -1,0 +1,235 @@
+; Language surface exercise — locked Echo core through `xo run`.
+; Run: cargo run -p xo -- run examples/app/surface.echo
+; Pulls multi-file % / @ via user + user_extra (same package as main).
+
+/ std/io
+/ std/str
+/ ./user
+/ ./user_extra
+
+; --- # compile-time constants (SCREAMING_SNAKE) ---
+# MAX = 3
+# TITLE = "surface"
+# LOCAL_I64 = <i64>10
+
+; --- % shape + methods ($ / ~ / # members, incl. function values) ---
+% point {
+    $ x
+    $ y
+}
+
+% counter {
+    ~ n
+    # KIND = 'ctr'
+
+    $ inc = () {
+        ~ .n = .n + 1
+    }
+
+    $ value = () {
+        ^ .n
+    }
+}
+
+; --- @ extra members (same file; multi-file @ is user_extra.echo) ---
+@ counter {
+    $ bump = () {
+        ~ .n = .n + 1
+        ^ .n
+    }
+}
+
+; --- free functions as values ---
+$ add = (a, b) {
+    ^ a + b
+}
+
+; --- ordinary | match (literals + default :) ---
+$ classify = (n) {
+    | n {
+        0 {
+            ^ "zero"
+        }
+        1 {
+            ^ "one"
+        }
+        : {
+            ^ "many"
+        }
+    }
+}
+
+; --- Option-shaped fn: bare ^ = none, ^ v = some ---
+$ find_even = (xs) {
+    * item : xs {
+        ? item % 2 == 0 {
+            ^ item
+        }
+    }
+    ^
+}
+
+; --- Result-shaped fn: ! = err return, ^ = ok ---
+$ checked_div = (a, b) {
+    ? b == 0 {
+        ! "divide by zero"
+    }
+    ^ a / b
+}
+
+; --- ~ and $ binds ---
+~ mut_a = 1
+~ mut_b = 2
+$ imm = "hello"
+# LOCAL_MAX = 10
+
+; --- arithmetic, compare, boolean, unary ---
+~ sum = mut_a + mut_b * 2 - 1
+~ flag_ok = sum >= 0 && ! _
+~ flag = | || _
+~ same = sum == sum
+~ id = sum === sum
+
+; --- strings pure / rich ---
+$ pure = 'no-interp'
+$ rich = "title={TITLE} sum={sum}"
+
+; --- number forms + width tags ---
+$ hex = 0xFF
+$ bin = 0b1010
+$ big = 1_000_000
+$ fl = 3.14
+$ sci = 1e-3
+$ neg = -42
+$ w32 = <i32>7
+$ w64 = <i64>7
+$ wf = <f64>2.5
+
+; --- duration, bytes, locator ---
+$ wait = 5s
+$ tick = 10ms
+$ raw = b'raw'
+$ payload = b"hi\n"
+$ home = p'/home/user'
+$ rel = p'home/user'
+$ site = p"http://xo.run"
+
+; --- list + index assign ---
+~ xs = [1, 2, 3]
+~ xs[0] = 9
+
+; --- anon struct vs named struct lit ---
+$ row = { name: "row", n: 1 }
+$ pt = point {
+    x: 1,
+    y: 2
+}
+
+; --- ? / : chain ---
+? sum > LOCAL_MAX {
+    io.log("big")
+}
+: sum == 0 {
+    io.log("zero")
+}
+: {
+    io.log("mid")
+}
+
+$ kind = classify(sum)
+
+; --- loops: infinite + break, while, for-each + continue ---
+~ i = 0
+* {
+    ~ i = i + 1
+    ? i >= MAX {
+        <
+    }
+    io.log(str.from_int(i))
+}
+
+~ j = 0
+* j < 3 {
+    ~ j = j + 1
+}
+
+* item : xs {
+    ? item == 2 {
+        >
+    }
+    io.log(str.from_int(item))
+}
+
+; --- methods + free call ---
+~ ctr = counter {
+    n: 0
+}
+$ v = ctr.inc()
+$ v2 = ctr.value()
+$ b = ctr.bump()
+$ s = add(v, hex)
+
+; --- multi-file % user + @ user ---
+~ ada = user.user {
+    name: "Ada",
+    visits: 0,
+    active: |,
+    banned: _
+}
+$ hello = ada.greet()
+ada.visit()
+$ tag = ada.label()
+io.print(hello)
+io.print(tag)
+
+; --- Option consume ---
+| find_even(xs) {
+    $ even {
+        io.log(str.from_int(even))
+    }
+    : {
+        io.log("no even")
+    }
+}
+
+; --- Result consume ---
+| checked_div(s, mut_a) {
+    $ q {
+        io.log(str.from_int(q))
+    }
+    ! err {
+        io.log(err)
+    }
+}
+
+io.print(pure)
+io.print(rich)
+io.print(kind)
+io.print(str.from_int(s))
+io.print(str.from_int(b))
+io.print(str.from_int(flag_ok))
+io.print(str.from_int(flag))
+io.print(str.from_int(same))
+io.print(str.from_int(id))
+io.print(str.from_int(pt.x))
+io.print(str.from_int(row.n))
+io.print(str.from_float(fl))
+io.print(str.from_float(sci))
+io.print(str.from_int(neg))
+io.print(str.from_int(bin))
+io.print(str.from_int(big))
+io.print(imm)
+io.print(str.from_int(w32))
+io.print(str.from_int(w64))
+io.print(str.from_float(wf))
+io.print(str.from_duration(wait))
+io.print(str.from_duration(tick))
+io.print(str.from_bytes(raw))
+io.print(str.from_bytes(payload))
+io.print(str.from_locator(home))
+io.print(str.from_locator(rel))
+io.print(str.from_locator(site))
+io.print(str.from_int(v2))
+
+
+\ add, classify, point, counter, find_even, checked_div

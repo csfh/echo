@@ -1,0 +1,16 @@
+/ std/io
+/ std/str
+
+$ load = (n) {
+    ? n < 0 {
+        ! 1
+    }
+    ^ n
+}
+
+$ f = load
+& out = {
+    $ x = f(9)
+    ^ x
+}
+io.print(str.from_int(out))

@@ -1,0 +1,12 @@
+; Real dynamic value still rejects ordering (negative control for pin-to-value).
+$ id = (x) {
+    ^ x
+}
+$ main = () {
+    $ a = id(1)
+    $ b = id(2)
+    ? a > b {
+        ^ 1
+    }
+    ^ 0
+}

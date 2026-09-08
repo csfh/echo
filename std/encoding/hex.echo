@@ -1,0 +1,48 @@
+; std/encoding/hex
+/ runtime
+/ std/test
+/ std/str
+/ std/bytes
+
+$ encode = (b) {
+    ^ runtime.hex_encode(b)
+}
+
+$ decode = (s) {
+    $ b = runtime.hex_decode(s)
+    ? b == 0 {
+        ! "hex decode failed"
+    }
+    ^ b
+}
+
+test.it("hex_roundtrip", () {
+    $ b = bytes.from_str("Hi")
+    $ h = encode(b)
+    test.eq(h, "4869")
+    | decode(h) {
+        $ out {
+            test.eq(str.from_bytes(out), "Hi")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+; Benchmarks: `xo test --bench std/encoding/hex.echo`
+test.bench("encode", () {
+    $ b = bytes.from_str("benchmark payload bytes")
+    $ h = encode(b)
+})
+
+test.bench("roundtrip", () {
+    $ b = bytes.from_str("Hi")
+    $ h = encode(b)
+    | decode(h) {
+        $ out {}
+        ! e {}
+    }
+})
+
+\ encode, decode

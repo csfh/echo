@@ -1,0 +1,8 @@
+/ std/io
+/ std/str
+/ std/math
+
+io.print(str.from_float(math.floor(<f64>3.7)))
+io.print(str.from_float(math.ceil(<f64>3.2)))
+io.print(str.from_float(math.pow(<f64>2.0, <f64>3.0)))
+io.print(str.from_float(math.cos(<f64>0.0)))

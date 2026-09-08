@@ -1,0 +1,284 @@
+; std/process — args, environment, exit, spawn+wait.
+; Privileged std may `/ runtime` and call `runtime.*` (docs/stdlib.md).
+;
+; Public API:
+;   args() — list of strings (argv; [0] is the program name when present)
+;   env(name) — option string (some value / none if unset)
+;   env_set(name, value) — set process environment
+;   env_unset(name) — remove environment variable
+;   exit(code) — terminate process with status code
+;   run(program, args) — spawn+wait; result exit status, or ! on spawn failure
+;
+; Suite: xo test std/process.echo (XO_TEST).
+
+/ runtime
+/ std/test
+/ std/list
+/ std/str
+/ std/bytes
+/ std/os
+
+$ args = () {
+    ^ runtime.process_args()
+}
+
+; Option-shaped: bare ^ = unset, ^ s = value.
+$ env = (name) {
+    ? runtime.process_env_has(name) == 0 {
+        ^
+    }
+    ^ runtime.process_env_get(name)
+}
+
+$ env_set = (name, value) {
+    runtime.process_env_set(name, value)
+    ^
+}
+
+$ env_unset = (name) {
+    runtime.process_env_unset(name)
+    ^
+}
+
+$ exit = (code) {
+    runtime.process_exit(code)
+    ^
+}
+
+; Result-shaped: ^ code on success, ! on spawn failure.
+$ run = (program, args) {
+    $ code = runtime.process_run(program, args)
+    ? code < 0 {
+        ! "failed to spawn process"
+    }
+    ^ code
+}
+
+; Spawn+wait capturing stdout/stderr. Result product { code, stdout, stderr } or ! spawn fail.
+; Runtime product always has `ok` (internal) so fields type after spawn fail.
+$ run_capture = (program, args) {
+    $ r = runtime.process_run_capture(program, args)
+    ? r.ok == 0 {
+        ! "failed to spawn process"
+    }
+    ^ r
+}
+
+; Spawn+wait capturing stdout/stderr in `cwd` (empty = inherit).
+; Result product { code, stdout, stderr } or ! spawn fail.
+; Runtime product always has `ok` (internal) so fields type after spawn fail.
+$ run_cwd = (program, args, cwd) {
+    $ r = runtime.process_run_cwd(program, args, cwd)
+    ? r.ok == 0 {
+        ! "failed to spawn process"
+    }
+    ^ r
+}
+
+; Spawn with piped stdin/stdout/stderr.
+; Result product { ok, child, stdin, stdout, stderr } or ! spawn fail.
+$ spawn_pipes = (program, args) {
+    $ r = runtime.process_spawn_pipes(program, args)
+    ? r.ok == 0 {
+        ! "failed to spawn process"
+    }
+    ^ r
+}
+
+$ pipe_write = (pipe, data) {
+    $ st = runtime.process_pipe_write(pipe, data)
+    ? st < 0 {
+        ! "pipe write failed"
+    }
+    ^
+}
+
+$ pipe_read = (pipe, limit) {
+    $ b = runtime.process_pipe_read(pipe, limit)
+    ? b == 0 {
+        ! "pipe read failed"
+    }
+    ^ b
+}
+
+$ pipe_close = (pipe) {
+    runtime.process_pipe_close(pipe)
+    ^
+}
+
+; Wait for child from spawn_pipes; exit code or ! fail.
+$ wait = (child) {
+    $ code = runtime.process_wait(child)
+    ? code < 0 {
+        ! "wait failed"
+    }
+    ^ code
+}
+
+; --- suite ---
+
+test.it("args_nonempty", () {
+    $ a = args()
+    test.true(list.len(a) >= 1)
+})
+
+test.it("e26_argv_is_program", () {
+    ; Same lock as echo26/run/process/005_argv_len: argv is the suite child, not `xo`.
+    $ a = args()
+    test.eq(list.len(a), 1)
+})
+
+test.it("env_roundtrip", () {
+    $ key = "ECHO_STD_PROCESS_TEST"
+    env_unset(key)
+    | env(key) {
+        $ v {
+            test.true(0 == 1)
+        }
+        : {
+            test.eq(1, 1)
+        }
+    }
+    env_set(key, "hello")
+    | env(key) {
+        $ v {
+            test.eq(v, "hello")
+        }
+        : {
+            test.true(0 == 1)
+        }
+    }
+    env_unset(key)
+    | env(key) {
+        $ v {
+            test.true(0 == 1)
+        }
+        : {
+            test.eq(1, 1)
+        }
+    }
+})
+
+; Spawn success (`true`/`false`) is covered by runtime unit tests (platform-specific).
+test.it("run_missing", () {
+    $ empty = []
+    | run("__echo_missing_binary_xyz__", empty) {
+        $ code {
+            test.true(0 == 1)
+        }
+        ! err {
+            test.eq(err, "failed to spawn process")
+        }
+    }
+})
+
+test.it("run_capture_missing", () {
+    $ empty = []
+    | run_capture("__echo_missing_binary_xyz__", empty) {
+        $ r {
+            test.true(0 == 1)
+        }
+        ! err {
+            test.eq(err, "failed to spawn process")
+        }
+    }
+})
+
+test.it("run_capture_pwd", () {
+    ? os.platform() == "windows" {
+        test.eq(1, 1)
+    }
+    : {
+        $ empty = []
+        | run_capture("pwd", empty) {
+            $ r {
+                test.eq(r.code, 0)
+                test.true(str.contains(r.stdout, "/"))
+            }
+            ! err {
+                test.fail(err)
+            }
+        }
+    }
+})
+
+test.it("run_cwd_missing", () {
+    $ empty = []
+    | run_cwd("__echo_missing_binary_xyz__", empty, "/tmp") {
+        $ r {
+            test.true(0 == 1)
+        }
+        ! err {
+            test.eq(err, "failed to spawn process")
+        }
+    }
+})
+
+test.it("run_cwd_pwd_tmp", () {
+    ? os.platform() == "windows" {
+        test.eq(1, 1)
+    }
+    : {
+        $ empty = []
+        | run_cwd("pwd", empty, "/tmp") {
+            $ r {
+                test.eq(r.code, 0)
+                test.true(str.contains(r.stdout, "tmp"))
+            }
+            ! err {
+                test.fail(err)
+            }
+        }
+    }
+})
+
+test.it("spawn_pipes_missing", () {
+    $ empty = []
+    | spawn_pipes("__echo_missing_binary_xyz__", empty) {
+        $ r {
+            test.true(0 == 1)
+        }
+        ! err {
+            test.eq(err, "failed to spawn process")
+        }
+    }
+})
+
+test.it("spawn_pipes_cat", () {
+    $ empty = []
+    | spawn_pipes("cat", empty) {
+        $ r {
+            | pipe_write(r.stdin, "hi") {
+                $ ok {
+                    pipe_close(r.stdin)
+                    | pipe_read(r.stdout, 16) {
+                        $ b {
+                            test.eq(str.from_bytes(b), "hi")
+                            pipe_close(r.stdout)
+                            pipe_close(r.stderr)
+                            | wait(r.child) {
+                                $ code {
+                                    test.eq(code, 0)
+                                }
+                                ! e {
+                                    test.fail(e)
+                                }
+                            }
+                        }
+                        ! e {
+                            test.fail(e)
+                        }
+                    }
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! err {
+            test.fail(err)
+        }
+    }
+})
+
+\ args, env, env_set, env_unset, exit, run, run_capture, run_cwd, spawn_pipes, pipe_write, pipe_read, pipe_close, wait

@@ -1,0 +1,7 @@
+file
+  bind_dollar
+    name x
+    number 1
+  bind_tilde
+    name x
+    number 2

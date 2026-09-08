@@ -1,0 +1,19 @@
+<svg width="470" height="300" viewBox="0 0 470 300" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">Echo Programming Language</title>
+  <desc id="logo-desc">A stylized Echo Programming Language logo.</desc>
+  <defs>
+    <linearGradient id="echo-gradient" x1="0" y1="14" x2="0" y2="286" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#A855F7" />
+      <stop offset="38%" stop-color="#6366F1" />
+      <stop offset="68%" stop-color="#0EA5E9" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <mask id="arc-mask" x="300" y="0" width="160" height="300" maskUnits="userSpaceOnUse">
+      <path d="M350 36 C415 86 415 214 350 264" fill="none" stroke="#fff" stroke-width="32" stroke-linecap="butt" stroke-linejoin="round" />
+      <rect x="-16" y="-6" width="32" height="12" rx="5" fill="#fff" transform="translate(350 36) rotate(128)" />
+      <rect x="-16" y="-6" width="32" height="12" rx="5" fill="#fff" transform="translate(350 264) rotate(52)" />
+    </mask>
+  </defs>
+  <text x="0" y="220" fill="#0B1018" font-family="Space Grotesk, Inter, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="300" font-weight="700" letter-spacing="-0.07em">xo</text>
+  <rect x="300" y="0" width="160" height="300" fill="url(#echo-gradient)" mask="url(#arc-mask)" />
+</svg>

@@ -1,0 +1,9 @@
+file
+  bind_dollar
+    name a
+    binary Add
+      name b
+      number 4
+  bind_dollar
+    name b
+    number 5

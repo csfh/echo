@@ -1,0 +1,13 @@
+/ std/io
+/ std/str
+
+; Higher-order: pass function values as params and call them (no nested capture).
+$ add = (a, b) {
+    ^ a + b
+}
+
+$ call = (f, x, y) {
+    ^ f(x, y)
+}
+
+io.print(str.from_int(call(add, 3, 4)))

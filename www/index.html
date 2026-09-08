@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Echo Programming Language</title>
+    <meta name="description" content="Echo is a compiled language." />
+    <script>
+      (function () {
+        var redirect = window.location.search;
+
+        if (redirect.slice(0, 2) !== "?/") {
+          return;
+        }
+
+        var decoded = redirect
+          .slice(1)
+          .split("&")
+          .map(function (part) {
+            return part.replace(/~and~/g, "&");
+          })
+          .join("?");
+
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname.replace(/\/$/, "") + decoded + window.location.hash,
+        );
+      })();
+    </script>
+  </head>
+  <body class="m-0 font-sans text-slate-950 antialiased">
+    <div id="root"></div>
+    <noscript id="docs-first-fallback"></noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

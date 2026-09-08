@@ -1,0 +1,67 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct counter
+    bind_tilde
+      name n
+    bind_dollar
+      name inc
+      fn
+        assign
+          target_field n
+            receiver
+          binary Add
+            field n
+              receiver
+            number 1
+    bind_dollar
+      name value
+      fn
+        return
+          field n
+            receiver
+  bind_dollar
+    name c
+    struct_lit counter
+      field n
+        number 0
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field value
+            call
+              field inc
+                name c
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field value
+            call
+              field inc
+                call
+                  field inc
+                    name c
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field value
+            name c

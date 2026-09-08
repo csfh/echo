@@ -1,0 +1,67 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg encoding
+    seg utf8
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field valid
+            name utf8
+          bytes_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field valid
+            name utf8
+          bytes_rich
+  match
+    call
+      field decode
+        name utf8
+      bytes_pure
+    arm_ok t
+      expr_stmt
+        call
+          field print
+            name io
+          name t
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field decode
+        name utf8
+      bytes_rich
+    arm_ok t
+      expr_stmt
+        call
+          field print
+            name io
+          name t
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

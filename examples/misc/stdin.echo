@@ -1,0 +1,14 @@
+; Read all of stdin as bytes, print as UTF-8 (lossy).
+; printf ping | xo run examples/misc/stdin.echo
+
+/ std/io
+/ std/str
+
+| io.read() {
+    $ b {
+        io.print(str.from_bytes(b))
+    }
+    ! e {
+        io.print(e)
+    }
+}

@@ -1,0 +1,16 @@
+/ std/io
+/ std/str
+
+% box {
+    ~ n
+    $ twice = () {
+        $ add = (a, b) {
+            ^ a + b
+        }
+        ~ .n = add(.n, .n)
+    }
+}
+
+~ b = box { n: 7 }
+b.twice()
+io.print(str.from_int(b.n))

@@ -1,0 +1,5 @@
+/ std/io
+/ std/str
+
+io.print(str.from_float(1.5 + 2.25))
+io.print(str.from_float(10.0 / 4.0))

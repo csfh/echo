@@ -1,0 +1,40 @@
+; std/crypto/random — CSPRNG (/dev/urandom on Unix).
+/ runtime
+/ std/test
+/ std/bytes
+
+$ fill = (n) {
+    $ b = runtime.crypto_random_bytes(n)
+    ? b == 0 {
+        ! "csprng failed"
+    }
+    ^ b
+}
+
+$ u64 = () {
+    ^ runtime.crypto_random_u64()
+}
+
+test.it("csprng_len", () {
+    | fill(16) {
+        $ b {
+            test.eq(bytes.len(b), 16)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("fill_zero", () {
+    | fill(0) {
+        $ b {
+            test.eq(bytes.len(b), 0)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+\ fill, u64

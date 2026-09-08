@@ -1,0 +1,6 @@
+file
+  bind_dollar
+    name x
+    binary Add
+      locator_pure
+      number 1

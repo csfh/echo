@@ -1,0 +1,90 @@
+; Integer power — exponentiation by squaring.
+; Run: xo run examples/algos/power.echo
+
+/ std/io
+/ std/str
+
+; base^exp for non-negative exp. 0^0 is treated as 1.
+$ pow = (base, exp) {
+    ? exp < 0 {
+        ! "negative exponent"
+    }
+    ~ b = base
+    ~ e = exp
+    ~ acc = 1
+    * e > 0 {
+        ? e % 2 == 1 {
+            ~ acc = acc * b
+        }
+        ~ b = b * b
+        ~ e = e / 2
+    }
+    ^ acc
+}
+
+; Modular power: (base^exp) mod m  (m > 0).
+$ pow_mod = (base, exp, m) {
+    ? exp < 0 {
+        ! "negative exponent"
+    }
+    ? m <= 0 {
+        ! "modulus must be positive"
+    }
+    ~ b = base % m
+    ? b < 0 {
+        ~ b = b + m
+    }
+    ~ e = exp
+    ~ acc = 1
+    * e > 0 {
+        ? e % 2 == 1 {
+            ~ acc = acc * b % m
+        }
+        ~ b = b * b % m
+        ~ e = e / 2
+    }
+    ^ acc
+}
+
+| pow(2, 0) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| pow(2, 10) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| pow(3, 5) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| pow_mod(2, 10, 1000) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| pow_mod(7, 3, 5) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+
+\ pow, pow_mod

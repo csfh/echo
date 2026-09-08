@@ -1,0 +1,113 @@
+; std/net/unix — Unix domain sockets (blocking). Handle-0 failure like TCP
+; (including on Windows, where the natives stub handle 0).
+;
+; Public API:
+;   listen(path) → % listener
+;   accept(lis) → % conn
+;   connect(path) → % conn
+;   read/write/close free helpers
+;
+; Suite: xo test std/net/unix.echo
+
+/ runtime
+/ std/test
+/ std/str
+/ std/bytes
+/ std/os
+
+% listener {
+    $ handle
+
+    $ accept = () {
+        $ h = runtime.unix_accept(.handle)
+        ? h == 0 {
+            ^ conn {
+                handle: 0,
+                open: _
+            }
+        }
+        ^ conn {
+            handle: h,
+            open: |
+        }
+    }
+
+    $ close = () {
+        runtime.unix_close(.handle)
+        ^ .
+    }
+}
+
+% conn {
+    $ handle
+    ~ open = |
+
+    $ read = (limit) {
+        ^ runtime.unix_read(.handle, limit)
+    }
+
+    $ write = (data) {
+        ^ runtime.unix_write(.handle, data)
+    }
+
+    $ close = () {
+        runtime.unix_close(.handle)
+        ~ .open = _
+        ^ .
+    }
+}
+
+$ listen = (path) {
+    $ h = runtime.unix_listen(path)
+    ^ listener {
+        handle: h
+    }
+}
+
+$ accept = (lis) {
+    $ h = runtime.unix_accept(lis.handle)
+    ? h == 0 {
+        ^ conn {
+            handle: 0,
+            open: _
+        }
+    }
+    ^ conn {
+        handle: h,
+        open: |
+    }
+}
+
+$ connect = (path) {
+    $ h = runtime.unix_connect(path)
+    ? h == 0 {
+        ^ conn {
+            handle: 0,
+            open: _
+        }
+    }
+    ^ conn {
+        handle: h,
+        open: |
+    }
+}
+
+$ read = (c, limit) {
+    ^ runtime.unix_read(c.handle, limit)
+}
+
+$ write = (c, data) {
+    ^ runtime.unix_write(c.handle, data)
+}
+
+$ close = (c) {
+    runtime.unix_close(c.handle)
+    ^
+}
+
+test.it("listen_bad_path", () {
+    $ lis = listen("/no/such/dir/echo_unix_missing.sock")
+    test.eq(lis.handle, 0)
+})
+
+\ listener, conn, listen, accept, connect, read, write, close

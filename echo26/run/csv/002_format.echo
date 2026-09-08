@@ -1,0 +1,6 @@
+; csv.format_line joins fields with commas.
+/ std/io
+/ std/encoding/csv
+
+io.print(csv.format_line(["x", "y"]))
+io.print(csv.format_line(["solo"]))

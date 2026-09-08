@@ -1,0 +1,472 @@
+; std/cli — pure flag/option parsing over an argv list (no / runtime).
+; Not a full getopt/GNU matrix. Suitable for process.args or injected vectors.
+;
+; Public API:
+;   parse(argv) → result list (encoded tokens) | ! message
+;   has(tokens, name) → bool
+;   get(tokens, name) → option string  (bare flags yield "")
+;   positionals(tokens) → list of leftover strings
+;
+; Encoded token stream (flat list of strings, ownership-safe under scope free):
+;   "f", name           — boolean flag
+;   "o", name, value    — option with value
+;   "p", value          — positional
+;
+; Forms: --name, --name=value, --name value, -x ; -- ends options.
+;
+; Suite: xo test std/cli.echo (XO_TEST).
+
+/ std/test
+/ std/list
+/ std/str
+
+$ is_long = (s) {
+    ^ str.starts_with(s, "--")
+}
+
+$ is_short = (s) {
+    ? str.starts_with(s, "-") {
+        ? is_long(s) {
+            ^ _
+        }
+        ? str.len(s) == 2 {
+            ^ |
+        }
+        ^ _
+    }
+    ^ _
+}
+
+$ is_opt_token = (s) {
+    ? s == "--" {
+        ^ |
+    }
+    ? is_long(s) {
+        ^ |
+    }
+    ? is_short(s) {
+        ^ |
+    }
+    ^ _
+}
+
+$ find_eq = (s) {
+    $ n = str.len(s)
+    ~ i = 0
+    * i < n {
+        | str.get(s, i) {
+            $ c {
+                ? c == 61 {
+                    ^ i
+                }
+                : {
+                    ~ i = i + 1
+                }
+            }
+            ! e {
+                ~ i = n
+            }
+        }
+    }
+    ^ -1
+}
+
+$ parse = (argv) {
+    ~ out = []
+    ~ only_pos = _
+    ~ need_val = _
+    ~ prev_flag = ""
+    * a : argv {
+        ~ handled = _
+        ? need_val {
+            $ pn = str.len(prev_flag)
+            | str.slice(prev_flag, 2, pn) {
+                $ name {
+                    ? is_opt_token(a) {
+                        ~ out[] = str.cat("f", "")
+                        ~ out[] = str.cat(name, "")
+                        ~ need_val = _
+                        ~ prev_flag = ""
+                    }
+                    : {
+                        ~ out[] = str.cat("o", "")
+                        ~ out[] = str.cat(name, "")
+                        ~ out[] = str.cat(a, "")
+                        ~ need_val = _
+                        ~ prev_flag = ""
+                        ~ handled = |
+                    }
+                }
+                ! e {
+                    ! "bad option"
+                }
+            }
+        }
+        ? handled {
+            ~ handled = |
+        }
+        : {
+            ? only_pos {
+                ~ out[] = str.cat("p", "")
+                ~ out[] = str.cat(a, "")
+            }
+            : {
+                ? a == "--" {
+                    ~ only_pos = |
+                }
+                : {
+                    ? is_long(a) {
+                        $ n = str.len(a)
+                        ? n < 3 {
+                            ! "empty long option"
+                        }
+                        $ eq = find_eq(a)
+                        ? eq == 2 {
+                            ! "empty long option"
+                        }
+                        ? eq > 2 {
+                            | str.slice(a, 2, eq) {
+                                $ name {
+                                    ? str.len(name) == 0 {
+                                        ! "empty long option"
+                                    }
+                                    | str.slice(a, eq + 1, n) {
+                                        $ val {
+                                            ~ out[] = str.cat("o", "")
+                                            ~ out[] = str.cat(name, "")
+                                            ~ out[] = str.cat(val, "")
+                                        }
+                                        ! e {
+                                            ! "bad option"
+                                        }
+                                    }
+                                }
+                                ! e {
+                                    ! "bad option"
+                                }
+                            }
+                        }
+                        : {
+                            ~ need_val = |
+                            ~ prev_flag = str.cat(a, "")
+                        }
+                    }
+                    : {
+                        ? is_short(a) {
+                            | str.slice(a, 1, 2) {
+                                $ ch {
+                                    ~ out[] = str.cat("f", "")
+                                    ~ out[] = str.cat(ch, "")
+                                }
+                                ! e {
+                                    ! "bad short option"
+                                }
+                            }
+                        }
+                        : {
+                            ~ out[] = str.cat("p", "")
+                            ~ out[] = str.cat(a, "")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ? need_val {
+        $ pn = str.len(prev_flag)
+        | str.slice(prev_flag, 2, pn) {
+            $ name {
+                ~ out[] = str.cat("f", "")
+                ~ out[] = str.cat(name, "")
+            }
+            ! e {
+                ! "bad option"
+            }
+        }
+    }
+    ^ out
+}
+
+$ has = (tokens, name) {
+    ~ mode = 0
+    ~ expect = ""
+    * t : tokens {
+        ? mode == 0 {
+            ? t == "f" {
+                ~ mode = 1
+                ~ expect = "f"
+            }
+            : {
+                ? t == "o" {
+                    ~ mode = 1
+                    ~ expect = "o"
+                }
+                : {
+                    ? t == "p" {
+                        ~ mode = 3
+                    }
+                    : {
+                        ~ mode = 0
+                    }
+                }
+            }
+        }
+        : {
+            ? mode == 1 {
+                ? t == name {
+                    ^ |
+                }
+                ? expect == "f" {
+                    ~ mode = 0
+                }
+                : {
+                    ~ mode = 2
+                }
+            }
+            : {
+                ? mode == 2 {
+                    ~ mode = 0
+                }
+                : {
+                    ? mode == 3 {
+                        ~ mode = 0
+                    }
+                    : {
+                        ~ mode = 0
+                    }
+                }
+            }
+        }
+    }
+    ^ _
+}
+
+$ get = (tokens, name) {
+    ~ mode = 0
+    ~ expect = ""
+    ~ matched = _
+    * t : tokens {
+        ? mode == 0 {
+            ? t == "f" {
+                ~ mode = 1
+                ~ expect = "f"
+            }
+            : {
+                ? t == "o" {
+                    ~ mode = 1
+                    ~ expect = "o"
+                }
+                : {
+                    ? t == "p" {
+                        ~ mode = 3
+                    }
+                    : {
+                        ~ mode = 0
+                    }
+                }
+            }
+        }
+        : {
+            ? mode == 1 {
+                ? t == name {
+                    ? expect == "f" {
+                        ^ ""
+                    }
+                    ~ matched = |
+                    ~ mode = 2
+                }
+                : {
+                    ? expect == "f" {
+                        ~ mode = 0
+                    }
+                    : {
+                        ~ mode = 2
+                        ~ matched = _
+                    }
+                }
+            }
+            : {
+                ? mode == 2 {
+                    ? matched {
+                        ^ str.cat(t, "")
+                    }
+                    ~ mode = 0
+                    ~ matched = _
+                }
+                : {
+                    ? mode == 3 {
+                        ~ mode = 0
+                    }
+                    : {
+                        ~ mode = 0
+                    }
+                }
+            }
+        }
+    }
+    ^
+}
+
+$ positionals = (tokens) {
+    ~ pos = []
+    ~ mode = 0
+    * t : tokens {
+        ? mode == 0 {
+            ? t == "f" {
+                ~ mode = 1
+            }
+            : {
+                ? t == "o" {
+                    ~ mode = 4
+                }
+                : {
+                    ? t == "p" {
+                        ~ mode = 3
+                    }
+                    : {
+                        ~ mode = 0
+                    }
+                }
+            }
+        }
+        : {
+            ? mode == 1 {
+                ~ mode = 0
+            }
+            : {
+                ? mode == 4 {
+                    ~ mode = 2
+                }
+                : {
+                    ? mode == 2 {
+                        ~ mode = 0
+                    }
+                    : {
+                        ? mode == 3 {
+                            ~ pos[] = str.cat(t, "")
+                            ~ mode = 0
+                        }
+                        : {
+                            ~ mode = 0
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ^ pos
+}
+
+test.it("e26_fixed_argv_verbose_out", () {
+    ; Same vector as echo26/run/cli/001_flags.echo.
+    $ argv = ["tool", "--verbose", "--out", "a.txt", "in.echo"]
+    | parse(argv) {
+        $ t {
+            test.true(has(t, "verbose"))
+            | get(t, "out") {
+                $ v {
+                    test.eq(v, "a.txt")
+                }
+                : {
+                    test.fail("missing out")
+                }
+            }
+            $ pos = positionals(t)
+            test.eq(list.len(pos), 2)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("parse_flags_and_positionals", () {
+    $ argv = ["prog", "--verbose", "--out", "a.txt", "in.echo", "-x"]
+    | parse(argv) {
+        $ t {
+            test.true(has(t, "verbose"))
+            | get(t, "out") {
+                $ v {
+                    test.eq(v, "a.txt")
+                }
+                : {
+                    test.fail("missing out")
+                }
+            }
+            test.true(has(t, "x"))
+            $ pos = positionals(t)
+            test.eq(list.len(pos), 2)
+            | list.get(pos, 0) {
+                $ a {
+                    test.eq(a, "prog")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+            | list.get(pos, 1) {
+                $ b {
+                    test.eq(b, "in.echo")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("parse_eq_and_end", () {
+    $ argv = ["--name=bob", "--", "--not-flag"]
+    | parse(argv) {
+        $ t {
+            | get(t, "name") {
+                $ v {
+                    test.eq(v, "bob")
+                }
+                : {
+                    test.fail("name")
+                }
+            }
+            $ pos = positionals(t)
+            test.eq(list.len(pos), 1)
+            | list.get(pos, 0) {
+                $ a {
+                    test.eq(a, "--not-flag")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("parse_empty_long_fails", () {
+    $ argv = ["--"]
+    | parse(argv) {
+        $ t {
+            test.eq(list.len(positionals(t)), 0)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    $ bad = ["--="]
+    | parse(bad) {
+        $ t {
+            test.fail("should fail")
+        }
+        ! e {
+            test.true(str.len(e) > 0)
+        }
+    }
+})
+
+\ parse, has, get, positionals

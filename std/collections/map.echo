@@ -1,0 +1,338 @@
+; The Echo map collection (`/ std/collections/map`).
+; Wraps hash_table. Fluent: map.make().seed(k0, k1).
+; Methods: seed, put, get, remove, has, len, is_empty, keys, values, entries,
+;   to_list, hash_key, bucket_index.
+; Snapshots are ordinary lists → `* e : m.to_list() { … }` (entries).
+;
+; Public API (export discipline — docs/stdlib.md):
+;   \ map, make, from_indexed
+; Private: suite only.
+;
+; Suite: xo test std/collections/map.echo (XO_TEST).
+
+/ std/test
+/ std/list
+/ std/collections/hash_table
+
+% map {
+    $ table
+
+    ; Empty map only. Result-shaped: ^ . or ! msg. (Policy lives here, not on hash_table.)
+    $ seed = (k0, k1) {
+        ? .table.is_empty() {
+            .table.seed(k0, k1)
+            ^ .
+        }
+        ! "cannot reseed non-empty map"
+    }
+
+    $ put = (key, value) {
+        .table.put(key, value)
+        ^ .
+    }
+
+    $ get = (key) {
+        | .table.get(key) {
+            $ v {
+                ^ v
+            }
+            : {
+                ^
+            }
+        }
+    }
+
+    ; Option of removed value.
+    $ remove = (key) {
+        | .table.remove(key) {
+            $ v {
+                ^ v
+            }
+            : {
+                ^
+            }
+        }
+    }
+
+    $ has = (key) {
+        ^ .table.has(key)
+    }
+
+    $ len = () {
+        ^ .table.len()
+    }
+
+    $ is_empty = () {
+        ^ .table.is_empty()
+    }
+
+    $ keys = () {
+        ^ .table.keys()
+    }
+
+    $ values = () {
+        ^ .table.values()
+    }
+
+    $ entries = () {
+        ^ .table.entries()
+    }
+
+    ; Snapshot of `{ key, value }` pairs (order undefined). For for-in over the map.
+    $ to_list = () {
+        ^ .entries()
+    }
+
+    $ hash_key = (key) {
+        ^ .table.hash_key(key)
+    }
+
+    $ bucket_index = (key) {
+        ^ .table.bucket_index(key)
+    }
+}
+
+$ make = () {
+    ^ map { table: hash_table.make() }
+}
+
+$ from_indexed = (ls) {
+    ~ m = make()
+    ~ i = 0
+    * v : ls {
+        m.put(i, v)
+        ~ i = i + 1
+    }
+    ^ m
+}
+
+; --- suite ---
+
+test.it("from_indexed", () {
+    $ m = from_indexed([10, 20, 30])
+    test.eq(m.len(), 3)
+    | m.get(0) {
+        $ v {
+            test.eq(v, 10)
+        }
+        : {
+            test.fail("missing 0")
+        }
+    }
+    | m.get(2) {
+        $ v {
+            test.eq(v, 30)
+        }
+        : {
+            test.fail("missing 2")
+        }
+    }
+})
+
+test.it("make_put_get", () {
+    $ m = make()
+    test.true(m.is_empty())
+    m.put(7, 42)
+    m.put(8, 99)
+    test.eq(m.len(), 2)
+    test.true(m.has(7))
+    test.false(m.has(0))
+    | m.get(7) {
+        $ v {
+            test.eq(v, 42)
+        }
+        : {
+            test.fail("missing 7")
+        }
+    }
+    | m.get(8) {
+        $ v {
+            test.eq(v, 99)
+        }
+        : {
+            test.fail("missing 8")
+        }
+    }
+    | m.get(0) {
+        $ v {
+            test.fail("expected miss")
+        }
+        : {
+            test.eq(1, 1)
+        }
+    }
+})
+
+; Benchmarks: real map API (seed + get in-body).
+test.bench("put_get_fresh", () {
+    $ m = make()
+    m.put(1, 10)
+    m.put(2, 20)
+    m.put(3, 30)
+    | m.get(2) {
+        $ v {}
+        : {}
+    }
+})
+
+test.bench("seed_1k_get", () {
+    $ m = make()
+    ~ i = 0
+    * i < 1000 {
+        m.put(i, i * 3)
+        ~ i = i + 1
+    }
+    | m.get(500) {
+        $ v {}
+        : {}
+    }
+})
+
+test.it("put_overwrite", () {
+    $ m = make()
+    m.put(1, 10)
+    m.put(1, 20)
+    test.eq(m.len(), 1)
+    | m.get(1) {
+        $ v {
+            test.eq(v, 20)
+        }
+        : {
+            test.fail("missing")
+        }
+    }
+})
+
+test.it("remove", () {
+    $ m = make()
+    m.put(1, 10)
+    m.put(2, 20)
+    | m.remove(1) {
+        $ v {
+            test.eq(v, 10)
+        }
+        : {
+            test.fail("remove miss")
+        }
+    }
+    test.eq(m.len(), 1)
+    test.false(m.has(1))
+    | m.remove(9) {
+        $ v {
+            test.fail("expected none")
+        }
+        : {
+            test.eq(1, 1)
+        }
+    }
+})
+
+test.it("keys_values_entries", () {
+    $ m = make()
+    m.put(10, 100)
+    m.put(20, 200)
+    test.eq(list.len(m.keys()), 2)
+    test.eq(list.len(m.values()), 2)
+    test.eq(list.len(m.entries()), 2)
+    test.eq(list.len(m.to_list()), 2)
+    * e : m.to_list() {
+        | m.get(e.key) {
+            $ v {
+                test.eq(v, e.value)
+            }
+            : {
+                test.fail("entry")
+            }
+        }
+    }
+})
+
+test.it("bucket_index_stable", () {
+    $ m = make()
+    $ a = m.bucket_index(123)
+    $ b = m.bucket_index(123)
+    test.eq(a, b)
+    ? a < 0 {
+        test.fail("bucket out of range")
+    }
+})
+
+test.it("fluent_seed", () {
+    # K0 = <ui64> 0x0101010101010101
+    # K1 = <ui64> 0x0202020202020202
+    | make().seed(K0, K1) {
+        $ m {
+            m.put(3, 9)
+            | m.get(3) {
+                $ v {
+                    test.eq(v, 9)
+                }
+                : {
+                    test.fail("missing")
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("reseed_nonempty_err", () {
+    $ m = make()
+    m.put(1, 1)
+    | m.seed(1, 2) {
+        $ ok {
+            test.fail("expected reseed error")
+        }
+        ! e {
+            test.eq(e, "cannot reseed non-empty map")
+        }
+    }
+})
+
+; Heterogeneous keys (same as hash_table: kind-tagged hash, deep ==).
+test.it("mixed_keys", () {
+    $ m = make()
+    m.put("a", 1)
+    m.put("b", 2)
+    | m.get("a") {
+        $ v {
+            test.eq(v, 1)
+        }
+        : {
+            test.fail("missing a")
+        }
+    }
+    test.true(m.has("a"))
+    test.false(m.has("c"))
+    m.put(1, 99)
+    | m.get(1) {
+        $ v {
+            test.eq(v, 99)
+        }
+        : {
+            test.fail("missing int 1")
+        }
+    }
+    | m.get("1") {
+        $ v {
+            test.fail("string 1 should be absent")
+        }
+        : {
+            test.eq(1, 1)
+        }
+    }
+    | m.remove("a") {
+        $ v {
+            test.eq(v, 1)
+        }
+        : {
+            test.fail("remove a")
+        }
+    }
+    test.false(m.has("a"))
+    test.eq(m.len(), 2)
+})
+
+\ map, make, from_indexed

@@ -1,0 +1,8 @@
+/ std/io
+/ std/str
+
+io.print(str.from_int(10 - 3))
+io.print(str.from_int(4 * 5))
+io.print(str.from_int(20 / 4))
+io.print(str.from_int(10 % 3))
+io.print(str.from_int(-7))

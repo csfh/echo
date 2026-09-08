@@ -1,0 +1,12 @@
+; Mixed abs/rel cannot yield a relative path.
+/ std/io
+/ std/path
+
+| path.rel("/a", "b") {
+    $ r {
+        io.print(r)
+    }
+    ! e {
+        io.print(e)
+    }
+}

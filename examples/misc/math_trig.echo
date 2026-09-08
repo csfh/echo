@@ -1,0 +1,7 @@
+; math.sin / tan at 0. Run: xo run examples/misc/math_trig.echo
+/ std/io
+/ std/str
+/ std/math
+
+io.print(str.from_float(math.sin(<f64>0.0)))
+io.print(str.from_float(math.tan(<f64>0.0)))

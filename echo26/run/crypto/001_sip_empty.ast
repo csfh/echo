@@ -1,0 +1,29 @@
+file
+  import
+    seg std
+    seg crypto
+    seg hash
+  bind_hash
+    name K0
+    number 0x0706050403020100
+  bind_hash
+    name K1
+    number 0x0f0e0d0c0b0a0908
+  bind_dollar
+    name h
+    call
+      field sip
+        name hash
+      width_cast ui64
+        name K0
+      width_cast ui64
+        name K1
+      bytes_pure
+  if
+    binary Eq
+      name h
+      number_ui64 0x726fdb47dd0e0e31
+    return
+      number 0
+  return
+    number 1

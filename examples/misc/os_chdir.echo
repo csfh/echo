@@ -1,0 +1,34 @@
+; os.chdir /tmp then restore. Run: xo run examples/misc/os_chdir.echo
+/ std/io
+/ std/str
+/ std/os
+/ std/path
+
+| os.cwd() {
+    $ here {
+        | os.chdir("/tmp") {
+            $ ok {
+                | os.cwd() {
+                    $ now {
+                        io.print(path.file_name(now))
+                    }
+                    ! e {
+                        io.print(e)
+                    }
+                }
+                | os.chdir(here) {
+                    $ ok2 {}
+                    ! e {
+                        io.print(e)
+                    }
+                }
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}

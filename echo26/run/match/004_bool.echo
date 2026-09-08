@@ -1,0 +1,12 @@
+/ std/io
+/ std/str
+
+$ t = |
+| t {
+    | {
+        io.print(str.from_int(1))
+    }
+    _ {
+        io.print(str.from_int(0))
+    }
+}

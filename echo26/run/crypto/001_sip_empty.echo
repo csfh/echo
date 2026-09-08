@@ -1,0 +1,8 @@
+/ std/crypto/hash
+# K0 = 0x0706050403020100
+# K1 = 0x0f0e0d0c0b0a0908
+$ h = hash.sip(<ui64> K0, <ui64> K1, b'')
+? h == <ui64> 0x726fdb47dd0e0e31 {
+    ^ 0
+}
+^ 1

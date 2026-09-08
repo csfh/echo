@@ -1,0 +1,6 @@
+file
+  bind_hash
+    name D
+    binary Add
+      duration 5s
+      number 1

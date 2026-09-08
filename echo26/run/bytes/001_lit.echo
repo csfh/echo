@@ -1,0 +1,19 @@
+/ std/io
+/ std/str
+
+$ a = b'raw'
+io.print(str.from_bytes(a))
+$ b = b"esc\t!"
+io.print(str.from_bytes(b))
+? a == b'raw' {
+    io.print(str.from_int(1))
+}
+: {
+    io.print(str.from_int(0))
+}
+? a == b'other' {
+    io.print(str.from_int(1))
+}
+: {
+    io.print(str.from_int(0))
+}

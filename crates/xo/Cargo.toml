@@ -1,0 +1,32 @@
+[package]
+name = "xo"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+clap = { version = "4", default-features = false, features = ["derive", "error-context", "help", "std", "usage"] }
+echo_source = { path = "../echo_source" }
+echo_diagnostics = { path = "../echo_diagnostics" }
+echo_syntax = { path = "../echo_syntax" }
+echo_lexer = { path = "../echo_lexer" }
+echo_ast = { path = "../echo_ast" }
+echo_parser = { path = "../echo_parser" }
+echo_semantics = { path = "../echo_semantics" }
+echo_hir = { path = "../echo_hir" }
+echo_mir = { path = "../echo_mir" }
+echo_codegen = { path = "../echo_codegen" }
+echo_codegen_abi = { path = "../echo_codegen_abi" }
+echo_runtime = { path = "../echo_runtime" }
+echo_std = { path = "../echo_std" }
+echo_index = { path = "../echo_index" }
+echo_resolver = { path = "../echo_resolver" }
+echo_pipeline = { path = "../echo_pipeline" }
+echo_fingerprint = { path = "../echo_fingerprint" }
+echo_cache = { path = "../echo_cache" }
+echo_build = { path = "../echo_build" }
+echo_reflection = { path = "../echo_reflection" }
+echo_lsp = { path = "../echo_lsp" }
+echo_oci = { path = "../echo_oci" }
+rustyline = { version = "14" }

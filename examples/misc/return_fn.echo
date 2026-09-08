@@ -1,0 +1,13 @@
+; Return a function value and call it
+/ std/io
+/ std/str
+
+$ make_double = () {
+    $ d = (n) {
+        ^ n + n
+    }
+    ^ d
+}
+
+$ f = make_double()
+io.print(str.from_int(f(21)))

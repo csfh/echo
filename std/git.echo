@@ -1,0 +1,48 @@
+; Git pack helpers. Pack bytes are crate-parsed (`gix-pack` on host).
+
+/ runtime
+/ std/test
+/ std/str
+/ std/bytes
+/ std/list
+
+$ pack_valid = (raw) {
+    ^ runtime.git_pack_valid(raw)
+}
+
+$ pack_count = (raw) {
+    ^ runtime.git_pack_count(raw)
+}
+
+$ index_pack = (raw) {
+    ^ runtime.git_index_pack(raw)
+}
+
+$ receive_pack_split = (raw) {
+    ^ runtime.git_receive_pack_split(raw)
+}
+
+$ upload_pack_wants = (raw) {
+    ^ runtime.git_upload_pack_wants(raw)
+}
+
+test.it("empty_pack_header", () {
+    $ p = bytes.cat(bytes.from_str("PACK"), bytes.from_str(""))
+    test.eq(pack_valid(p), 0)
+})
+
+test.it("upload_pack_wants_raw", () {
+    $ oid = "0123456789abcdef0123456789abcdef01234567"
+    $ body = "want {oid}\n"
+    $ wants = upload_pack_wants(body)
+    | list.get(wants, 0) {
+        $ oid0 {
+            test.eq(str.len(oid0), 40)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+\ pack_valid, pack_count, index_pack, receive_pack_split, upload_pack_wants

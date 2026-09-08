@@ -1,0 +1,12 @@
+; Piped .stdin sidecar → print UTF-8 payload.
+/ std/io
+/ std/str
+
+| io.read() {
+    $ b {
+        io.print(str.from_bytes(b))
+    }
+    ! e {
+        io.print(e)
+    }
+}

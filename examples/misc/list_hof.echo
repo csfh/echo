@@ -1,0 +1,49 @@
+; list.map / filter / fold — closed function values
+/ std/io
+/ std/str
+/ std/list
+
+$ inc = (n) {
+    ^ n + 1
+}
+
+$ even = (n) {
+    ^ n % 2 == 0
+}
+
+$ add = (a, b) {
+    ^ a + b
+}
+
+$ ys = list.map([1, 2, 3], inc)
+io.print(str.from_int(list.len(ys)))
+| list.get(ys, 0) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| list.get(ys, 2) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+
+$ evens = list.filter([1, 2, 3, 4], even)
+io.print(str.from_int(list.len(evens)))
+| list.get(evens, 0) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+
+io.print(str.from_int(list.fold([1, 2, 3], 0, add)))
+io.print(str.from_int(list.fold([], 7, add)))

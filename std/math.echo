@@ -1,0 +1,89 @@
+; std/math — numeric helpers (f64 float ops + int abs/min/max).
+; Suite: xo test std/math.echo
+
+/ runtime
+/ std/test
+
+$ abs_i = (n) {
+    ^ runtime.math_abs_i(n)
+}
+
+$ min = (a, b) {
+    ? a < b {
+        ^ a
+    }
+    ^ b
+}
+
+$ max = (a, b) {
+    ? a > b {
+        ^ a
+    }
+    ^ b
+}
+
+$ sqrt = (x) {
+    ^ runtime.math_sqrt(x)
+}
+
+$ sin = (x) {
+    ^ runtime.math_sin(x)
+}
+
+$ cos = (x) {
+    ^ runtime.math_cos(x)
+}
+
+$ tan = (x) {
+    ^ runtime.math_tan(x)
+}
+
+$ floor = (x) {
+    ^ runtime.math_floor(x)
+}
+
+$ ceil = (x) {
+    ^ runtime.math_ceil(x)
+}
+
+$ abs_f = (x) {
+    ^ runtime.math_abs_f(x)
+}
+
+$ pow = (a, b) {
+    ^ runtime.math_pow(a, b)
+}
+
+test.it("abs_min_max", () {
+    test.eq(abs_i(-3), 3)
+    test.eq(min(2, 5), 2)
+    test.eq(max(2, 5), 5)
+})
+
+test.it("sqrt4", () {
+    $ x = <f64>4.0
+    $ y = sqrt(x)
+    test.true(y == <f64>2.0)
+})
+
+test.it("floor_ceil_pow", () {
+    test.true(floor(<f64>3.7) == <f64>3.0)
+    test.true(ceil(<f64>3.2) == <f64>4.0)
+    test.true(pow(<f64>2.0, <f64>3.0) == <f64>8.0)
+    test.true(abs_f(<f64>-2.5) == <f64>2.5)
+    test.true(sin(<f64>0.0) == <f64>0.0)
+    test.true(cos(<f64>0.0) == <f64>1.0)
+    test.true(tan(<f64>0.0) == <f64>0.0)
+})
+
+; Co-located benchmarks: `xo test --bench std` / `xo test --bench std/math.echo`.
+test.bench("abs_i", () {
+    $ n = abs_i(-42)
+})
+
+test.bench("sqrt", () {
+    $ x = <f64>2.0
+    $ y = sqrt(x)
+})
+
+\ abs_i, min, max, sqrt, sin, cos, tan, floor, ceil, abs_f, pow

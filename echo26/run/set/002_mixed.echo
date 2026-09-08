@@ -1,0 +1,12 @@
+; Int 1 and string "1" are distinct members.
+/ std/io
+/ std/str
+/ std/collections/set
+
+$ s = set.make()
+s.add("a")
+s.add(1)
+io.print(str.from_int(s.len()))
+io.print(str.from_int(s.has("a")))
+io.print(str.from_int(s.has(1)))
+io.print(str.from_int(s.has("1")))

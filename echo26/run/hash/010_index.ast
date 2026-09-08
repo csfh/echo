@@ -1,0 +1,59 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_hash
+    name XS
+    list
+      number 10
+      number 20
+      number 12
+  bind_hash
+    name I
+    number 1
+  bind_hash
+    name A
+    index
+      name XS
+      number 0
+  bind_hash
+    name B
+    index
+      name XS
+      name I
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name A
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name B
+  if
+    binary Eq
+      binary Add
+        name A
+        name B
+      number 30
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure

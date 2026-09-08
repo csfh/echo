@@ -1,0 +1,10 @@
+; time.mono_ms. Run: xo run examples/misc/time_mono.echo
+/ std/io
+/ std/str
+/ std/time
+
+$ a = time.mono_ms()
+io.print(str.from_int(a >= 0))
+time.sleep_ms(30)
+$ b = time.mono_ms()
+io.print(str.from_int(b >= a))

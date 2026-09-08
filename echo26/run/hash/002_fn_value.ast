@@ -1,0 +1,21 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_hash
+    name F
+    fn
+      return
+        number 7
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          name F

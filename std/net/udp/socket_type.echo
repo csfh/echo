@@ -1,0 +1,26 @@
+; % socket — UDP endpoint as a named struct (pass by reference).
+; Opaque id only in .handle (docs/semantics.md § Value vs reference).
+
+/ runtime
+
+% socket {
+    $ addr
+    $ handle
+    ~ open = |
+
+    $ send_to = (data, to) {
+        ^ runtime.udp_send_to(.handle, data, to)
+    }
+
+    $ recv_from = (limit) {
+        ^ runtime.udp_recv_from(.handle, limit)
+    }
+
+    $ close = () {
+        runtime.udp_close(.handle)
+        ~ .open = _
+        ^ .
+    }
+}
+
+\ socket

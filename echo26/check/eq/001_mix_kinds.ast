@@ -1,0 +1,12 @@
+file
+  bind_dollar
+    name a
+    number 1
+  bind_dollar
+    name b
+    string_pure
+  bind_dollar
+    name c
+    binary Eq
+      name a
+      name b

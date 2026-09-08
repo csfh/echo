@@ -1,0 +1,9 @@
+; csv.format_line + parse. Run: xo run examples/misc/csv_demo.echo
+/ std/io
+/ std/str
+/ std/list
+/ std/encoding/csv
+
+io.print(csv.format_line(["x", "y"]))
+$ rows = csv.parse("a,b\n\nc,d\n")
+io.print(str.from_int(list.len(rows)))

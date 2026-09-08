@@ -1,0 +1,41 @@
+; Cleartext HTTP client against a local one-shot server (no public network).
+/ std/io
+/ std/str
+/ std/net/http
+/ std/net/tcp
+/ std/net/http_client
+
+$ hi = (req) {
+    ^ http.text_response(200, "hi")
+}
+
+$ routes = [
+    { path: "/hi", handle: hi }
+]
+
+$ addr = "127.0.0.1:18091"
+$ lis = tcp.listen(addr)
+? lis.handle == 0 {
+    io.print("skip")
+    ^
+}
+
++ srv = () [lis, routes] {
+    $ c = tcp.accept(lis)
+    ? c.handle != 0 {
+        http.handle_connection(c, routes)
+    }
+    ^
+}
+
+| http_client.get("127.0.0.1", 18091, "/hi") {
+    $ raw {
+        io.print(str.from_bytes(raw))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+
+- srv
+tcp.close(lis)

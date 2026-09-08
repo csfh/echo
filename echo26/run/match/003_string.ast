@@ -1,0 +1,41 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name s
+    string_pure
+  match
+    name s
+    arm_values 1
+      string_pure
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            number 1
+    arm_values 1
+      string_pure
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            number 2
+    arm_default
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            number 0

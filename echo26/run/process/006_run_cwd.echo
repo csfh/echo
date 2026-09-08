@@ -1,0 +1,14 @@
+; run_cwd pwd in /tmp; stdout contains tmp (or private/tmp).
+/ std/io
+/ std/str
+/ std/process
+
+| process.run_cwd("pwd", [], "/tmp") {
+    $ r {
+        io.print(str.from_int(r.code == 0))
+        io.print(str.from_int(str.contains(r.stdout, "tmp")))
+    }
+    ! e {
+        io.print(e)
+    }
+}

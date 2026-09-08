@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+
+$ s = 'b'
+| s {
+    'a' {
+        io.print(str.from_int(1))
+    }
+    'b' {
+        io.print(str.from_int(2))
+    }
+    : {
+        io.print(str.from_int(0))
+    }
+}

@@ -1,0 +1,11 @@
+leader_dollar
+ident
+eq
+ident
+plus
+number
+leader_dollar
+ident
+eq
+number
+eof

@@ -1,0 +1,60 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  import
+    seg std
+    seg store
+  bind_dollar
+    name s
+    call
+      field memory
+        name store
+  bind_dollar
+    name p
+    call
+      field put
+        name store
+      name s
+      string_rich
+      call
+        field from_str
+          name bytes
+        string_rich
+  if
+    binary Eq
+      field status
+        name p
+      number 200
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  bind_dollar
+    name g
+    call
+      field get
+        name store
+      name s
+      string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_bytes
+          name str
+        field body
+          name g
+  expr_stmt
+    call
+      field close
+        name store
+      name s

@@ -1,0 +1,5 @@
+/ std/io
+
+io.print("\{x\}")
+io.print("\x41")
+io.print("a\tb")

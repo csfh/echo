@@ -1,0 +1,12 @@
+; Date-only parse → midnight UTC; format back to the same day.
+/ std/io
+/ std/time
+
+| time.parse("2023-11-14", "%Y-%m-%d") {
+    $ t {
+        io.print(time.format(t, "%Y-%m-%d"))
+    }
+    ! e {
+        io.print(e)
+    }
+}

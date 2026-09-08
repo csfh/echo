@@ -1,0 +1,8 @@
+/ std/io
+/ std/str
+
+$ a = 0xFF
+$ b = 0b1010
+io.print(str.from_int(a))
+io.print(str.from_int(b))
+io.print(str.from_int(0x10 + 0b10))

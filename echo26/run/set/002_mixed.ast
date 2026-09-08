@@ -1,0 +1,69 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg collections
+    seg set
+  bind_dollar
+    name s
+    call
+      field make
+        name set
+  expr_stmt
+    call
+      field add
+        name s
+      string_rich
+  expr_stmt
+    call
+      field add
+        name s
+      number 1
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name s
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field has
+            name s
+          string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field has
+            name s
+          number 1
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field has
+            name s
+          string_rich

@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+/ std/list
+/ std/encoding/csv
+
+$ f = csv.parse_line("a,b,c")
+io.print(str.from_int(list.len(f)))
+| list.get(f, 1) {
+  $ b { io.print(b) }
+  ! e { io.print(e) }
+}

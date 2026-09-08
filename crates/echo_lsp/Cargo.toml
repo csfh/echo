@@ -1,0 +1,23 @@
+[package]
+name = "echo_lsp"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+echo_ast = { path = "../echo_ast" }
+echo_build = { path = "../echo_build" }
+echo_cache = { path = "../echo_cache" }
+echo_diagnostics = { path = "../echo_diagnostics" }
+echo_index = { path = "../echo_index" }
+echo_lexer = { path = "../echo_lexer" }
+echo_parser = { path = "../echo_parser" }
+echo_reflection = { path = "../echo_reflection" }
+echo_pipeline = { path = "../echo_pipeline" }
+echo_resolver = { path = "../echo_resolver" }
+echo_semantics = { path = "../echo_semantics" }
+echo_source = { path = "../echo_source" }
+echo_syntax = { path = "../echo_syntax" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

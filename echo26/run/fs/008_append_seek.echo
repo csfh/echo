@@ -1,0 +1,81 @@
+; append then absolute seek via std/fs.
+/ std/io
+/ std/str
+/ std/bytes
+/ std/fs
+
+$ root = fs.join("/tmp", "echo26_fs_008")
+| fs.create_dir_all(root) {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+$ path = fs.join(root, "t.txt")
+| fs.write(path, "ab") {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+| fs.append(path) {
+    $ f {
+        | f.write("cd") {
+            $ ok {}
+            ! e {
+                io.print(e)
+            }
+        }
+        f.close()
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.read(path) {
+    $ b {
+        io.print(str.from_bytes(b))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.open(path) {
+    $ f {
+        | f.seek(2) {
+            $ pos {
+                | f.read(10) {
+                    $ b {
+                        io.print(str.from_bytes(b))
+                    }
+                    ! e {
+                        io.print(e)
+                    }
+                }
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+        | f.seek(-1) {
+            $ pos {
+                io.print("seek-ok")
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+        f.close()
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(path) {
+    $ ok {}
+    ! e {}
+}
+| fs.remove_dir(root) {
+    $ ok {}
+    ! e {}
+}

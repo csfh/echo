@@ -1,0 +1,126 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg collections
+    seg hash_table
+  bind_dollar
+    name t
+    call
+      field make
+        name hash_table
+  expr_stmt
+    call
+      field put
+        name t
+      string_rich
+      number 1
+  expr_stmt
+    call
+      field put
+        name t
+      number 1
+      number 99
+  expr_stmt
+    call
+      field put
+        name t
+      bytes_pure
+      number 7
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name t
+  match
+    call
+      field get
+        name t
+      string_rich
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_default
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+  match
+    call
+      field get
+        name t
+      number 1
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_default
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field has
+            name t
+          string_rich
+  match
+    call
+      field get
+        name t
+      bytes_pure
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_default
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field has
+            name t
+          string_rich

@@ -1,0 +1,30 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct pkt
+    bind_dollar
+      name id
+    bind_dollar
+      name payload
+      fn
+        return
+          bytes_rich
+  bind_dollar
+    name p
+    struct_lit pkt
+      field id
+        number 7
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_bytes
+          name str
+        call
+          field payload
+            name p

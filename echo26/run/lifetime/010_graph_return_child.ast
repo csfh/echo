@@ -1,0 +1,36 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name make
+    fn
+      bind_dollar
+        name xs
+        list
+          number 7
+      bind_dollar
+        name holder
+        list
+          name xs
+      return
+        name holder
+  bind_dollar
+    name r
+    call
+      name make
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          index
+            name r
+            number 0
+          number 0

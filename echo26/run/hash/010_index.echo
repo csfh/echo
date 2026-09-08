@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+
+# XS = [10, 20, 12]
+# I = 1
+# A = XS[0]
+# B = XS[I]
+io.print(str.from_int(A))
+io.print(str.from_int(B))
+? A + B == 30 {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}

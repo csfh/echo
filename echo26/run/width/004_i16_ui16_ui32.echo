@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+
+$ a = <i16> 1000
+$ b = <i16> 24
+io.print(str.from_int(a + b))
+$ c = <ui16> 40000
+$ d = <ui16> 1000
+io.print(str.from_int(c + d))
+$ e = <ui32> 1
+io.print(str.from_int(e << <ui32> 8))

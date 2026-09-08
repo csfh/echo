@@ -1,0 +1,271 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display:
+    "Space Grotesk", Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:
+    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
+@utility scrollbar-nice {
+  scrollbar-width: thin;
+  scrollbar-color: --alpha(var(--color-slate-500) / 45%) white;
+
+  &::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: white;
+  }
+
+  &::-webkit-scrollbar-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-button:single-button,
+  &::-webkit-scrollbar-button:vertical:decrement,
+  &::-webkit-scrollbar-button:vertical:increment,
+  &::-webkit-scrollbar-button:horizontal:decrement,
+  &::-webkit-scrollbar-button:horizontal:increment {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: --alpha(var(--color-slate-500) / 35%);
+    border: 2px solid white;
+    border-inline-width: 4px;
+    border-radius: 9999px;
+    background-clip: content-box;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: --alpha(var(--color-slate-500) / 60%);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: white;
+  }
+}
+
+@utility scrollbar-nice-dark {
+  scrollbar-color: --alpha(var(--color-slate-300) / 35%) transparent;
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-button:single-button,
+  &::-webkit-scrollbar-button:vertical:decrement,
+  &::-webkit-scrollbar-button:vertical:increment,
+  &::-webkit-scrollbar-button:horizontal:decrement,
+  &::-webkit-scrollbar-button:horizontal:increment {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: --alpha(var(--color-slate-300) / 25%);
+    border-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: --alpha(var(--color-slate-300) / 45%);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+@utility scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
+
+@utility scrollbar-gutter-both {
+  scrollbar-gutter: stable both-edges;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: --alpha(var(--color-slate-500) / 45%) white;
+  scrollbar-gutter: stable both-edges;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: white;
+}
+
+html::-webkit-scrollbar-button,
+body::-webkit-scrollbar-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+html::-webkit-scrollbar-button:single-button,
+html::-webkit-scrollbar-button:vertical:decrement,
+html::-webkit-scrollbar-button:vertical:increment,
+html::-webkit-scrollbar-button:horizontal:decrement,
+html::-webkit-scrollbar-button:horizontal:increment,
+body::-webkit-scrollbar-button:single-button,
+body::-webkit-scrollbar-button:vertical:decrement,
+body::-webkit-scrollbar-button:vertical:increment,
+body::-webkit-scrollbar-button:horizontal:decrement,
+body::-webkit-scrollbar-button:horizontal:increment {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background-color: --alpha(var(--color-slate-500) / 35%);
+  border: 2px solid white;
+  border-inline-width: 4px;
+  border-radius: 9999px;
+  background-clip: content-box;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background-color: --alpha(var(--color-slate-500) / 60%);
+}
+
+html::-webkit-scrollbar-corner,
+body::-webkit-scrollbar-corner {
+  background: white;
+}
+
+.docs-on-this-page-links {
+  view-transition-name: docs-on-this-page-links;
+  contain: layout;
+}
+
+.docs-primary-nav-train {
+  view-transition-name: docs-primary-nav-train;
+  contain: layout;
+}
+
+.docs-on-this-page-train {
+  view-transition-name: docs-on-this-page-train;
+  contain: layout;
+}
+
+.docs-logo-gradient-rail {
+  background-image: linear-gradient(180deg, #a855f7 0%, #6366f1 38%, #0ea5e9 68%, #06b6d4 100%);
+}
+
+body {
+  background: white;
+  text-rendering: optimizeLegibility;
+}
+
+/* Shell / install snippets: keep every space (e.g. before `--` flags). */
+.install-snippet-pre {
+  font-family: var(--font-mono);
+  font-variant-ligatures: none;
+  font-feature-settings:
+    "liga" 0,
+    "clig" 0,
+    "dlig" 0,
+    "calt" 0;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+/* Code blocks: no ligatures that can eat spaces around `--` flags. */
+.echo-code,
+.echo-code-body {
+  font-variant-ligatures: none;
+  font-feature-settings:
+    "liga" 0,
+    "clig" 0,
+    "dlig" 0,
+    "calt" 0;
+}
+
+/* Tree-sitter Echo captures (queries/highlights.scm → tok-*) */
+.echo-code .tok-comment {
+  color: #64748b;
+  font-style: italic;
+}
+.echo-code .tok-keyword {
+  color: #7c3aed;
+  font-weight: 600;
+}
+.echo-code .tok-variable {
+  color: #0f172a;
+}
+.echo-code .tok-variable-builtin {
+  color: #0d9488;
+}
+.echo-code .tok-property {
+  color: #0369a1;
+}
+.echo-code .tok-type {
+  color: #c2410c;
+  font-weight: 600;
+}
+.echo-code .tok-function,
+.echo-code .tok-function-method {
+  color: #1d4ed8;
+}
+.echo-code .tok-namespace {
+  color: #0f766e;
+}
+.echo-code .tok-number {
+  color: #b45309;
+}
+.echo-code .tok-string {
+  color: #15803d;
+}
+.echo-code .tok-constant-builtin {
+  color: #a21caf;
+  font-weight: 600;
+}
+.echo-code .tok-operator {
+  color: #475569;
+}
+.echo-code .tok-punctuation {
+  color: #94a3b8;
+}

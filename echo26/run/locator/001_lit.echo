@@ -1,0 +1,21 @@
+/ std/io
+/ std/str
+
+$ abs = p'/home/user'
+io.print(str.from_locator(abs))
+$ rel = p'home/user'
+io.print(str.from_locator(rel))
+$ url = p"http://xo.run"
+io.print(str.from_locator(url))
+? abs == p'/home/user' {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}
+? abs == p'/other' {
+    io.print('bad')
+}
+: {
+    io.print('ok')
+}

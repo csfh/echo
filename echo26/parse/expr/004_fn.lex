@@ -1,0 +1,15 @@
+leader_dollar
+ident
+eq
+l_paren
+ident
+comma
+ident
+r_paren
+l_brace
+leader_caret
+ident
+plus
+ident
+r_brace
+eof

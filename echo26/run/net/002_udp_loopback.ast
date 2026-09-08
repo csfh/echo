@@ -1,0 +1,42 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg net
+    seg udp
+  bind_dollar
+    name sock
+    call
+      field bind
+        name udp
+      string_rich
+  expr_stmt
+    call
+      field send_to
+        name sock
+      string_rich
+      string_rich
+  bind_dollar
+    name pkt
+    call
+      field recv_from
+        name sock
+      number 64
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_bytes
+          name str
+        field data
+          name pkt
+  expr_stmt
+    call
+      field close
+        name sock

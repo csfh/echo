@@ -1,0 +1,7 @@
+; Nested closed body cannot call outer params (even if they hold functions).
+$ compose = (f) {
+    $ h = (x) {
+        ^ f(x)
+    }
+    ^ h
+}

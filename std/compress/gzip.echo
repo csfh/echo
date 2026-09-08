@@ -1,0 +1,41 @@
+; std/compress/gzip — gzip compress/decompress (bytes or string in → bytes).
+/ runtime
+/ std/test
+/ std/bytes
+/ std/str
+
+$ compress = (data) {
+    $ d = runtime.gzip_compress(data)
+    ? d == 0 {
+        ! "gzip compress failed"
+    }
+    ^ d
+}
+
+$ decompress = (data) {
+    $ d = runtime.gzip_decompress(data)
+    ? d == 0 {
+        ! "gzip decompress failed"
+    }
+    ^ d
+}
+
+test.it("roundtrip", () {
+    | compress("hello-gzip") {
+        $ c {
+            | decompress(c) {
+                $ d {
+                    test.eq(str.from_bytes(d), "hello-gzip")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+\ compress, decompress

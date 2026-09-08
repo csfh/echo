@@ -1,0 +1,12 @@
+; Float arithmetic + explicit string conversion for print.
+/ std/io
+/ std/str
+
+$ a = 3.0
+$ b = 1.5
+io.print(str.from_float(a + b))
+io.print(str.from_float(a * 2.0))
+$ scale = (x) {
+    ^ x * 0.5
+}
+io.print(str.from_float(scale(10.0)))

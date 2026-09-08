@@ -1,0 +1,10 @@
+; std/str text ops. Run: xo run examples/misc/str_text.echo
+/ std/io
+/ std/str
+
+io.print(str.trim("  hi  "))
+io.print(str.to_lower("AbC"))
+io.print(str.to_upper("ab"))
+io.print(str.join(str.split("a,b,c", ","), "-"))
+io.print(str.replace("aa", "a", "b"))
+io.print(str.repeat("x", 3))

@@ -1,0 +1,84 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg collections
+    seg queue
+  bind_tilde
+    name q
+    call
+      field make
+        name queue
+  expr_stmt
+    call
+      field push
+        name q
+      number 1
+  expr_stmt
+    call
+      field push
+        name q
+      number 2
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name q
+  match
+    call
+      field pop
+        name q
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field pop
+        name q
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field is_empty
+            name q

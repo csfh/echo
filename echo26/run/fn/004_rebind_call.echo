@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+
+$ add1 = (n) {
+    ^ n + 1
+}
+
+$ f = add1
+io.print(str.from_int(f(41)))

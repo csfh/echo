@@ -1,0 +1,46 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct bag
+    bind_tilde
+      name entries
+      list
+  bind_dollar
+    name m
+    struct_lit bag
+  assign
+    target_push
+      field entries
+        name m
+    number 10
+  assign
+    target_push
+      field entries
+        name m
+    number 20
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          field entries
+            name m
+          number 0
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          field entries
+            name m
+          number 1

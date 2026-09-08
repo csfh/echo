@@ -1,0 +1,403 @@
+; HTTP package — parse (httparse), dispatch, frame, serve
+;
+; Serve loop: nonblocking TCP + task spawn per connection (`+ handle_connection(…)`).
+; Connections are % conn from std/net.
+
+/ runtime
+/ std/test
+/ std/str
+/ std/bytes
+/ std/io
+/ std/net/tcp
+/ std/net/request
+/ std/net/response
+/ std/net/server
+
+$ text_response = (status, body) {
+    ^ response.response {
+        status: status,
+        headers: {
+            content_type: "text/plain; charset=utf-8"
+        },
+        body: body,
+        chunked: _
+    }
+}
+
+$ html_response = (status, body) {
+    ^ response.response {
+        status: status,
+        headers: {
+            content_type: "text/html; charset=utf-8"
+        },
+        body: body,
+        chunked: _
+    }
+}
+
+$ json_response = (status, body) {
+    ^ response.response {
+        status: status,
+        headers: {
+            content_type: "application/json; charset=utf-8"
+        },
+        body: body,
+        chunked: _
+    }
+}
+
+$ request_complete = (raw) {
+    ^ runtime.http_request_complete(raw)
+}
+
+$ parse_request = (raw) {
+    $ p = runtime.http_parse_request(raw)
+    ^ request.request {
+        method: p.method,
+        path: p.path,
+        headers: p.headers,
+        body: p.body
+    }
+}
+
+$ status_reason = (code) {
+    ? code == 200 {
+        ^ "OK"
+    }
+    ? code == 201 {
+        ^ "Created"
+    }
+    ? code == 204 {
+        ^ "No Content"
+    }
+    ? code == 400 {
+        ^ "Bad Request"
+    }
+    ? code == 404 {
+        ^ "Not Found"
+    }
+    ? code == 500 {
+        ^ "Internal Server Error"
+    }
+    ^ "OK"
+}
+
+$ body_len = (body) {
+    $ n = bytes.len(body)
+    ? n > 0 {
+        ^ n
+    }
+    ^ str.len(body)
+}
+
+$ format_head = (res) {
+    $ status = str.from_int(res.status)
+    $ reason = status_reason(res.status)
+    $ ct = res.headers.content_type
+    ? res.chunked {
+        ^ "HTTP/1.1 {status} {reason}\r\nContent-Type: {ct}\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n"
+    }
+    $ body = res.body
+    $ len = str.from_int(body_len(body))
+    ^ "HTTP/1.1 {status} {reason}\r\nContent-Type: {ct}\r\nContent-Length: {len}\r\nConnection: close\r\n\r\n"
+}
+
+$ format_response = (res) {
+    $ head = format_head(res)
+    ? res.chunked {
+        ^ head
+    }
+    $ body = res.body
+    ^ "{head}{body}"
+}
+
+$ hex_digit = (d) {
+    ? d == 0 {
+        ^ "0"
+    }
+    ? d == 1 {
+        ^ "1"
+    }
+    ? d == 2 {
+        ^ "2"
+    }
+    ? d == 3 {
+        ^ "3"
+    }
+    ? d == 4 {
+        ^ "4"
+    }
+    ? d == 5 {
+        ^ "5"
+    }
+    ? d == 6 {
+        ^ "6"
+    }
+    ? d == 7 {
+        ^ "7"
+    }
+    ? d == 8 {
+        ^ "8"
+    }
+    ? d == 9 {
+        ^ "9"
+    }
+    ? d == 10 {
+        ^ "a"
+    }
+    ? d == 11 {
+        ^ "b"
+    }
+    ? d == 12 {
+        ^ "c"
+    }
+    ? d == 13 {
+        ^ "d"
+    }
+    ? d == 14 {
+        ^ "e"
+    }
+    ^ "f"
+}
+
+; Chunked Transfer-Encoding sizes are hex, not decimal.
+$ hex_from_int = (n) {
+    ? n <= 0 {
+        ^ "0"
+    }
+    ~ out = ""
+    ~ x = n
+    * x > 0 {
+        $ d = x % 16
+        $ ch = hex_digit(d)
+        ~ out = str.cat(ch, out)
+        ~ x = x / 16
+    }
+    ^ out
+}
+
+$ write_head = (c, res) {
+    $ out = format_head(res)
+    c.write(out)
+    ^
+}
+
+$ write_raw = (c, data) {
+    c.write(data)
+    ^
+}
+
+$ write_chunk = (c, data) {
+    $ n = str.len(data)
+    $ hx = hex_from_int(n)
+    c.write("{hx}\r\n{data}\r\n")
+    ^
+}
+
+$ write_bytes_chunk = (c, data) {
+    $ n = bytes.len(data)
+    $ hx = hex_from_int(n)
+    c.write("{hx}\r\n")
+    c.write(data)
+    c.write("\r\n")
+    ^
+}
+
+$ write_chunk_end = (c) {
+    c.write("0\r\n\r\n")
+    ^
+}
+
+$ read_headers = (c) {
+    ~ raw = b''
+    * i : 0..256 {
+        $ chunk = c.read(65536)
+        ? bytes.len(chunk) == 0 {
+            <
+        }
+        ~ raw = bytes.cat(raw, chunk)
+        ? runtime.http_headers_complete(raw) != 0 {
+            <
+        }
+    }
+    ^ raw
+}
+
+$ dispatch = (routes, req) {
+    * route : routes {
+        ? route.path == req.path {
+            ^ route.handle(req)
+        }
+    }
+    $ path = req.path
+    ^ text_response(404, "not found: {path}")
+}
+
+; One TCP connection (% conn): accumulate **bytes** until request is complete
+; (headers + body up to Content-Length when present), then respond.
+; Per-chunk `str.from_bytes` would split UTF-8 and shift Content-Length.
+; Free-fn param `c` is monomorphic `% conn` from call sites → methods resolve.
+$ handle_connection = (c, routes) {
+    ~ raw = b''
+    * i : 0..256 {
+        $ chunk = c.read(65536)
+        ? bytes.len(chunk) == 0 {
+            ? bytes.len(raw) == 0 {
+                c.close()
+                ^
+            }
+            <
+        }
+        ~ raw = bytes.cat(raw, chunk)
+        ? runtime.http_request_complete(raw) != 0 {
+            <
+        }
+    }
+    ? bytes.len(raw) == 0 {
+        c.close()
+        ^
+    }
+    $ req = parse_request(raw)
+    $ res = dispatch(routes, req)
+    $ out = format_response(res)
+    c.write(out)
+    c.close()
+    ^
+}
+
+; Headers-first: dispatch as soon as `\r\n\r\n` is in. Body may still be on
+; `% conn` (git smart HTTP). Chunked responses write hex-sized parts.
+$ handle_connection_stream = (c, routes) {
+    $ raw = read_headers(c)
+    ? bytes.len(raw) == 0 {
+        c.close()
+        ^
+    }
+    $ req = parse_request(raw)
+    $ res = dispatch(routes, req)
+    ? res.chunked {
+        write_head(c, res)
+        ? str.len(res.body) > 0 {
+            write_chunk(c, res.body)
+        }
+        write_chunk_end(c)
+        c.close()
+        ^
+    }
+    $ out = format_response(res)
+    c.write(out)
+    c.close()
+    ^
+}
+
+; Infinite accept loop. Each connection is a fire-and-forget task (`+`).
+$ serve = (addr, routes) {
+    $ lis = tcp.listen(addr)
+    ? lis.handle == 0 {
+        io.log("http.serve: listen failed")
+        ^ server.server {
+            addr: addr,
+            routes: routes,
+            running: _
+        }
+    }
+    io.log("http.serve listening {addr}")
+    * {
+        $ c = tcp.accept(lis)
+        ? c.handle != 0 {
+            + handle_connection(c, routes)
+        }
+    }
+    ^ server.server {
+        addr: addr,
+        routes: routes,
+        running: |
+    }
+}
+
+$ serve_stream = (addr, routes) {
+    $ lis = tcp.listen(addr)
+    ? lis.handle == 0 {
+        io.log("http.serve_stream: listen failed")
+        ^ server.server {
+            addr: addr,
+            routes: routes,
+            running: _
+        }
+    }
+    io.log("http.serve_stream listening {addr}")
+    * {
+        $ c = tcp.accept(lis)
+        ? c.handle != 0 {
+            + handle_connection_stream(c, routes)
+        }
+    }
+    ^ server.server {
+        addr: addr,
+        routes: routes,
+        running: |
+    }
+}
+
+test.it("e26_body_content_length", () {
+    ; Same POST /echo bytes as echo26/run/http/006_body_content_length.
+    $ raw = "POST /echo HTTP/1.1\r\nHost: x\r\nContent-Length: 5\r\n\r\nhello"
+    $ req = parse_request(raw)
+    test.eq(req.method, "POST")
+    test.eq(req.path, "/echo")
+    test.eq(req.body, "hello")
+})
+
+test.it("parse_70_headers", () {
+    ~ raw = "GET /health HTTP/1.1\r\nHost: x\r\n"
+    ~ i = 0
+    * i < 70 {
+        ~ raw = str.cat(raw, "X-H")
+        ~ raw = str.cat(raw, str.from_int(i))
+        ~ raw = str.cat(raw, ": v\r\n")
+        ~ i = i + 1
+    }
+    ~ raw = str.cat(raw, "\r\n")
+    $ req = parse_request(raw)
+    test.eq(req.path, "/health")
+})
+
+; Two TCP-sized chunks that split UTF-8 `é` (U+00E9 = c3 a9).
+test.it("parse_split_utf8_chunks", () {
+    $ headers = b"POST /echo HTTP/1.1\r\nHost: x\r\nContent-Length: 2\r\n\r\n"
+    $ c1 = bytes.cat(headers, b"\xc3")
+    $ raw = bytes.cat(c1, b"\xa9")
+    $ req = parse_request(raw)
+    test.eq(req.body, "é")
+})
+
+test.it("format_chunked_head", () {
+    $ res = response.response {
+        status: 200,
+        headers: {
+            content_type: "application/x-git-upload-pack-result"
+        },
+        body: "",
+        chunked: |
+    }
+    $ head = format_head(res)
+    test.eq(str.contains(head, "Transfer-Encoding: chunked"), |)
+    test.eq(str.contains(head, "Content-Length:"), _)
+})
+
+test.it("hex_from_int_chunk_sizes", () {
+    test.eq(hex_from_int(0), "0")
+    test.eq(hex_from_int(10), "a")
+    test.eq(hex_from_int(255), "ff")
+    test.eq(hex_from_int(16), "10")
+})
+
+; Public API (export discipline — docs/stdlib.md):
+;   types; serve; parse/format; response helpers; dispatch + handle_connection
+;   stream: format_head, write_head, write_chunk, write_chunk_end, read_headers
+; Private: status_reason (format_response plumbing only)
+\ request, response, server
+\ text_response, html_response, json_response, parse_request, format_response
+\ format_head, write_head, write_raw, write_chunk, write_bytes_chunk, write_chunk_end
+\ hex_from_int, body_len, read_headers, request_complete
+\ dispatch, handle_connection, handle_connection_stream, serve, serve_stream

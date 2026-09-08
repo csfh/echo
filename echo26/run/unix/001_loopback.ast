@@ -1,0 +1,133 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  import
+    seg std
+    seg net
+    seg unix
+  import
+    seg std
+    seg os
+  bind_dollar
+    name path
+    call
+      field cat
+        name str
+      string_rich
+      call
+        field from_int
+          name str
+        call
+          field pid
+            name os
+  bind_dollar
+    name lis
+    call
+      field listen
+        name unix
+      name path
+  if
+    binary Eq
+      field handle
+        name lis
+      number 0
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+    return
+  task_spawn
+    bind srv
+    closure
+      capture lis
+      bind_dollar
+        name c
+        call
+          field accept
+            name unix
+          name lis
+      if
+        binary NotEq
+          field handle
+            name c
+          number 0
+        bind_dollar
+          name b
+          call
+            field read
+              name unix
+            name c
+            number 64
+        expr_stmt
+          call
+            field print
+              name io
+            call
+              field from_bytes
+                name str
+              name b
+        expr_stmt
+          call
+            field write
+              name unix
+            name c
+            string_rich
+        expr_stmt
+          call
+            field close
+              name unix
+            name c
+      return
+  bind_dollar
+    name client
+    call
+      field connect
+        name unix
+      name path
+  if
+    binary NotEq
+      field handle
+        name client
+      number 0
+    expr_stmt
+      call
+        field write
+          name unix
+        name client
+        string_rich
+    bind_dollar
+      name raw
+      call
+        field read
+          name unix
+        name client
+        number 64
+    expr_stmt
+      call
+        field print
+          name io
+        call
+          field from_bytes
+            name str
+          name raw
+    expr_stmt
+      call
+        field close
+          name unix
+        name client
+  task_join
+    handle
+      name srv
+  expr_stmt
+    call
+      field close
+        name unix
+      name lis

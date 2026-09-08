@@ -1,0 +1,45 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct inner
+    bind_tilde
+      name n
+  struct outer
+    bind_tilde
+      name child
+  bind_dollar
+    name o
+    struct_lit outer
+      field child
+        struct_lit inner
+          field n
+            number 1
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field n
+          field child
+            name o
+  assign
+    target_field n
+      field child
+        name o
+    number 7
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field n
+          field child
+            name o

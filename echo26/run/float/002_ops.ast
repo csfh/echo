@@ -1,0 +1,27 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_float
+          name str
+        binary Add
+          number 1.5
+          number 2.25
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_float
+          name str
+        binary Div
+          number 10.0
+          number 4.0

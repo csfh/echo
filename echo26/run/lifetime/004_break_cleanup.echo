@@ -1,0 +1,13 @@
+; Break must exit if and loop body scopes before leaving the loop.
+/ std/io
+/ std/str
+
+~ i = 0
+* {
+    ? i == 2 {
+        <
+    }
+    io.print(str.from_int(i))
+    ~ i = i + 1
+}
+io.print(str.from_int(i))

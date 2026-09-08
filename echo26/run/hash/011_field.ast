@@ -1,0 +1,67 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct point
+    bind_dollar
+      name x
+    bind_dollar
+      name y
+  bind_hash
+    name P
+    struct_lit point
+      field x
+        number 3
+      field y
+        number 4
+  bind_hash
+    name Q
+    object
+      field a
+        number 1
+      field b
+        number 2
+  bind_hash
+    name X
+    field x
+      name P
+  bind_hash
+    name A
+    field a
+      name Q
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name X
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name A
+  if
+    binary Eq
+      binary Add
+        name X
+        name A
+      number 4
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure

@@ -1,0 +1,14 @@
+; Longer-lived shared (param) must remain live after promoting a nest that
+; references it. Graph promote rehomes only source-owned allocs.
+/ std/io
+/ std/str
+
+$ wrap = (s) {
+    $ a = [s]
+    ^ a
+}
+
+$ shared = [10]
+$ w = wrap(shared)
+io.print(str.from_int(w[0][0]))
+io.print(str.from_int(shared[0]))

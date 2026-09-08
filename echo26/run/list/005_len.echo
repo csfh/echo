@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+/ std/list
+
+io.print(str.from_int(list.len([])))
+io.print(str.from_int(list.len([1, 2, 3])))
+~ xs = [10]
+~ xs[] = 20
+io.print(str.from_int(list.len(xs)))

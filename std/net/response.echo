@@ -1,0 +1,14 @@
+; response — shape + methods
+
+% response {
+    ~ status = 200
+    ~ headers
+    ~ body = ""
+    ~ chunked = _
+
+    $ set_header = (name, value) {
+        ^ .
+    }
+}
+
+\ response

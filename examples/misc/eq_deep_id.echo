@@ -1,0 +1,14 @@
+; Deep == vs identity ===
+/ std/io
+/ std/str
+
+$ a = [1, 2]
+$ b = [1, 2]
+$ c = a
+io.print(str.from_int(a == b))
+io.print(str.from_int(a === b))
+io.print(str.from_int(a === c))
+$ s1 = 'same'
+$ s2 = 'same'
+io.print(str.from_int(s1 == s2))
+io.print(str.from_int(s1 === s2))

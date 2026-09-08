@@ -1,0 +1,9 @@
+; list.contains. Run: xo run examples/misc/list_contains.echo
+/ std/io
+/ std/str
+/ std/list
+
+io.print(str.from_int(list.contains([1, 2, 3], 2)))
+io.print(str.from_int(list.contains([1, 2, 3], 9)))
+io.print(str.from_int(list.contains([], 0)))
+io.print(str.from_int(list.contains(["a", "b"], "b")))

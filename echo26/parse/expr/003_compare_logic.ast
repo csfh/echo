@@ -1,0 +1,11 @@
+file
+  bind_dollar
+    name ok
+    binary Or
+      binary And
+        binary Lt
+          name n
+          number 10
+        unary Not
+          bool false
+      bool true

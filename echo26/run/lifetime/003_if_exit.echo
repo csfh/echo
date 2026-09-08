@@ -1,0 +1,11 @@
+; Nested if scope enters and exits on both arms.
+/ std/io
+/ std/str
+
+? 1 {
+    $ n = 7
+    io.print(str.from_int(n))
+}
+: {
+    io.print(str.from_int(0))
+}

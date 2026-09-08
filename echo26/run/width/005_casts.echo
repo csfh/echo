@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+
+$ a = <ui8> 200
+io.print(str.from_int(<i32> a))
+$ b = <i32> 3
+io.print(str.from_float(<f64> b))
+$ c = 3.9
+io.print(str.from_int(<i32> c))
+$ d = <f32> 1.5
+$ e = <f64> d
+io.print(str.from_float(e + 0.25))
+# HALF = 2.5
+# TWO = <i32> HALF
+io.print(str.from_int(TWO))

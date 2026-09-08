@@ -1,0 +1,25 @@
+; Method call after free function returns a named struct.
+/ std/io
+/ std/str
+
+% box {
+    ~ n = 0
+    $ bump = () {
+        ~ .n = .n + 1
+        ^ .
+    }
+    $ value = () {
+        ^ .n
+    }
+}
+
+$ make = () {
+    ^ box {
+        n: 10
+    }
+}
+
+$ b = make()
+io.print(str.from_int(b.value()))
+$ b2 = b.bump()
+io.print(str.from_int(b2.value()))

@@ -1,0 +1,10 @@
+/ std/io
+/ std/str
+/ std/list
+
+$ add = (a, b) {
+    ^ a + b
+}
+
+io.print(str.from_int(list.fold([1, 2, 3], 0, add)))
+io.print(str.from_int(list.fold([], 7, add)))

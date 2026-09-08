@@ -1,0 +1,19 @@
+; Ordinary `|` match on literals (int); default with `:`
+/ std/io
+/ std/str
+
+$ n = 2
+| n {
+    0 {
+        io.print(str.from_int(100))
+    }
+    1 {
+        io.print(str.from_int(101))
+    }
+    2 {
+        io.print(str.from_int(102))
+    }
+    : {
+        io.print(str.from_int(999))
+    }
+}

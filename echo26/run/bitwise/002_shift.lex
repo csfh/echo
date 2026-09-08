@@ -1,0 +1,13 @@
+leader_caret
+l_paren
+number
+lt_lt
+number
+r_paren
+plus
+l_paren
+number
+gt_gt
+number
+r_paren
+eof

@@ -1,0 +1,9 @@
+; Homepage hero — must match app.tsx sample (top-level, no entry keyword).
+/ std/io
+
+$ xs = [1, 2, 3]
+~ sum = 0
+* x : xs {
+    ~ sum = sum + x
+}
+io.print("sum={sum}")

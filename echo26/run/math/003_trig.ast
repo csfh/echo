@@ -1,0 +1,32 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg math
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_float
+          name str
+        call
+          field sin
+            name math
+          number_f64 0.0
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_float
+          name str
+        call
+          field tan
+            name math
+          number_f64 0.0

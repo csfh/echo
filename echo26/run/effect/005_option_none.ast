@@ -1,0 +1,36 @@
+file
+  bind_dollar
+    name maybe
+    fn
+      param x
+      if
+        binary Lt
+          name x
+          number 0
+        return
+      return
+        name x
+  bind_tilde
+    name n
+    number 0
+  effect_block
+    block
+      bind_dollar
+        name a
+        call
+          name maybe
+          number 5
+      bind_dollar
+        name b
+        call
+          name maybe
+          binary Sub
+            number 0
+            number 1
+      bind_tilde
+        name n
+        binary Add
+          name a
+          name b
+  return
+    name n

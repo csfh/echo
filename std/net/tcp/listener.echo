@@ -1,0 +1,35 @@
+; % listener — TCP listen socket as a named struct (pass by reference).
+; Part of folder module `std/net/tcp`. Opaque id only in .handle.
+
+/ runtime
+/ ./conn
+
+% listener {
+    $ addr
+    $ handle
+    ~ open = |
+
+    $ accept = () {
+        $ a = runtime.tcp_accept(.handle)
+        ? a.conn == 0 {
+            ^ conn {
+                remote: "",
+                handle: 0,
+                open: _
+            }
+        }
+        ^ conn {
+            remote: a.remote,
+            handle: a.conn,
+            open: |
+        }
+    }
+
+    $ close = () {
+        runtime.tcp_close(.handle)
+        ~ .open = _
+        ^ .
+    }
+}
+
+\ listener

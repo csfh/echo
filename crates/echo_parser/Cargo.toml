@@ -1,0 +1,18 @@
+[package]
+name = "echo_parser"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+bincode = "1"
+chumsky = "0.9"
+echo_source = { path = "../echo_source" }
+echo_syntax = { path = "../echo_syntax" }
+echo_diagnostics = { path = "../echo_diagnostics" }
+echo_lexer = { path = "../echo_lexer" }
+echo_ast = { path = "../echo_ast" }
+echo_cache = { path = "../echo_cache" }
+echo_fingerprint = { path = "../echo_fingerprint" }
+serde = { version = "1", features = ["derive"] }

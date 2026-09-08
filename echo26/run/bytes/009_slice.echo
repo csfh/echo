@@ -1,0 +1,37 @@
+; bytes.slice is half-open [start,end); oob is "out of bounds".
+/ std/io
+/ std/str
+/ std/bytes
+
+| bytes.slice(b'abcdef', 1, 4) {
+    $ mid {
+        io.print(str.from_int(bytes.len(mid)))
+        | bytes.get(mid, 0) {
+            $ x {
+                io.print(str.from_int(x))
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| bytes.slice(b'ab', 2, 2) {
+    $ empty {
+        io.print(str.from_int(bytes.len(empty)))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| bytes.slice(b'ab', 0, 3) {
+    $ x {
+        io.print("ok")
+    }
+    ! e {
+        io.print(e)
+    }
+}

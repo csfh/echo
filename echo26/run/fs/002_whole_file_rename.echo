@@ -1,0 +1,70 @@
+; Whole-file write/read + rename via std/fs.
+/ std/io
+/ std/str
+/ std/bytes
+/ std/fs
+
+$ root = fs.join("/tmp", "echo26_fs_002")
+| fs.create_dir_all(root) {
+    $ ok {
+        io.print("dir")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+$ a = fs.join(root, "a.txt")
+$ b = fs.join(root, "b.txt")
+| fs.write(a, "hi") {
+    $ ok {
+        io.print("write")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.read(a) {
+    $ data {
+        io.print(str.from_bytes(data))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.rename(a, b) {
+    $ ok {
+        ? fs.exists(a) {
+            io.print("still-a")
+        }
+        : {
+            io.print("renamed")
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.read(b) {
+    $ data {
+        io.print(str.from_bytes(data))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(b) {
+    $ ok {
+        io.print("rm")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove_dir(root) {
+    $ ok {
+        io.print("rmdir")
+    }
+    ! e {
+        io.print("rmdir-soft")
+    }
+}

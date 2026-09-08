@@ -1,0 +1,33 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg json
+  task_spawn
+    bind job
+    block
+      return
+        string_rich
+  task_join
+    bind s
+    handle
+      name job
+  match
+    call
+      field stringify
+        name json
+      name s
+    arm_ok out
+      expr_stmt
+        call
+          field print
+            name io
+          name out
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

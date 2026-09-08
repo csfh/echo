@@ -1,0 +1,8 @@
+% counter {
+    ~ n
+    $ get = () {
+        ^ .n
+    }
+}
+
+\ counter

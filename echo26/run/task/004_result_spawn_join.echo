@@ -1,0 +1,17 @@
+/ std/io
+/ std/str
+
++ job = {
+    ! 5
+}
+- r = job
+| r {
+    $ v {
+        io.print("ok")
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print("err")
+        io.print(str.from_int(e))
+    }
+}

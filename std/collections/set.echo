@@ -1,0 +1,192 @@
+; The Echo set collection (`/ std/collections/set`).
+; Backed by hash_table. Fluent: set.make().seed(k0, k1).
+; Methods: seed, add, remove, has, len, is_empty, values, to_list
+;   Member snapshot (order undefined) → ordinary list → `* x : s.to_list() { … }`.
+;
+; Public API (export discipline — docs/stdlib.md):
+;   \ set, make, from_list
+; Private: PRESENT constant, suite.
+;
+; Suite: xo test std/collections/set.echo (XO_TEST).
+
+/ std/test
+/ std/list
+/ std/collections/hash_table
+
+# PRESENT = 1
+
+% set {
+    $ table
+
+    ; Empty set only. Result-shaped: ^ . or ! msg. (Policy lives here, not on hash_table.)
+    $ seed = (k0, k1) {
+        ? .table.is_empty() {
+            .table.seed(k0, k1)
+            ^ .
+        }
+        ! "cannot reseed non-empty set"
+    }
+
+    $ add = (x) {
+        .table.put(x, PRESENT)
+        ^ .
+    }
+
+    ; True if the element was present and removed.
+    $ remove = (x) {
+        | .table.remove(x) {
+            $ v {
+                ^ |
+            }
+            : {
+                ^ _
+            }
+        }
+    }
+
+    $ has = (x) {
+        ^ .table.has(x)
+    }
+
+    $ len = () {
+        ^ .table.len()
+    }
+
+    $ is_empty = () {
+        ^ .table.is_empty()
+    }
+
+    ; Snapshot of members as a list (order undefined). Same as `to_list`.
+    $ values = () {
+        ^ .table.keys()
+    }
+
+    ; For `* x : s.to_list() { … }` (for-in is list/range only at the language level).
+    $ to_list = () {
+        ^ .values()
+    }
+}
+
+$ make = () {
+    ^ set { table: hash_table.make() }
+}
+
+$ from_list = (ls) {
+    ~ s = make()
+    * v : ls {
+        s.add(v)
+    }
+    ^ s
+}
+
+; --- suite ---
+
+test.it("add_has", () {
+    $ s = make()
+    test.true(s.is_empty())
+    s.add(7)
+    s.add(8)
+    test.eq(s.len(), 2)
+    test.true(s.has(7))
+    test.true(s.has(8))
+    test.false(s.has(0))
+})
+
+test.it("add_idempotent", () {
+    $ s = make()
+    s.add(1)
+    s.add(1)
+    test.eq(s.len(), 1)
+    test.true(s.has(1))
+})
+
+test.it("to_list_for_in", () {
+    $ s = from_list([1, 2, 3])
+    $ vs = s.to_list()
+    test.eq(list.len(vs), 3)
+    test.eq(list.len(s.values()), 3)
+    ~ ok1 = _
+    ~ ok2 = _
+    ~ ok3 = _
+    * x : s.to_list() {
+        ? x == 1 {
+            ~ ok1 = |
+        }
+        ? x == 2 {
+            ~ ok2 = |
+        }
+        ? x == 3 {
+            ~ ok3 = |
+        }
+    }
+    test.true(ok1)
+    test.true(ok2)
+    test.true(ok3)
+})
+
+test.it("remove", () {
+    $ s = make()
+    s.add(1)
+    s.add(2)
+    test.true(s.remove(1))
+    test.false(s.has(1))
+    test.eq(s.len(), 1)
+    test.false(s.remove(9))
+    test.eq(s.len(), 1)
+    test.true(s.remove(2))
+    test.true(s.is_empty())
+})
+
+test.it("from_list", () {
+    $ s = from_list([10, 20, 10, 30])
+    test.eq(s.len(), 3)
+    test.true(s.has(10))
+    test.true(s.has(20))
+    test.true(s.has(30))
+    test.false(s.has(40))
+})
+
+test.it("fluent_seed", () {
+    # K0 = <ui64> 0x0303030303030303
+    # K1 = <ui64> 0x0404040404040404
+    | make().seed(K0, K1) {
+        $ s {
+            s.add(5)
+            test.true(s.has(5))
+            test.false(s.has(6))
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("reseed_nonempty_err", () {
+    $ s = make()
+    s.add(1)
+    | s.seed(1, 2) {
+        $ ok {
+            test.fail("expected reseed error")
+        }
+        ! e {
+            test.eq(e, "cannot reseed non-empty set")
+        }
+    }
+})
+
+; Heterogeneous members (same as hash_table: kind-tagged hash, deep ==).
+test.it("mixed_members", () {
+    $ s = make()
+    s.add("a")
+    s.add("b")
+    test.true(s.has("a"))
+    test.false(s.has("c"))
+    s.add(1)
+    test.true(s.has(1))
+    test.false(s.has("1"))
+    test.true(s.remove("a"))
+    test.false(s.has("a"))
+    test.eq(s.len(), 2)
+})
+
+\ set, make, from_list

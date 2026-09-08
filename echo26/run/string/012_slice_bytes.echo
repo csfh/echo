@@ -1,0 +1,14 @@
+; str.slice indexes original bytes, not a whole-buffer lossy expansion.
+/ std/io
+/ std/str
+/ std/bytes
+
+$ raw = b"\xffAB"
+| str.slice(raw, 1, 3) {
+    $ t {
+        io.print(t)
+    }
+    ! e {
+        io.print(e)
+    }
+}

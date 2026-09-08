@@ -1,0 +1,23 @@
+[package]
+name = "echo_pipeline"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+echo_ast = { path = "../echo_ast" }
+echo_build = { path = "../echo_build" }
+echo_cache = { path = "../echo_cache" }
+echo_codegen = { path = "../echo_codegen" }
+echo_diagnostics = { path = "../echo_diagnostics" }
+echo_fingerprint = { path = "../echo_fingerprint" }
+echo_hir = { path = "../echo_hir" }
+echo_mir = { path = "../echo_mir" }
+echo_resolver = { path = "../echo_resolver" }
+echo_semantics = { path = "../echo_semantics" }
+echo_source = { path = "../echo_source" }
+echo_std = { path = "../echo_std" }
+
+[dev-dependencies]
+echo_parser = { path = "../echo_parser" }

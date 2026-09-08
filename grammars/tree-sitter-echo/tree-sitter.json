@@ -1,0 +1,29 @@
+{
+  "grammars": [
+    {
+      "name": "echo",
+      "camelcase": "Echo",
+      "scope": "source.echo",
+      "path": ".",
+      "file-types": ["echo"],
+      "highlights": "queries/highlights.scm",
+      "injection-regex": "^echo$"
+    }
+  ],
+  "metadata": {
+    "version": "0.0.1",
+    "license": "MIT",
+    "description": "Echo grammar for tree-sitter (generated from echo_syntax)",
+    "links": {
+      "repository": "https://github.com/csfh/echo"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": false,
+    "node": true,
+    "python": false,
+    "rust": true,
+    "swift": false
+  }
+}

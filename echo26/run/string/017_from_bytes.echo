@@ -1,0 +1,16 @@
+; str.from_bytes is UTF-8 lossy (invalid → U+FFFD), not utf8.decode.
+/ std/io
+/ std/str
+
+io.print(str.from_bytes(b'hi'))
+$ bad = str.from_bytes(b"\xff")
+io.print(str.from_int(str.len(bad)))
+| str.get(bad, 0) {
+    $ x {
+        io.print(str.from_int(x))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+io.print(str.from_int(str.len(str.from_bytes(b''))))

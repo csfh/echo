@@ -1,0 +1,73 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name p
+    object
+      field x
+        number 1
+      field y
+        number 2
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field x
+          name p
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field y
+          name p
+  assign
+    target_field x
+      name p
+    number 10
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field x
+          name p
+  bind_dollar
+    name q
+    object
+      field n
+        number 0
+      field nested
+        object
+          field v
+            number 3
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field n
+          name q
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field v
+          field nested
+            name q

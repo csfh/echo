@@ -1,0 +1,6 @@
+file
+  bind_dollar
+    name s
+    call
+      field greet
+        name u

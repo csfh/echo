@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+/ std/net/url
+
+| url.parse("http://example.com:8080/x") {
+  $ u {
+    io.print(u.scheme)
+    io.print(u.host)
+    io.print(str.from_int(u.port))
+    io.print(u.path)
+  }
+  ! e {
+    io.print(e)
+  }
+}

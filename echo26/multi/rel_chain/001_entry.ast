@@ -1,0 +1,8 @@
+file
+  import
+    seg .
+    seg a
+  bind_dollar
+    name x
+    field from_a
+      name a

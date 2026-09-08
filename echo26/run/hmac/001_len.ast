@@ -1,0 +1,38 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  import
+    seg std
+    seg crypto
+    seg hmac
+  match
+    call
+      field sha256
+        name hmac
+      string_rich
+      string_rich
+    arm_ok d
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            call
+              field len
+                name bytes
+              name d
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

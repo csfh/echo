@@ -1,0 +1,8 @@
+/ std/io
+/ std/str
+/ std/net/http
+
+$ raw = "GET /x HTTP/1.1\r\nHost: xo.run\r\nContent-Type: text/plain\r\n\r\n"
+$ req = http.parse_request(raw)
+io.print(req.headers.host)
+io.print(req.headers.content_type)

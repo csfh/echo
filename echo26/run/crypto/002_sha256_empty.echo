@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+/ std/bytes
+/ std/encoding/hex
+/ std/crypto/hash
+
+$ empty = bytes.from_str("")
+| hash.sha256(empty) {
+    $ dig {
+        io.print(hex.encode(dig))
+    }
+    ! e {
+        io.print(e)
+    }
+}

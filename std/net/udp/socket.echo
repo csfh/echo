@@ -1,0 +1,38 @@
+; UDP free protocol surface over `runtime.udp_*`.
+; Folder module `std/net/udp` — reifies handles into `% socket` (struct by ref).
+
+/ runtime
+/ ./socket_type
+
+; bind(addr) -> socket (handle 0 / open _ on failure)
+$ bind = (addr) {
+    $ h = runtime.udp_bind(addr)
+    ? h == 0 {
+        ^ socket {
+            addr: addr,
+            handle: 0,
+            open: _
+        }
+    }
+    ^ socket {
+        addr: addr,
+        handle: h,
+        open: |
+    }
+}
+
+; Free helpers (also work when callers still pass handle-shaped values)
+$ send_to = (sock, data, addr) {
+    ^ runtime.udp_send_to(sock.handle, data, addr)
+}
+
+$ recv_from = (sock, limit) {
+    ^ runtime.udp_recv_from(sock.handle, limit)
+}
+
+$ close = (sock) {
+    runtime.udp_close(sock.handle)
+    ^
+}
+
+\ bind, send_to, recv_from, close

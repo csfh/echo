@@ -1,0 +1,9 @@
+leader_dollar
+ident
+eq
+minus
+lt
+ident
+gt
+number
+eof

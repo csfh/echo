@@ -1,0 +1,56 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Sub
+          number 10
+          number 3
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Mul
+          number 4
+          number 5
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Div
+          number 20
+          number 4
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Rem
+          number 10
+          number 3
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        unary Neg
+          number 7

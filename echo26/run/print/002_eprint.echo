@@ -1,0 +1,4 @@
+/ std/io
+
+io.eprint("err")
+io.print("out")

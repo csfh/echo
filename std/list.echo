@@ -1,0 +1,308 @@
+; std/list — free helpers for list values.
+; Privileged std may `/ runtime` and call `runtime.*` (docs/stdlib.md).
+;
+; Public API:
+;   len, is_empty, get, contains, sum_ints, sort_ints, map, filter, fold
+; `get` is **result-shaped**: ok is the element; err is `"out of bounds"`.
+; `contains` uses deep `==` (same as language equality).
+; HOFs take closed function values (params + locals + `#` + imports; no outer
+; `$`/`~` capture — docs/semantics.md). `filter` pred is boolean.
+;
+; Suite: xo test std/list.echo (XO_TEST).
+
+/ runtime
+/ std/test
+
+$ len = (xs) {
+    ^ runtime.list_len(xs)
+}
+
+$ is_empty = (xs) {
+    ^ len(xs) == 0
+}
+
+; Bounds-checked index. Soft runtime OOB is 0 — we reject before that.
+$ get = (xs, i) {
+    $ n = runtime.list_len(xs)
+    ? i < 0 || i >= n {
+        ! "out of bounds"
+    }
+    ^ runtime.list_get(xs, i)
+}
+
+$ contains = (xs, x) {
+    * e : xs {
+        ? e == x {
+            ^ |
+        }
+    }
+    ^ _
+}
+
+; Sum of integers in a list (index loop keeps len hot and avoids for-in len reloads).
+$ sum_ints = (xs) {
+    ~ acc = 0
+    ~ i = 0
+    $ n = runtime.list_len(xs)
+    * i < n {
+        ~ acc = acc + runtime.list_get(xs, i)
+        ~ i = i + 1
+    }
+    ^ acc
+}
+
+; Map each element through a closed function value. Returns a new list.
+$ map = (xs, f) {
+    ~ out = []
+    * e : xs {
+        ~ out[] = f(e)
+    }
+    ^ out
+}
+
+; Keep elements for which `pred` is true (boolean). Returns a new list.
+$ filter = (xs, pred) {
+    ~ out = []
+    * e : xs {
+        ? pred(e) {
+            ~ out[] = e
+        }
+    }
+    ^ out
+}
+
+; Left fold: `f(acc, element)` for each element, starting from `acc0`.
+$ fold = (xs, acc0, f) {
+    ~ acc = acc0
+    * e : xs {
+        ~ acc = f(acc, e)
+    }
+    ^ acc
+}
+
+; Insertion sort for integers (ascending).
+$ sort_ints = (xs) {
+    ~ out = []
+    * e : xs {
+        ~ out[] = e
+    }
+    ~ n = len(out)
+    ~ i = 1
+    * i < n {
+        ~ j = i
+        * j > 0 {
+            $ a = runtime.list_get(out, j - 1)
+            $ b = runtime.list_get(out, j)
+            ? a > b {
+                ~ out[j - 1] = b
+                ~ out[j] = a
+                ~ j = j - 1
+            }
+            : {
+                ~ j = 0
+            }
+        }
+        ~ i = i + 1
+    }
+    ^ out
+}
+
+; --- suite (xo test std/list.echo) ---
+
+test.it("len_empty", () {
+    test.eq(len([]), 0)
+    test.true(is_empty([]))
+})
+
+test.it("len_lit", () {
+    test.eq(len([10, 20, 12]), 3)
+    test.false(is_empty([1]))
+})
+
+test.it("len_push", () {
+    ~ xs = []
+    ~ xs[] = 1
+    ~ xs[] = 2
+    test.eq(len(xs), 2)
+})
+
+test.it("get_ok", () {
+    | get([10, 20, 30], 1) {
+        $ v {
+            test.eq(v, 20)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("get_oob", () {
+    | get([1], 1) {
+        $ v {
+            test.fail("expected oob")
+        }
+        ! e {
+            test.eq(e, "out of bounds")
+        }
+    }
+    | get([1], -1) {
+        $ v {
+            test.fail("expected oob neg")
+        }
+        ! e {
+            test.eq(e, "out of bounds")
+        }
+    }
+})
+
+test.it("contains", () {
+    test.true(contains([1, 2, 3], 2))
+    test.false(contains([1, 2, 3], 9))
+    test.false(contains([], 0))
+})
+
+test.it("contains_string", () {
+    test.true(contains(["a", "b"], "b"))
+    test.false(contains(["a"], "z"))
+})
+
+test.it("sum_and_sort", () {
+    test.eq(sum_ints([1, 2, 3]), 6)
+    $ zs = sort_ints([3, 1, 2])
+    | get(zs, 0) {
+        $ v {
+            test.eq(v, 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | get(zs, 2) {
+        $ v {
+            test.eq(v, 3)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("map_inc", () {
+    $ inc = (n) {
+        ^ n + 1
+    }
+    $ ys = map([1, 2, 3], inc)
+    test.eq(len(ys), 3)
+    | get(ys, 0) {
+        $ v {
+            test.eq(v, 2)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | get(ys, 2) {
+        $ v {
+            test.eq(v, 4)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    $ empty = map([], inc)
+    test.true(is_empty(empty))
+})
+
+test.it("filter_even", () {
+    $ even = (n) {
+        ^ n % 2 == 0
+    }
+    $ ys = filter([1, 2, 3, 4], even)
+    test.eq(len(ys), 2)
+    | get(ys, 0) {
+        $ v {
+            test.eq(v, 2)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | get(ys, 1) {
+        $ v {
+            test.eq(v, 4)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("fold_sum", () {
+    $ add = (a, b) {
+        ^ a + b
+    }
+    test.eq(fold([1, 2, 3], 0, add), 6)
+    test.eq(fold([], 7, add), 7)
+})
+
+; Benchmarks: real list APIs (build inputs in-body; free fns are closed).
+test.bench("contains", () {
+    $ ok = contains([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 7)
+})
+
+test.bench("sum_ints", () {
+    $ n = sum_ints([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+})
+
+test.bench("sum_ints_1k", () {
+    ~ xs = []
+    runtime.list_reserve(xs, 1000)
+    ~ i = 0
+    * i < 1000 {
+        ~ xs[] = i
+        ~ i = i + 1
+    }
+    $ n = sum_ints(xs)
+})
+
+test.bench("sum_ints_10k", () {
+    ~ xs = []
+    runtime.list_reserve(xs, 10000)
+    ~ i = 0
+    * i < 10000 {
+        ~ xs[] = i
+        ~ i = i + 1
+    }
+    $ n = sum_ints(xs)
+})
+
+test.bench("sort_ints", () {
+    $ zs = sort_ints([9, 1, 8, 2, 7, 3, 6, 4, 5, 0])
+})
+
+test.bench("sort_ints_1k", () {
+    ~ xs = []
+    ~ i = 1000
+    * i > 0 {
+        ~ i = i - 1
+        ~ xs[] = i
+    }
+    $ zs = sort_ints(xs)
+})
+
+test.bench("map", () {
+    $ inc = (n) {
+        ^ n + 1
+    }
+    $ ys = map([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], inc)
+})
+
+test.bench("fold", () {
+    $ add = (a, b) {
+        ^ a + b
+    }
+    $ n = fold([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 0, add)
+})
+
+\ len, is_empty, get, contains, sum_ints, sort_ints, map, filter, fold

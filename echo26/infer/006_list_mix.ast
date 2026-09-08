@@ -1,0 +1,6 @@
+file
+  bind_dollar
+    name xs
+    list
+      number 1
+      string_rich

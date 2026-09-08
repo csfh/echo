@@ -1,0 +1,49 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct box
+    bind_tilde
+      name n
+    bind_dollar
+      name twice
+      fn
+        bind_dollar
+          name add
+          fn
+            param a
+            param b
+            return
+              binary Add
+                name a
+                name b
+        assign
+          target_field n
+            receiver
+          call
+            name add
+            field n
+              receiver
+            field n
+              receiver
+  bind_tilde
+    name b
+    struct_lit box
+      field n
+        number 7
+  expr_stmt
+    call
+      field twice
+        name b
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field n
+          name b

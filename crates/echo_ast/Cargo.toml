@@ -1,0 +1,12 @@
+[package]
+name = "echo_ast"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+echo_source = { path = "../echo_source" }
+echo_syntax = { path = "../echo_syntax" }
+serde = { version = "1", features = ["derive"] }
+

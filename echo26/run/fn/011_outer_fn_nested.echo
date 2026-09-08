@@ -1,0 +1,17 @@
+/ std/io
+/ std/str
+
+; Outer free function bind (return shape known) may be used inside nested closed bodies.
+$ double = (n) {
+    ^ n + n
+}
+
+$ make = () {
+    $ h = (x) {
+        ^ double(x)
+    }
+    ^ h
+}
+
+$ f = make()
+io.print(str.from_int(f(21)))

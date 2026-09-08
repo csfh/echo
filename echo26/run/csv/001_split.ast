@@ -1,0 +1,49 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg list
+  import
+    seg std
+    seg encoding
+    seg csv
+  bind_dollar
+    name f
+    call
+      field parse_line
+        name csv
+      string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name list
+          name f
+  match
+    call
+      field get
+        name list
+      name f
+      number 1
+    arm_ok b
+      expr_stmt
+        call
+          field print
+            name io
+          name b
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

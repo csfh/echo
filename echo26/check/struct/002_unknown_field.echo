@@ -1,0 +1,4 @@
+% user {
+    $ name
+}
+$ u = user { name: "Ada", extra: 1 }

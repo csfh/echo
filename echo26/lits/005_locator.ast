@@ -1,0 +1,10 @@
+file
+  bind_dollar
+    name abs
+    locator_pure
+  bind_dollar
+    name rel
+    locator_pure
+  bind_dollar
+    name url
+    locator_rich

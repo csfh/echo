@@ -1,0 +1,6 @@
+file
+  struct user
+    bind_dollar
+      name name
+    bind_tilde
+      name visits

@@ -1,0 +1,12 @@
+/ std/io
+/ std/str
+
+# D = 5s
+# WAIT = D + 10ms
+io.print(str.from_duration(WAIT))
+? WAIT == 5010ms {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}

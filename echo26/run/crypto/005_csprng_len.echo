@@ -1,0 +1,21 @@
+/ std/io
+/ std/str
+/ std/bytes
+/ std/crypto/random
+
+| random.fill(16) {
+    $ b {
+        io.print(str.from_int(bytes.len(b)))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| random.fill(0) {
+    $ z {
+        io.print(str.from_int(bytes.len(z)))
+    }
+    ! e {
+        io.print(e)
+    }
+}

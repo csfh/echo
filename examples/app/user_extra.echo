@@ -1,0 +1,17 @@
+; user — extra behavior in another file (@ merges members)
+
+/ ./user
+
+@ user {
+    $ label = () {
+        ? .banned {
+            ^ "banned:{.name}"
+        }
+        : .active {
+            ^ "active:{.name}#{.visits}"
+        }
+        : {
+            ^ "idle:{.name}"
+        }
+    }
+}

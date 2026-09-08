@@ -1,0 +1,2 @@
+; Two different non-default widths do not mix (i64 yields to i32 — not a clash).
+$ x = <i32>1 + <ui64>2

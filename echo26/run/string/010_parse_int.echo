@@ -1,0 +1,7 @@
+/ std/io
+/ std/str
+
+| str.parse_int("42") {
+  $ n { io.print(str.from_int(n)) }
+  ! e { io.print(e) }
+}

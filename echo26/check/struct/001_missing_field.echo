@@ -1,0 +1,5 @@
+% user {
+    $ name
+    ~ visits = 0
+}
+$ u = user { visits: 1 }

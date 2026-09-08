@@ -1,0 +1,29 @@
+; Free fn returns a struct via another free fn call (not a direct struct lit).
+/ std/io
+/ std/str
+
+% box {
+    ~ n = 0
+    $ value = () {
+        ^ .n
+    }
+    $ bump = () {
+        ~ .n = .n + 1
+        ^ .
+    }
+}
+
+$ make_box = (n) {
+    ^ box {
+        n: n
+    }
+}
+
+$ make_ten = () {
+    ^ make_box(10)
+}
+
+$ b = make_ten()
+io.print(str.from_int(b.value()))
+$ b2 = b.bump()
+io.print(str.from_int(b2.value()))

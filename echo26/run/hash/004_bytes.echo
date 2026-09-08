@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+
+# RAW = b'raw'
+io.print(str.from_bytes(RAW))
+? RAW == b'raw' {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}

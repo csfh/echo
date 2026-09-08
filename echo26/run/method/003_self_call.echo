@@ -1,0 +1,17 @@
+/ std/io
+/ std/str
+
+% counter {
+    ~ n
+    $ inc = () {
+        ~ .n = .n + 1
+        ^ .n
+    }
+    $ twice = () {
+        ^ .inc() + .inc()
+    }
+}
+
+$ c = counter { n: 0 }
+io.print(str.from_int(c.twice()))
+io.print(str.from_int(c.n))

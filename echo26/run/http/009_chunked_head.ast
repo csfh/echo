@@ -1,0 +1,76 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg net
+    seg http
+  import
+    seg std
+    seg net
+    seg response
+  bind_dollar
+    name res
+    struct_lit response.response
+      field status
+        number 200
+      field headers
+        object
+          field content_type
+            string_rich
+      field body
+        string_rich
+      field chunked
+        bool true
+  bind_dollar
+    name head
+    call
+      field format_head
+        name http
+      name res
+  if
+    call
+      field contains
+        name str
+      name head
+      string_rich
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  if
+    call
+      field contains
+        name str
+      name head
+      string_rich
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field hex_from_int
+          name http
+        number 10

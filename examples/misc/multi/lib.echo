@@ -1,0 +1,8 @@
+; Shared helpers (imported as module `lib`)
+$ add = (a, b) {
+    ^ a + b
+}
+
+$ answer = 42
+
+\ add, answer

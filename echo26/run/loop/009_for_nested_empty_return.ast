@@ -1,0 +1,21 @@
+file
+  bind_dollar
+    name scan
+    fn
+      bind_tilde
+        name buckets
+        list
+          list
+          list
+          list
+      loop_for chain
+        name buckets
+        loop_for e
+          name chain
+          return
+            number 0
+      return
+        number 1
+  return
+    call
+      name scan

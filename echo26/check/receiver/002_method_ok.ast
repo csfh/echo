@@ -1,0 +1,11 @@
+file
+  struct c
+    bind_tilde
+      name n
+      number 0
+    bind_dollar
+      name get
+      fn
+        return
+          field n
+            receiver

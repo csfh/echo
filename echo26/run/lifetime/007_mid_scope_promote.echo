@@ -1,0 +1,12 @@
+; Promote to mid-level bind owner (not forced to function root).
+/ std/io
+/ std/str
+
+? 1 == 1 {
+    ~ mid = []
+    ? 1 == 1 {
+        $ xs = [7]
+        ~ mid = xs
+    }
+    io.print(str.from_int(mid[0]))
+}

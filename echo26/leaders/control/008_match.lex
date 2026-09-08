@@ -1,0 +1,15 @@
+leader_pipe
+ident
+l_brace
+number
+l_brace
+leader_caret
+number
+r_brace
+leader_colon
+l_brace
+leader_caret
+number
+r_brace
+r_brace
+eof

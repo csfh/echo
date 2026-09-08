@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+/ std/math
+
+io.print(str.from_int(math.abs_i(-7)))
+io.print(str.from_int(math.min(3, 9)))
+$ x = <f64>9.0
+$ y = math.sqrt(x)
+io.print(str.from_float(y))
+io.print(str.from_float(math.floor(<f64>3.7)))
+io.print(str.from_float(math.pow(<f64>2.0, <f64>3.0)))

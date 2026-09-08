@@ -1,0 +1,40 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg .
+    seg math
+  bind_dollar
+    name s
+    call
+      field add
+        name math
+      number 2
+      number 3
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name s
+  bind_dollar
+    name p
+    call
+      field mul
+        name math
+      number 2
+      number 3
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name p

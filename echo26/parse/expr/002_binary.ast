@@ -1,0 +1,12 @@
+file
+  bind_dollar
+    name n
+    binary Sub
+      binary Add
+        number 1
+        binary Mul
+          number 2
+          number 3
+      binary Div
+        number 4
+        number 2

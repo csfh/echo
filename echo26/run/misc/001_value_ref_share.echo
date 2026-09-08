@@ -1,0 +1,35 @@
+; Value vs ref: structs and lists share; ints are independent values.
+/ std/io
+/ std/str
+
+% cell {
+    ~ n = 0
+    $ set = (v) {
+        ~ .n = v
+        ^ .
+    }
+    $ get = () {
+        ^ .n
+    }
+}
+
+; Struct ref-sharing: two names, one object.
+~ a = cell { n: 1 }
+~ b = a
+~ b = b.set(7)
+io.print(str.from_int(a.get()))
+
+; List ref-sharing via free-fn param (list is RefValue).
+$ bump0 = (xs) {
+    ~ xs[0] = xs[0] + 1
+    ^ xs[0]
+}
+~ xs = [10]
+$ y = bump0(xs)
+io.print(str.from_int(xs[0]))
+
+; Int value independence: rebind does not alias.
+~ i = 3
+~ j = i
+~ j = j + 1
+io.print(str.from_int(i))

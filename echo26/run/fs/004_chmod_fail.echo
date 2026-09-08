@@ -1,0 +1,12 @@
+; Missing path → chmod err.
+/ std/io
+/ std/fs
+
+| fs.chmod("/tmp/echo26_fs_chmod_absent", 420) {
+    $ ok {
+        io.print("ok")
+    }
+    ! e {
+        io.print(e)
+    }
+}

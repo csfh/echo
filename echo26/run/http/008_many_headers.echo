@@ -1,0 +1,16 @@
+; Well-formed GET with >64 headers must keep path /health (not fail open as /).
+/ std/io
+/ std/str
+/ std/net/http
+
+~ raw = "GET /health HTTP/1.1\r\nHost: x\r\n"
+~ i = 0
+* i < 70 {
+    ~ raw = str.cat(raw, "X-H")
+    ~ raw = str.cat(raw, str.from_int(i))
+    ~ raw = str.cat(raw, ": v\r\n")
+    ~ i = i + 1
+}
+~ raw = str.cat(raw, "\r\n")
+$ req = http.parse_request(raw)
+io.print(req.path)

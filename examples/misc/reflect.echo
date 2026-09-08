@@ -1,0 +1,9 @@
+; Runtime value kinds. Run: xo run examples/misc/reflect.echo
+/ std/io
+/ std/str
+/ std/reflect
+
+io.print(reflect.kind_name(42))
+io.print(reflect.kind_name("hi"))
+io.print(reflect.kind_name([1, 2]))
+io.print(str.from_int(reflect.is_int(42)))

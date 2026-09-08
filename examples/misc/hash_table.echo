@@ -1,0 +1,25 @@
+; Hash table put/get. Run: xo run examples/misc/hash_table.echo
+/ std/io
+/ std/str
+/ std/collections/hash_table
+
+$ t = hash_table.make()
+t.put("a", 1)
+t.put(2, 20)
+| t.get("a") {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss")
+    }
+}
+io.print(str.from_int(t.len()))
+| t.get(2) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss")
+    }
+}

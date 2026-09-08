@@ -1,0 +1,6 @@
+file
+  bind_dollar
+    name x
+    binary Add
+      number_i32 1
+      number_ui64 2

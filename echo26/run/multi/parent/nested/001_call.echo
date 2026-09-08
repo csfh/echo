@@ -1,0 +1,5 @@
+/ std/io
+/ std/str
+/ ../util
+
+io.print(str.from_int(util.n))

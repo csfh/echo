@@ -1,0 +1,117 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg collections
+    seg map
+  bind_dollar
+    name m
+    call
+      field make
+        name map
+  expr_stmt
+    call
+      field put
+        name m
+      number 7
+      number 42
+  expr_stmt
+    call
+      field put
+        name m
+      number 8
+      number 99
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name m
+  match
+    call
+      field get
+        name m
+      number 7
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_default
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+  match
+    call
+      field remove
+        name m
+      number 8
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_default
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field has
+            name m
+          number 8
+  bind_dollar
+    name idx
+    call
+      field from_indexed
+        name map
+      list
+        number 10
+        number 20
+  match
+    call
+      field get
+        name idx
+      number 1
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_default
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich

@@ -1,0 +1,7 @@
+file
+  bind_dollar
+    name main
+    fn
+      if
+        number 1
+        return

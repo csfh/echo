@@ -1,0 +1,15 @@
+; Set add/has/remove + from_list factory.
+/ std/io
+/ std/str
+/ std/collections/set
+
+$ s = set.make()
+s.add(7)
+s.add(8)
+io.print(str.from_int(s.len()))
+io.print(str.from_int(s.has(7)))
+io.print(str.from_int(s.remove(8)))
+io.print(str.from_int(s.has(8)))
+$ t = set.from_list([10, 20, 10])
+io.print(str.from_int(t.len()))
+io.print(str.from_int(t.has(20)))

@@ -1,0 +1,10 @@
+; Promote nested list into outer bind; still usable after nested scope exits.
+/ std/io
+/ std/str
+
+~ holder = []
+? 1 == 1 {
+    $ xs = [1, 2, 3]
+    ~ holder = xs
+}
+io.print(str.from_int(holder[0] + holder[1] + holder[2]))

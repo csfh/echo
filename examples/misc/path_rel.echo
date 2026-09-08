@@ -1,0 +1,12 @@
+; path.rel. Run: xo run examples/misc/path_rel.echo
+/ std/io
+/ std/path
+
+| path.rel("/a/b", "/a/b/c") {
+    $ r {
+        io.print(r)
+    }
+    ! e {
+        io.print(e)
+    }
+}

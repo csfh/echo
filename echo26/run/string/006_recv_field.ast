@@ -1,0 +1,24 @@
+file
+  import
+    seg std
+    seg io
+  struct user
+    bind_dollar
+      name name
+    bind_dollar
+      name greet
+      fn
+        return
+          string_rich
+  bind_dollar
+    name u
+    struct_lit user
+      field name
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field greet
+          name u

@@ -1,0 +1,37 @@
+/ std/io
+/ std/str
+
+$ inner = (n) {
+    ? n < 0 {
+        ! 1
+    }
+    ^ n
+}
+
++ job = {
+    | inner(3) {
+        $ a {
+            | inner(4) {
+                $ b {
+                    ^ a + b
+                }
+                ! e {
+                    ! e
+                }
+            }
+        }
+        ! e {
+            ! e
+        }
+    }
+}
+- r = job
+| r {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print("err")
+        io.print(str.from_int(e))
+    }
+}

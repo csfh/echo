@@ -1,0 +1,12 @@
+/ std/io
+/ std/str
+
+$ x = 9
+| x {
+    1 {
+        io.print(str.from_int(1))
+    }
+    : {
+        io.print(str.from_int(99))
+    }
+}

@@ -1,0 +1,14 @@
+/ std/io
+/ std/str
+
+% inner {
+    ~ n
+}
+% outer {
+    ~ child
+}
+
+$ o = outer { child: inner { n: 1 } }
+io.print(str.from_int(o.child.n))
+~ o.child.n = 7
+io.print(str.from_int(o.child.n))

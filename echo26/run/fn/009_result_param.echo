@@ -1,0 +1,26 @@
+/ std/io
+/ std/str
+
+$ load = () {
+    ! 99
+}
+
+$ run = (g) {
+    | g() {
+        $ v {
+            ^ v
+        }
+        ! e {
+            ! e
+        }
+    }
+}
+
+| run(load) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(str.from_int(e))
+    }
+}

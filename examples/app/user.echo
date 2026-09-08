@@ -1,0 +1,20 @@
+; user — primary % declaration (fields + core methods)
+
+% user {
+    $ name
+    ~ visits = 0
+    ~ active = |
+    ~ banned = _
+    # KIND = 'user'
+
+    $ greet = () {
+        ^ "Hello, {.name}"
+    }
+
+    $ visit = () {
+        ~ .visits = .visits + 1
+        ; plain method fall-off returns .
+    }
+}
+
+\ user

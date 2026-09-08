@@ -1,0 +1,18 @@
+; Non-crypto random + leveled log demo.
+; Run: xo run examples/misc/random_log_demo.echo
+; std/random is NOT a CSPRNG — use std/crypto/random for secrets.
+
+/ std/io
+/ std/str
+/ std/random
+/ std/log
+
+random.seed(7)
+io.print(str.from_int(random.u64()))
+random.seed(7)
+io.print(str.from_int(random.u64()))
+
+; min_level 1 = info and above
+log.debug(1, "hidden")
+log.info(1, "visible")
+io.print("done")

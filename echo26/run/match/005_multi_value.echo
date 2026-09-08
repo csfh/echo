@@ -1,0 +1,12 @@
+/ std/io
+/ std/str
+
+$ x = 2
+| x {
+    1, 2, 3 {
+        io.print(str.from_int(42))
+    }
+    : {
+        io.print(str.from_int(0))
+    }
+}

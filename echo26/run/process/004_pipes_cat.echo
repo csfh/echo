@@ -1,0 +1,39 @@
+; Spawn cat with piped stdin/stdout; write and read back.
+/ std/io
+/ std/str
+/ std/bytes
+/ std/process
+
+| process.spawn_pipes("cat", []) {
+  $ r {
+    | process.pipe_write(r.stdin, "ping") {
+      $ ok {
+        process.pipe_close(r.stdin)
+        | process.pipe_read(r.stdout, 64) {
+          $ b {
+            io.print(str.from_bytes(b))
+            process.pipe_close(r.stdout)
+            process.pipe_close(r.stderr)
+            | process.wait(r.child) {
+              $ code {
+                io.print(str.from_int(code))
+              }
+              ! e {
+                io.print(e)
+              }
+            }
+          }
+          ! e {
+            io.print(e)
+          }
+        }
+      }
+      ! e {
+        io.print(e)
+      }
+    }
+  }
+  ! err {
+    io.print(err)
+  }
+}

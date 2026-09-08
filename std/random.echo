@@ -1,0 +1,27 @@
+; std/random — non-cryptographic PRNG (xorshift). Not for secrets.
+; See std/crypto/random for CSPRNG.
+/ runtime
+/ std/test
+
+$ seed = (s) {
+    runtime.random_seed(s)
+    ^
+}
+
+$ u64 = () {
+    ^ runtime.random_u64()
+}
+
+$ float = () {
+    ^ runtime.random_float()
+}
+
+test.it("seed_stable", () {
+    seed(99)
+    $ a = u64()
+    seed(99)
+    $ b = u64()
+    test.eq(a, b)
+})
+
+\ seed, u64, float

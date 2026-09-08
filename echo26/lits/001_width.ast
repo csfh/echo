@@ -1,0 +1,12 @@
+file
+  bind_dollar
+    name a
+    number_i32 1
+  bind_dollar
+    name b
+    number_i64 2
+  bind_dollar
+    name c
+    binary Add
+      number_i64 1
+      number 2

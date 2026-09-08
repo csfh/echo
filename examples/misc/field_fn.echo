@@ -1,0 +1,14 @@
+; Function value on a struct field; call through field
+/ std/io
+/ std/str
+
+$ add1 = (n) {
+    ^ n + 1
+}
+
+% box {
+    ~ f
+}
+
+~ b = box { f: add1 }
+io.print(str.from_int(b.f(41)))

@@ -1,0 +1,13 @@
+/ std/io
+/ std/str
+/ std/bytes
+/ std/store
+
+$ s = store.memory()
+$ p = store.put(s, "hello", bytes.from_str("world"))
+? p.status == 200 {
+    io.print("put")
+}
+$ g = store.get(s, "hello")
+io.print(str.from_bytes(g.body))
+store.close(s)

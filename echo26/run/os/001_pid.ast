@@ -1,0 +1,27 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg os
+  if
+    binary Gt
+      call
+        field pid
+          name os
+      number 0
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich

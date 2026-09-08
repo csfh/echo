@@ -1,0 +1,43 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg path
+  match
+    call
+      field rel
+        name path
+      string_rich
+      string_rich
+    arm_ok r
+      expr_stmt
+        call
+          field print
+            name io
+          name r
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field rel
+        name path
+      string_rich
+      string_rich
+    arm_ok r
+      expr_stmt
+        call
+          field print
+            name io
+          name r
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

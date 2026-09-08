@@ -1,0 +1,12 @@
+; Nested for-in over empty chains with early return inside a free fn.
+; Dead continue blocks must not poison loop-carried SSA (infinite i=0).
+$ scan = () {
+    ~ buckets = [[], [], []]
+    * chain : buckets {
+        * e : chain {
+            ^ 0
+        }
+    }
+    ^ 1
+}
+^ scan()

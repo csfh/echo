@@ -1,0 +1,5 @@
+/ std/io
+/ std/bytes
+/ std/encoding/hex
+$ b = bytes.from_str("A")
+io.print(hex.encode(b))

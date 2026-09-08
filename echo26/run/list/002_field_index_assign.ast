@@ -1,0 +1,53 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name row
+    object
+      field xs
+        list
+          number 1
+          number 2
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          field xs
+            name row
+          number 0
+  assign
+    target_index
+      field xs
+        name row
+      number 0
+    number 5
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          field xs
+            name row
+          number 0
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          field xs
+            name row
+          number 1

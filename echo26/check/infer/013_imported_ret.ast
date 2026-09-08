@@ -1,0 +1,12 @@
+file
+  import
+    seg std
+    seg str
+  bind_dollar
+    name x
+    binary Add
+      call
+        field from_int
+          name str
+        number 1
+      number 1

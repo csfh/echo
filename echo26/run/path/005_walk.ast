@@ -1,0 +1,144 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg list
+  import
+    seg std
+    seg path
+  import
+    seg std
+    seg fs
+  bind_dollar
+    name absent
+    call
+      field walk
+        name path
+      string_rich
+  if
+    call
+      field is_empty
+        name list
+      name absent
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  bind_dollar
+    name root
+    call
+      field join
+        name fs
+      string_rich
+      string_rich
+  match
+    call
+      field create_dir_all
+        name fs
+      name root
+    arm_ok ok
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  bind_dollar
+    name child
+    call
+      field join
+        name fs
+      name root
+      string_rich
+  match
+    call
+      field write
+        name fs
+      name child
+      string_rich
+    arm_ok ok
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  bind_dollar
+    name kids
+    call
+      field walk
+        name path
+      name root
+  if
+    call
+      field contains
+        name list
+      name kids
+      name child
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  match
+    call
+      field remove
+        name fs
+      name child
+    arm_ok ok
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field remove_dir
+        name fs
+      name root
+    arm_ok ok
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

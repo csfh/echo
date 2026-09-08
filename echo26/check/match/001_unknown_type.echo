@@ -1,0 +1,12 @@
+% circle {
+    ~ r
+}
+$ shape = circle { r: 1 }
+| shape {
+    % missing {
+        ^ 0
+    }
+    : {
+        ^ 1
+    }
+}

@@ -1,0 +1,10 @@
+/ std/io
+/ std/str
+
+$ inc = (x) {
+    ^ x + 1
+}
+
++ job = inc(41)
+- v = job
+io.print(str.from_int(v))

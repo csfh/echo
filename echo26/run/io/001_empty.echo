@@ -1,0 +1,13 @@
+; Null stdin (e26 default) → empty bytes, length 0.
+/ std/io
+/ std/str
+/ std/bytes
+
+| io.read() {
+    $ b {
+        io.print(str.from_int(bytes.len(b)))
+    }
+    ! e {
+        io.print(e)
+    }
+}

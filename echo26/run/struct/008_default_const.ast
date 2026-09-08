@@ -1,0 +1,30 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_hash
+    name BASE
+    number 10
+  struct item
+    bind_dollar
+      name name
+    bind_tilde
+      name n
+      name BASE
+  bind_dollar
+    name i
+    struct_lit item
+      field name
+        string_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field n
+          name i

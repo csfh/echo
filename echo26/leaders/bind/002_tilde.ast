@@ -1,0 +1,9 @@
+file
+  bind_tilde
+    name n
+    number 0
+  bind_tilde
+    name n
+    binary Add
+      name n
+      number 1

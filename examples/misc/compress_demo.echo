@@ -1,0 +1,40 @@
+; gzip + single-entry zip roundtrip demo.
+; Run: xo run examples/misc/compress_demo.echo
+
+/ std/io
+/ std/str
+/ std/compress/gzip
+/ std/compress/zip
+
+| gzip.compress("hello-gzip") {
+    $ c {
+        | gzip.decompress(c) {
+            $ d {
+                io.print(str.from_bytes(d))
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}
+
+| zip.pack("a.txt", "hi") {
+    $ z {
+        | zip.unpack_first(z) {
+            $ e {
+                io.print(e.name)
+                io.print(str.from_bytes(e.data))
+            }
+            ! err {
+                io.print(err)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}

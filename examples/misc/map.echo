@@ -1,0 +1,26 @@
+; Map put/get + from_indexed. Run: xo run examples/misc/map.echo
+/ std/io
+/ std/str
+/ std/collections/map
+
+$ m = map.make()
+m.put("a", 1)
+m.put(2, 20)
+| m.get("a") {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss")
+    }
+}
+$ idx = map.from_indexed([10, 20, 30])
+io.print(str.from_int(idx.len()))
+| idx.get(1) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss")
+    }
+}

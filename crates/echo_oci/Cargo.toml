@@ -1,0 +1,12 @@
+[package]
+name = "echo_oci"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+flate2 = "1"
+rustls = { version = "0.23", features = ["ring"] }
+sha2 = "0.10"
+webpki-roots = "0.26"

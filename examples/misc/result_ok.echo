@@ -1,0 +1,21 @@
+; Tiny: result ok path — print the ok value
+/ std/io
+/ std/str
+
+$ checked = (x) {
+    ? x < 0 {
+        ! 99
+    }
+    ^ x
+}
+
+| checked(7) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(str.from_int(e))
+        ^ 1
+    }
+}
+

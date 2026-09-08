@@ -1,0 +1,8 @@
+/ std/io
+/ std/str
+/ std/bytes
+
+$ a = b'ab'
+$ b = b'cd'
+io.print(str.from_bytes(bytes.cat(a, b)))
+io.print(str.from_int(bytes.len(a)))

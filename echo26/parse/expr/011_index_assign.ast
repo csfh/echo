@@ -1,0 +1,6 @@
+file
+  assign
+    target_index
+      name xs
+      number 0
+    number 9

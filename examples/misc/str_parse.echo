@@ -1,0 +1,28 @@
+; str.parse_int / parse_float. Run: xo run examples/misc/str_parse.echo
+/ std/io
+/ std/str
+
+| str.parse_int("42") {
+    $ n {
+        io.print(str.from_int(n))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| str.parse_float("3.5") {
+    $ n {
+        io.print(str.from_float(n))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| str.parse_float("nope") {
+    $ n {
+        io.print("ok")
+    }
+    ! e {
+        io.print(e)
+    }
+}

@@ -1,0 +1,34 @@
+; std/io — printing, logging, and stdin.
+; Privileged std may `/ runtime` and call `runtime.*` (docs/stdlib.md).
+;
+; Public API:
+;   print  — string + newline on stdout
+;   log    — same as print (stdout; diagnostic alias)
+;   eprint — string + newline on stderr
+;   read   — whole stdin as bytes until EOF; ! "stdin read failed"
+; Non-strings on print/log/eprint produce no output.
+; `read` is not co-located in `xo test` (it consumes process stdin).
+
+/ runtime
+
+$ print = (value) {
+    runtime.print(value)
+}
+
+$ log = (value) {
+    runtime.print(value)
+}
+
+$ eprint = (value) {
+    runtime.eprint(value)
+}
+
+$ read = () {
+    $ d = runtime.stdin_read()
+    ? d == 0 {
+        ! "stdin read failed"
+    }
+    ^ d
+}
+
+\ print, log, eprint, read

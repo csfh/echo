@@ -1,0 +1,20 @@
+file
+  import
+    seg std
+    seg io
+  bind_dollar
+    name a
+    string_pure
+  bind_dollar
+    name b
+    string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      name a
+  expr_stmt
+    call
+      field print
+        name io
+      name b

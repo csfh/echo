@@ -1,0 +1,31 @@
+; Peer connects and closes without sending — handle_connection must not hang.
+/ std/io
+/ std/str
+/ std/net/http
+/ std/net/tcp
+
+$ routes = []
+
+$ addr = "127.0.0.1:18082"
+$ lis = tcp.listen(addr)
+? lis.handle == 0 {
+    io.print("skip")
+    ^
+}
+
++ srv = () [lis, routes] {
+    $ c = tcp.accept(lis)
+    ? c.handle != 0 {
+        http.handle_connection(c, routes)
+    }
+    ^
+}
+
+$ client = tcp.connect(addr)
+? client.handle != 0 {
+    tcp.close(client)
+}
+
+- srv
+tcp.close(lis)
+io.print("ok")

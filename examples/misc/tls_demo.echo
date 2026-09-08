@@ -1,0 +1,43 @@
+; TLS loopback demo with local PEMs under echo26/run/tls/certs.
+; Run from repo root: xo run examples/misc/tls_demo.echo
+
+/ std/io
+/ std/str
+/ std/net/tls
+
+$ cert = tls.load_pem("echo26/run/tls/certs/cert.pem")
+$ key = tls.load_pem("echo26/run/tls/certs/key.pem")
+$ ca = tls.load_pem("echo26/run/tls/certs/ca.pem")
+
+? str.len(cert) == 0 || str.len(key) == 0 || str.len(ca) == 0 {
+    io.print("pem-missing")
+    ^
+}
+
+$ lis = tls.listen("127.0.0.1:18492")
+? lis.handle == 0 {
+    io.print("listen-fail")
+    ^
+}
+
++ srv = () [lis, cert, key] {
+    $ c = tls.accept(lis, cert, key)
+    ? c.handle != 0 {
+        $ b = tls.read(c, 64)
+        io.print(str.from_bytes(b))
+        tls.write(c, "ok")
+        tls.close(c)
+    }
+    ^
+}
+
+$ client = tls.connect("127.0.0.1", 18492, "localhost", ca)
+? client.handle != 0 {
+    tls.write(client, "hi")
+    $ raw = tls.read(client, 64)
+    io.print(str.from_bytes(raw))
+    tls.close(client)
+}
+
+- srv
+tls.close_listener(lis)

@@ -1,0 +1,63 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field trim
+          name str
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field to_lower
+          name str
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field to_upper
+          name str
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field join
+          name str
+        call
+          field split
+            name str
+          string_rich
+          string_rich
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field replace
+          name str
+        string_rich
+        string_rich
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field repeat
+          name str
+        string_rich
+        number 3

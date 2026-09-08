@@ -1,0 +1,19 @@
+; fs.create_temp. Run: xo run examples/misc/fs_create_temp.echo
+/ std/io
+/ std/str
+/ std/fs
+
+| fs.create_temp("echo_fs_tmp_ex") {
+    $ p {
+        io.print(str.from_int(fs.exists(p)))
+        | fs.remove(p) {
+            $ ok {}
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}

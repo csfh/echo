@@ -1,0 +1,76 @@
+; std/collections/queue — FIFO over a list (pure Echo + std/list; no / runtime).
+/ std/list
+/ std/test
+
+% queue {
+    ~ items
+    ~ head
+
+    $ len = () {
+        ^ list.len(.items) - .head
+    }
+
+    $ is_empty = () {
+        ^ .len() == 0
+    }
+
+    $ push = (x) {
+        $ xs = .items
+        ~ xs[] = x
+        ~ .items = xs
+        ^ .
+    }
+
+    $ pop = () {
+        ? .is_empty() {
+            ! "empty"
+        }
+        $ h = .head
+        $ n = list.len(.items)
+        ? h < 0 || h >= n {
+            ! "empty"
+        }
+        | list.get(.items, h) {
+            $ v {
+                ~ .head = h + 1
+                ^ v
+            }
+            ! e {
+                ! "empty"
+            }
+        }
+    }
+}
+
+$ make = () {
+    ^ queue {
+        items: [],
+        head: 0
+    }
+}
+
+test.it("queue_fifo", () {
+    ~ q = make()
+    q.push(1)
+    q.push(2)
+    test.eq(q.len(), 2)
+    | q.pop() {
+        $ v {
+            test.eq(v, 1)
+        }
+        ! e {
+            test.fail("pop")
+        }
+    }
+    | q.pop() {
+        $ v {
+            test.eq(v, 2)
+        }
+        ! e {
+            test.fail("pop2")
+        }
+    }
+    test.true(q.is_empty())
+})
+
+\ queue, make

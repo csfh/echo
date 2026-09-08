@@ -1,0 +1,33 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name apply
+    fn
+      param x
+      bind_dollar
+        name double
+        fn
+          param n
+          return
+            binary Add
+              name n
+              name n
+      return
+        call
+          name double
+          name x
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          name apply
+          number 21

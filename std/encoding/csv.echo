@@ -1,0 +1,96 @@
+; std/encoding/csv — thin comma-separated fields (no quotes in v0).
+;
+; Public API:
+;   parse_line(s) → list of field strings
+;   parse(s) → list of rows
+;   format_line(fields) → string
+;
+; Suite: xo test std/encoding/csv.echo
+
+/ std/str
+/ std/list
+/ std/test
+
+$ parse_line = (s) {
+    ^ str.split(s, ",")
+}
+
+$ parse = (s) {
+    $ rows_raw = str.split(s, "\n")
+    ~ rows = []
+    * line : rows_raw {
+        $ t = str.trim(line)
+        ? str.len(t) > 0 {
+            $ f = parse_line(t)
+            ~ rows[] = f
+        }
+    }
+    ^ rows
+}
+
+$ format_line = (fields) {
+    ^ str.join(fields, ",")
+}
+
+test.it("parse_simple", () {
+    $ f = parse_line("a,b,c")
+    test.eq(list.len(f), 3)
+    | list.get(f, 0) {
+        $ a {
+            test.eq(a, "a")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | list.get(f, 2) {
+        $ c {
+            test.eq(c, "c")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("format_round", () {
+    $ line = format_line(["x", "y"])
+    test.eq(line, "x,y")
+})
+
+test.it("parse_rows", () {
+    $ rows = parse("a,b\n\n c,d \n")
+    test.eq(list.len(rows), 2)
+    | list.get(rows, 0) {
+        $ r0 {
+            | list.get(r0, 0) {
+                $ a {
+                    test.eq(a, "a")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | list.get(rows, 1) {
+        $ r1 {
+            | list.get(r1, 0) {
+                $ c {
+                    test.eq(c, "c")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+\ parse_line, parse, format_line

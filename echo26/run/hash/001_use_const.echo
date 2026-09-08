@@ -1,0 +1,8 @@
+/ std/io
+/ std/str
+
+# MAX = 3
+# TWICE = MAX + MAX
+
+io.print(str.from_int(TWICE))
+

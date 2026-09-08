@@ -1,0 +1,23 @@
+; bytes.from_int packs i64 as 8 little-endian bytes.
+/ std/io
+/ std/str
+/ std/bytes
+
+$ b = bytes.from_int(0x0102)
+io.print(str.from_int(bytes.len(b)))
+| bytes.get(b, 0) {
+    $ x {
+        io.print(str.from_int(x))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| bytes.get(b, 1) {
+    $ x {
+        io.print(str.from_int(x))
+    }
+    ! e {
+        io.print(e)
+    }
+}

@@ -1,0 +1,7 @@
+/ std/io
+/ std/str
+
+# F = () {
+    ^ 7
+}
+io.print(str.from_int(F()))

@@ -1,0 +1,3 @@
+/ std/io
+/ std/path
+io.print(path.clean("/a/b/../c"))

@@ -1,0 +1,20 @@
+; Struct methods + receiver `.` — field mutate via method
+/ std/io
+/ std/str
+
+% counter {
+    ~ n
+    $ inc = () {
+        ~ .n = .n + 1
+        ^ .n
+    }
+    $ add = (d) {
+        ~ .n = .n + d
+        ^ .n
+    }
+}
+
+$ c = counter { n: 0 }
+io.print(str.from_int(c.inc()))
+io.print(str.from_int(c.add(10)))
+io.print(str.from_int(c.n))

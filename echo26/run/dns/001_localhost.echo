@@ -1,0 +1,17 @@
+/ std/io
+/ std/str
+/ std/list
+/ std/net/dns
+| dns.lookup("localhost") {
+    $ a {
+        ? list.len(a) >= 1 {
+            io.print("ok")
+        }
+        : {
+            io.print("empty")
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}

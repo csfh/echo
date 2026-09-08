@@ -1,0 +1,7 @@
+file
+  bind_dollar
+    name f
+    fn
+      return
+        field n
+          receiver

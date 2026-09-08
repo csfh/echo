@@ -1,0 +1,45 @@
+; Cleartext HTTP client demo (localhost loopback).
+; Run: xo run examples/misc/http_client_demo.echo
+;
+; Serves one request on 127.0.0.1:18092 and GETs it via std/net/http_client.
+
+/ std/io
+/ std/str
+/ std/net/http
+/ std/net/tcp
+/ std/net/http_client
+
+$ hi = (req) {
+    ^ http.text_response(200, "ok")
+}
+
+$ routes = [
+    { path: "/", handle: hi }
+]
+
+$ addr = "127.0.0.1:18092"
+$ lis = tcp.listen(addr)
+? lis.handle == 0 {
+    io.print("listen failed")
+    ^
+}
+
++ srv = () [lis, routes] {
+    $ c = tcp.accept(lis)
+    ? c.handle != 0 {
+        http.handle_connection(c, routes)
+    }
+    ^
+}
+
+| http_client.get("127.0.0.1", 18092, "/") {
+    $ raw {
+        io.print(str.from_bytes(raw))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+
+- srv
+tcp.close(lis)

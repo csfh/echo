@@ -1,0 +1,13 @@
+; Process id and platform (linux / macos / windows)
+/ std/io
+/ std/str
+/ std/os
+
+io.print(str.from_int(os.pid() > 0))
+$ p = os.platform()
+? p == "linux" || p == "macos" || p == "windows" {
+    io.print("ok")
+}
+: {
+    io.print(p)
+}

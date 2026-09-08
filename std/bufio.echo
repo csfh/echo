@@ -1,0 +1,97 @@
+; std/bufio — line splitting helpers (thin; pure Echo over strings).
+;
+; Public API:
+;   lines(s) — list of lines (split on \n)
+;   read_lines(path) — result of lines from whole-file read, or ! io err
+;
+; Suite: xo test std/bufio.echo
+
+/ std/str
+/ std/fs
+/ std/list
+/ std/test
+
+$ lines = (s) {
+    ^ str.split(s, "\n")
+}
+
+$ read_lines = (path) {
+    | fs.read(path) {
+        $ b {
+            $ t = str.from_bytes(b)
+            ^ lines(t)
+        }
+        ! e {
+            ! e
+        }
+    }
+}
+
+test.it("lines_basic", () {
+    $ ls = lines("a\nb\nc")
+    test.eq(list.len(ls), 3)
+    | list.get(ls, 0) {
+        $ a {
+            test.eq(a, "a")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | list.get(ls, 1) {
+        $ b {
+            test.eq(b, "b")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("lines_len", () {
+    $ ls = lines("x\ny")
+    test.eq(list.len(ls), 2)
+})
+
+test.it("read_lines_missing", () {
+    | read_lines("/tmp/echo_bufio_absent_zzz") {
+        $ ls {
+            test.fail("expected err")
+        }
+        ! e {
+            test.eq(e, "read failed")
+        }
+    }
+})
+
+test.it("read_lines_file", () {
+    $ p = fs.join(fs.temp_dir(), "echo_bufio_suite.txt")
+    | fs.write(p, "a\nb") {
+        $ ok {}
+        ! e {
+            test.fail(e)
+        }
+    }
+    | read_lines(p) {
+        $ ls {
+            test.eq(list.len(ls), 2)
+            | list.get(ls, 0) {
+                $ a {
+                    test.eq(a, "a")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | fs.remove(p) {
+        $ ok {}
+        ! e {}
+    }
+})
+
+\ lines, read_lines

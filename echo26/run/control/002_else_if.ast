@@ -1,0 +1,31 @@
+file
+  import
+    seg std
+    seg io
+  bind_dollar
+    name x
+    number 2
+  if
+    binary Eq
+      name x
+      number 1
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure
+  else_if
+    binary Eq
+      name x
+      number 2
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure

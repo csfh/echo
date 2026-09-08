@@ -1,0 +1,54 @@
+; user free-function helpers
+
+/ std/io
+/ ./user
+/ ./user_extra
+
+$ sample_users = () {
+    ^ [
+        user.user {
+            name: "Ada",
+            visits: 0,
+            active: |,
+            banned: _
+        },
+        user.user {
+            name: "Grace",
+            visits: 2,
+            active: |,
+            banned: _
+        },
+        user.user {
+            name: "Bad",
+            visits: 0,
+            active: _,
+            banned: |
+        }
+    ]
+}
+
+$ count_active = (users) {
+    ~ n = 0
+    * u : users {
+        ? u.active && !u.banned {
+            ~ n = n + 1
+        }
+    }
+    ^ n
+}
+
+$ find_by_name = (users, name) {
+    * u : users {
+        ? u.name == name {
+            ^ u
+        }
+    }
+    ^ user.user {
+        name: "nobody",
+        visits: 0,
+        active: _,
+        banned: |
+    }
+}
+
+\ user, sample_users, count_active, find_by_name

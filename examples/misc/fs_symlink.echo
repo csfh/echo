@@ -1,0 +1,39 @@
+; fs.symlink. Run: xo run examples/misc/fs_symlink.echo
+/ std/io
+/ std/str
+/ std/fs
+
+$ tgt = fs.join("/tmp", "echo_fs_symlink_ex.txt")
+$ ln = fs.join("/tmp", "echo_fs_symlink_ex.link")
+| fs.write(tgt, "hi") {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+| fs.symlink(tgt, ln) {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+| fs.metadata(ln) {
+    $ m {
+        io.print(str.from_int(m.is_symlink))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(ln) {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(tgt) {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}

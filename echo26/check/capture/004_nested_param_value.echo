@@ -1,0 +1,7 @@
+; Nested closed body cannot return/use outer params as values.
+$ wrap = (f) {
+    $ h = () {
+        ^ f
+    }
+    ^ h
+}

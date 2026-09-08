@@ -1,0 +1,19 @@
+/ std/io
+/ std/str
+/ std/json
+
+| json.parse('{"n":1}') {
+    $ v {
+        | json.stringify(v) {
+            $ s {
+                io.print(s)
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}

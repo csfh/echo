@@ -1,0 +1,7 @@
+; stdout vs stderr. Run: xo run examples/misc/eprint.echo
+; stdout is `out`; stderr is `err`.
+
+/ std/io
+
+io.eprint("err")
+io.print("out")

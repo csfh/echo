@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+
+% user {
+    $ name
+    ~ visits = 0
+}
+
+$ u = user { name: "Ada" }
+io.print(u.name)
+io.print(str.from_int(u.visits))

@@ -1,0 +1,48 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg random
+  expr_stmt
+    call
+      field seed
+        name random
+      number 42
+  bind_dollar
+    name a
+    call
+      field u64
+        name random
+  expr_stmt
+    call
+      field seed
+        name random
+      number 42
+  bind_dollar
+    name b
+    call
+      field u64
+        name random
+  if
+    binary Eq
+      name a
+      name b
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  if
+    binary NotEq
+      name a
+      name b
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich

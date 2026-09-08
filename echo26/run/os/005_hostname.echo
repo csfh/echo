@@ -1,0 +1,6 @@
+; Hostname is a non-empty string (value is host-specific).
+/ std/io
+/ std/str
+/ std/os
+
+io.print(str.from_int(str.len(os.hostname()) > 0))

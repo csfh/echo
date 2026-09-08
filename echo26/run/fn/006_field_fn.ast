@@ -1,0 +1,34 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name add1
+    fn
+      param n
+      return
+        binary Add
+          name n
+          number 1
+  struct box
+    bind_tilde
+      name f
+  bind_tilde
+    name b
+    struct_lit box
+      field f
+        name add1
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field f
+            name b
+          number 41

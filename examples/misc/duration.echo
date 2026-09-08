@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+
+$ t = 5s
+io.print(str.from_duration(t))
+$ u = 10ms
+io.print(str.from_duration(u))
+$ sum = 5s + 10ms
+io.print(str.from_duration(sum))
+? sum == 5010ms {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}

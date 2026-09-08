@@ -1,0 +1,10 @@
+file
+  task_spawn
+    bind job
+    closure
+      capture missing
+      return
+        number 1
+  task_join
+    handle
+      name job

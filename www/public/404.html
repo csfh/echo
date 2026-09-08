@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Echo Programming Language</title>
+    <script>
+      (function () {
+        var path = window.location.pathname;
+        var search = window.location.search
+          ? "&" + window.location.search.slice(1).replace(/&/g, "~and~")
+          : "";
+        var target = window.location.origin + "/?" + path + search + window.location.hash;
+
+        window.location.replace(target);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

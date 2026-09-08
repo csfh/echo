@@ -1,0 +1,31 @@
+; Process args, env, and spawn+wait.
+; Run: xo run examples/misc/process.echo
+
+/ std/io
+/ std/str
+/ std/list
+/ std/process
+
+$ av = process.args()
+io.print(str.from_int(list.len(av)))
+io.print(av[0])
+
+process.env_set("ECHO_DEMO", "1")
+| process.env("ECHO_DEMO") {
+    $ v {
+        io.print(v)
+    }
+    : {
+        io.print("missing")
+    }
+}
+process.env_unset("ECHO_DEMO")
+
+| process.run("__echo_missing_binary_xyz__", []) {
+    $ code {
+        io.print(str.from_int(code))
+    }
+    ! err {
+        io.print(err)
+    }
+}

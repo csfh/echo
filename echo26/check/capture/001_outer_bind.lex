@@ -1,0 +1,14 @@
+leader_tilde
+ident
+eq
+number
+leader_dollar
+ident
+eq
+l_paren
+r_paren
+l_brace
+leader_caret
+ident
+r_brace
+eof

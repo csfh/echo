@@ -1,0 +1,48 @@
+; Call / result overhead — real tiny helpers + normal benches.
+; Run: xo run examples/algos/call.echo
+
+/ std/io
+/ std/str
+/ std/test
+
+$ empty = () {
+    ^ 0
+}
+
+$ identity = (x) {
+    ^ x
+}
+
+; Result-shaped ok (both ^ and ! present → result ABI).
+$ ok_value = () {
+    ^ 42
+    ! "unused"
+}
+
+io.print(str.from_int(empty()))
+io.print(str.from_int(identity(7)))
+| ok_value() {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+
+test.bench("empty_call", () {
+    $ x = empty()
+})
+
+test.bench("identity_call", () {
+    $ x = identity(1)
+})
+
+test.bench("result_ok_match", () {
+    | ok_value() {
+        $ v {}
+        ! e {}
+    }
+})
+
+\ empty, identity, ok_value

@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+/ std/crypto/hash
+
+; SipHash-2-4 paper vector: key 00..0f, empty message
+; → 0x726fdb47dd0e0e31
+
+# K0 = <ui64> 0x0706050403020100
+# K1 = <ui64> 0x0f0e0d0c0b0a0908
+
+$ h = hash.sip(K0, K1, b'')
+io.print(str.from_int(h))
+
+$ h2 = hash.sip(K0, K1, b"\x00")
+io.print(str.from_int(h2))

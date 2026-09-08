@@ -1,0 +1,5 @@
+; log.kv join. Run: xo run examples/misc/log_kv.echo
+/ std/io
+/ std/log
+
+io.print(log.kv(["a=1", "b=2"]))

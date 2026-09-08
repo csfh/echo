@@ -1,0 +1,13 @@
+# Bindings are cache-busted with ?v= from ECHO_WASM_REV; do not pin them long.
+/echo-wasm/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/echo-wasm/*.wasm
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=0, must-revalidate
+
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8

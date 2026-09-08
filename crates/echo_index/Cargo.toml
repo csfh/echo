@@ -1,0 +1,13 @@
+[package]
+name = "echo_index"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+echo_ast = { path = "../echo_ast" }
+echo_source = { path = "../echo_source" }
+
+[dev-dependencies]
+echo_parser = { path = "../echo_parser" }

@@ -1,0 +1,44 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg list
+  import
+    seg std
+    seg net
+    seg dns
+  match
+    call
+      field lookup
+        name dns
+      string_rich
+    arm_ok a
+      if
+        binary GtEq
+          call
+            field len
+              name list
+            name a
+          number 1
+        expr_stmt
+          call
+            field print
+              name io
+            string_rich
+      else
+        expr_stmt
+          call
+            field print
+              name io
+            string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

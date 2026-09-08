@@ -1,0 +1,7 @@
+file
+  bind_dollar
+    name a
+    bytes_pure
+  bind_dollar
+    name b
+    bytes_rich

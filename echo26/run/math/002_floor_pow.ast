@@ -1,0 +1,55 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg math
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_float
+          name str
+        call
+          field floor
+            name math
+          number_f64 3.7
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_float
+          name str
+        call
+          field ceil
+            name math
+          number_f64 3.2
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_float
+          name str
+        call
+          field pow
+            name math
+          number_f64 2.0
+          number_f64 3.0
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_float
+          name str
+        call
+          field cos
+            name math
+          number_f64 0.0

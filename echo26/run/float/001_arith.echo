@@ -1,0 +1,17 @@
+/ std/io
+/ std/str
+
+$ a = 3.0
+$ b = 1.5
+io.print(str.from_float(a + b))
+io.print(str.from_float(a * 2.0))
+$ add1 = (x) {
+    ^ x + 1.0
+}
+io.print(str.from_float(add1(2.5)))
+? a < 4.0 {
+    io.print(str.from_int(1))
+}
+: {
+    io.print(str.from_int(0))
+}

@@ -1,0 +1,28 @@
+/ std/io
+/ std/str
+/ std/list
+
+$ inc = (n) {
+    ^ n + 1
+}
+
+$ ys = list.map([1, 2, 3], inc)
+io.print(str.from_int(list.len(ys)))
+| list.get(ys, 0) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| list.get(ys, 2) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+$ empty = list.map([], inc)
+io.print(str.from_int(list.len(empty)))

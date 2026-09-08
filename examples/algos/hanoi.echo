@@ -1,0 +1,73 @@
+; Tower of Hanoi — recursive move count (2^n - 1).
+; Run: xo run examples/algos/hanoi.echo
+
+/ std/io
+/ std/str
+
+; Minimum moves to transfer n disks.
+$ hanoi_moves = (n) {
+    ? n < 0 {
+        ! "negative disks"
+    }
+    ? n == 0 {
+        ^ 0
+    }
+    | hanoi_moves(n - 1) {
+        $ sub {
+            ^ 2 * sub + 1
+        }
+        ! err {
+            ! err
+        }
+    }
+}
+
+; Simulate move logging: move n disks from src to dst via aux.
+; Counts only — pegs are labels printed as numbers (0,1,2).
+$ hanoi_solve = (n, src, dst, aux, move_count) {
+    ? n <= 0 {
+        ^ move_count
+    }
+    $ after_first = hanoi_solve(n - 1, src, aux, dst, move_count)
+    io.print(str.from_int(src))
+    io.print(str.from_int(dst))
+    $ next = after_first + 1
+    ^ hanoi_solve(n - 1, aux, dst, src, next)
+}
+
+| hanoi_moves(0) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| hanoi_moves(1) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| hanoi_moves(3) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| hanoi_moves(8) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+$ moves = hanoi_solve(3, 0, 2, 1, 0)
+io.print(str.from_int(moves))
+
+\ hanoi_moves, hanoi_solve

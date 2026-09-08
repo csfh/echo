@@ -1,0 +1,6 @@
+; Tiny: print via std
+/ std/io
+/ std/str
+
+io.print(str.from_int(42))
+

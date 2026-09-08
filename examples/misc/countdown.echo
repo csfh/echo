@@ -1,0 +1,10 @@
+; Tiny: while loop — print each step, then final
+/ std/io
+/ std/str
+
+~ i = 0
+* i < 5 {
+    ~ i = i + 1
+    io.print(str.from_int(i))
+}
+

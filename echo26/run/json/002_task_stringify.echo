@@ -1,0 +1,16 @@
+; json.stringify of a string allocated inside a `+` worker, then `-` joined.
+/ std/io
+/ std/json
+
++ job = {
+    ^ "hello"
+}
+- s = job
+| json.stringify(s) {
+    $ out {
+        io.print(out)
+    }
+    ! e {
+        io.print(e)
+    }
+}

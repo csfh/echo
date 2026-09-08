@@ -1,0 +1,6 @@
+/ std/io
+/ std/str
+/ std/time
+
+$ s = time.format(1700000000000, "%Y-%m-%d")
+io.print(s)

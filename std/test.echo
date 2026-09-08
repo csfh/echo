@@ -1,0 +1,43 @@
+; std/test — suite helpers for `xo test` (Model A registration).
+; Privileged: `/ runtime` only in std. Cases register when XO_TEST is set.
+; `bench` cases run only under `xo test --bench` (XO_BENCH).
+
+/ runtime
+
+$ it = (name, body) {
+    runtime.test_register(name, body)
+}
+
+$ bench = (name, body) {
+    runtime.test_bench_register(name, body)
+}
+
+$ eq = (left, right) {
+    ? left != right {
+        runtime.test_fail("test.eq failed")
+    }
+}
+
+$ ne = (left, right) {
+    ? left == right {
+        runtime.test_fail("test.ne failed")
+    }
+}
+
+$ true = (cond) {
+    ? !cond {
+        runtime.test_fail("test.true failed")
+    }
+}
+
+$ false = (cond) {
+    ? cond {
+        runtime.test_fail("test.false failed")
+    }
+}
+
+$ fail = (msg) {
+    runtime.test_fail(msg)
+}
+
+\ it, bench, eq, ne, true, false, fail

@@ -1,0 +1,69 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg fs
+  import
+    seg std
+    seg str
+  bind_dollar
+    name p
+    call
+      field join
+        name fs
+      call
+        field temp_dir
+          name fs
+      string_rich
+  match
+    call
+      field create
+        name fs
+      name p
+    arm_ok f
+      match
+        call
+          field write
+            name f
+          string_rich
+        arm_ok w
+          expr_stmt
+            call
+              field print
+                name io
+              string_rich
+        arm_err e
+          expr_stmt
+            call
+              field print
+                name io
+              name e
+      expr_stmt
+        call
+          field close
+            name f
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field remove
+        name fs
+      name p
+    arm_ok r
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich

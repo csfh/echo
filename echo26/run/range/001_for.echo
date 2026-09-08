@@ -1,0 +1,8 @@
+/ std/io
+/ std/str
+
+~ s = 0
+* x : 4..6 {
+    ~ s = s + x
+}
+io.print(str.from_int(s))

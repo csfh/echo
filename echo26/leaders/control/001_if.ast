@@ -1,0 +1,5 @@
+file
+  if
+    name ready
+    return
+      number 1

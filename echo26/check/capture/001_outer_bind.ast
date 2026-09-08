@@ -1,0 +1,9 @@
+file
+  bind_tilde
+    name n
+    number 1
+  bind_dollar
+    name f
+    fn
+      return
+        name n

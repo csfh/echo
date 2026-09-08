@@ -1,0 +1,159 @@
+; std/reflect — runtime value kind inspection and key material for hashing.
+; Privileged std may `/ runtime` and call `runtime.*` (docs/stdlib.md).
+;
+; Distinct from the tools crate `echo_reflection` (export metadata for LSP).
+; This module is **userland value reflection** over the universal ABI slot.
+;
+; Public API:
+;   kind, kind_name, key_bytes
+;   is_int, is_string, is_bytes, is_list, is_float, is_struct
+;   KIND_INT, KIND_LIST, KIND_STRING, KIND_STRUCT, KIND_FLOAT, KIND_BYTES
+;
+; Params are dynamic `value` (unconstrained → pin); mixed call sites ok.
+; `key_bytes` is kind-tagged so int `1` and string `"1"` hash apart
+; (used by collections/hash_table).
+;
+; Suite: xo test std/reflect.echo (XO_TEST).
+
+/ runtime
+/ std/test
+/ std/bytes
+
+; Stable kind codes (match runtime heap tags; 0 = bare int).
+# KIND_INT = 0
+# KIND_LIST = 1
+# KIND_STRING = 2
+# KIND_STRUCT = 4
+# KIND_FLOAT = 5
+# KIND_BYTES = 6
+
+$ kind = (v) {
+    ^ runtime.reflect_kind(v)
+}
+
+$ kind_name = (v) {
+    ^ runtime.reflect_kind_name(v)
+}
+
+; Kind-tagged bytes for SipHash / framing (see runtime-abi).
+$ key_bytes = (v) {
+    ^ runtime.reflect_key_bytes(v)
+}
+
+$ is_int = (v) {
+    ^ kind(v) == KIND_INT
+}
+
+$ is_string = (v) {
+    ^ kind(v) == KIND_STRING
+}
+
+$ is_bytes = (v) {
+    ^ kind(v) == KIND_BYTES
+}
+
+$ is_list = (v) {
+    ^ kind(v) == KIND_LIST
+}
+
+$ is_float = (v) {
+    ^ kind(v) == KIND_FLOAT
+}
+
+$ is_struct = (v) {
+    ^ kind(v) == KIND_STRUCT
+}
+
+; --- suite (xo test std/reflect.echo) ---
+
+test.it("kind_int", () {
+    test.eq(kind(42), KIND_INT)
+    test.eq(kind_name(42), "int")
+    test.true(is_int(42))
+    test.false(is_string(42))
+})
+
+test.it("kind_string", () {
+    test.eq(kind("hi"), KIND_STRING)
+    test.eq(kind_name("hi"), "string")
+    test.true(is_string("hi"))
+    test.false(is_int("hi"))
+})
+
+test.it("kind_bytes", () {
+    $ b = bytes.from_int(7)
+    test.eq(kind(b), KIND_BYTES)
+    test.eq(kind_name(b), "bytes")
+    test.true(is_bytes(b))
+})
+
+test.it("kind_list", () {
+    test.eq(kind([1, 2]), KIND_LIST)
+    test.eq(kind_name([1, 2]), "list")
+    test.true(is_list([1, 2]))
+})
+
+test.it("key_bytes_int_tag", () {
+    $ kb = key_bytes(0x0102)
+    test.eq(bytes.len(kb), 9)
+    | bytes.get(kb, 0) {
+        $ t {
+            test.eq(t, KIND_INT)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | bytes.get(kb, 1) {
+        $ x {
+            test.eq(x, 0x02)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("key_bytes_string_tag", () {
+    $ kb = key_bytes("AB")
+    test.eq(bytes.len(kb), 3)
+    | bytes.get(kb, 0) {
+        $ t {
+            test.eq(t, KIND_STRING)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | bytes.get(kb, 1) {
+        $ x {
+            test.eq(x, 65)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("key_bytes_kinds_diverge", () {
+    $ a = key_bytes(1)
+    $ b = key_bytes("1")
+    test.ne(bytes.len(a), bytes.len(b))
+    | bytes.get(a, 0) {
+        $ ta {
+            | bytes.get(b, 0) {
+                $ tb {
+                    test.ne(ta, tb)
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+\ kind, kind_name, key_bytes, is_int, is_string, is_bytes, is_list, is_float, is_struct, KIND_INT, KIND_LIST, KIND_STRING, KIND_STRUCT, KIND_FLOAT, KIND_BYTES

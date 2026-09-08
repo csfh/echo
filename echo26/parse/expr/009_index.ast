@@ -1,0 +1,6 @@
+file
+  bind_dollar
+    name x
+    index
+      name xs
+      number 0

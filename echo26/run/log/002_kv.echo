@@ -1,0 +1,7 @@
+; Join key=value pairs; empty list is empty string.
+/ std/io
+/ std/str
+/ std/log
+
+io.print(log.kv(["a=1", "b=2"]))
+io.print(str.from_int(str.len(log.kv([]))))

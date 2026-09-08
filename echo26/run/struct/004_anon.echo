@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+
+$ p = { x: 1, y: 2 }
+io.print(str.from_int(p.x))
+io.print(str.from_int(p.y))
+~ p.x = 10
+io.print(str.from_int(p.x))
+$ q = { n: 0, nested: { v: 3 } }
+io.print(str.from_int(q.n))
+io.print(str.from_int(q.nested.v))

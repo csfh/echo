@@ -1,0 +1,142 @@
+; Classic list helpers — sum, max, reverse, contains.
+; Length uses std: list.len. Run: xo run examples/algos/list.echo
+
+/ std/io
+/ std/str
+/ std/list
+/ std/test
+
+$ sum = (xs) {
+    ~ acc = 0
+    * item : xs {
+        ~ acc = acc + item
+    }
+    ^ acc
+}
+
+; Sum 0..n-1 (tight integer loop — codegen floor canary).
+$ sum_to = (n) {
+    ~ acc = 0
+    ~ i = 0
+    * i < n {
+        ~ acc = acc + i
+        ~ i = i + 1
+    }
+    ^ acc
+}
+
+$ product = (xs) {
+    ~ acc = 1
+    * item : xs {
+        ~ acc = acc * item
+    }
+    ^ acc
+}
+
+; Max of a non-empty list; none if empty.
+$ max = (xs) {
+    ~ first = |
+    ~ best = 0
+    * item : xs {
+        ? first {
+            ~ best = item
+            ~ first = _
+        }
+        : item > best {
+            ~ best = item
+        }
+    }
+    ? first {
+        ^
+    }
+    ^ best
+}
+
+$ min = (xs) {
+    ~ first = |
+    ~ best = 0
+    * item : xs {
+        ? first {
+            ~ best = item
+            ~ first = _
+        }
+        : item < best {
+            ~ best = item
+        }
+    }
+    ? first {
+        ^
+    }
+    ^ best
+}
+
+; True if target appears in xs.
+$ contains = (xs, target) {
+    * item : xs {
+        ? item == target {
+            ^ |
+        }
+    }
+    ^ _
+}
+
+; Reverse xs in place.
+$ reverse = (xs) {
+    $ n = list.len(xs)
+    ~ i = 0
+    * i < n / 2 {
+        $ j = n - 1 - i
+        $ t = xs[i]
+        ~ xs[i] = xs[j]
+        ~ xs[j] = t
+        ~ i = i + 1
+    }
+    ^ xs
+}
+
+$ xs = [3, 1, 4, 1, 5, 9]
+io.print(str.from_int(list.len(xs)))
+io.print(str.from_int(sum(xs)))
+io.print(str.from_int(product([1, 2, 3, 4])))
+| max(xs) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("empty")
+    }
+}
+| min(xs) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("empty")
+    }
+}
+io.print(str.from_int(contains(xs, 5)))
+io.print(str.from_int(contains(xs, 7)))
+
+~ buf = [1, 2, 3, 4, 5]
+$ rev = reverse(buf)
+* item : rev {
+    io.print(str.from_int(item))
+}
+
+; Benches: real APIs, args built in the body (functions are closed).
+test.bench("sum_to_1e6", () {
+    $ s = sum_to(1000000)
+})
+
+test.bench("sum_to_1e7", () {
+    $ s = sum_to(10000000)
+})
+
+test.bench("sum_list_1k", () {
+    $ s = sum_to(1000)
+})
+
+test.bench("sum_list_10k", () {
+    $ s = sum_to(10000)
+})
+\ sum, sum_to, product, max, min, contains, reverse

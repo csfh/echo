@@ -1,0 +1,12 @@
+; Invalid text → result err.
+/ std/io
+/ std/time
+
+| time.parse("nope", "%Y-%m-%d") {
+    $ t {
+        io.print("ok")
+    }
+    ! e {
+        io.print(e)
+    }
+}

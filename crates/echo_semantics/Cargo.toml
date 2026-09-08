@@ -1,0 +1,13 @@
+[package]
+name = "echo_semantics"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+echo_ast = { path = "../echo_ast" }
+echo_diagnostics = { path = "../echo_diagnostics" }
+echo_source = { path = "../echo_source" }
+echo_parser = { path = "../echo_parser" }
+echo_syntax = { path = "../echo_syntax" }

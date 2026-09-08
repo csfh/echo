@@ -1,0 +1,22 @@
+; create_temp writes an empty file under temp_dir with the prefix in the name.
+/ std/io
+/ std/str
+/ std/fs
+
+| fs.create_temp("echo26_fs_007") {
+    $ p {
+        io.print(str.from_int(fs.exists(p)))
+        io.print(str.from_int(str.contains(p, "echo26_fs_007")))
+        | fs.remove(p) {
+            $ ok {
+                io.print("rm")
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}

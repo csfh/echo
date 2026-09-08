@@ -1,0 +1,20 @@
+; Relative path from base to a child.
+/ std/io
+/ std/path
+
+| path.rel("/a/b", "/a/b/c") {
+    $ r {
+        io.print(r)
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| path.rel("/a/b", "/a/b") {
+    $ r {
+        io.print(r)
+    }
+    ! e {
+        io.print(e)
+    }
+}

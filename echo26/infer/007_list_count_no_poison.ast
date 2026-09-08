@@ -1,0 +1,64 @@
+file
+  bind_dollar
+    name count
+    fn
+      param xs
+      bind_tilde
+        name n
+        number 0
+      loop_for item
+        name xs
+        bind_tilde
+          name n
+          binary Add
+            name n
+            number 1
+      return
+        name n
+  bind_dollar
+    name bubble
+    fn
+      param xs
+      bind_dollar
+        name n
+        call
+          name count
+          name xs
+      bind_tilde
+        name j
+        number 0
+      loop_while
+        binary Lt
+          name j
+          binary Sub
+            name n
+            number 1
+        if
+          binary Gt
+            index
+              name xs
+              name j
+            index
+              name xs
+              binary Add
+                name j
+                number 1
+          return
+            number 1
+        bind_tilde
+          name j
+          binary Add
+            name j
+            number 1
+      return
+        number 0
+  bind_dollar
+    name main
+    fn
+      return
+        call
+          name bubble
+          list
+            number 3
+            number 1
+            number 2

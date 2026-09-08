@@ -1,0 +1,12 @@
+leader_dollar
+ident
+eq
+l_paren
+r_paren
+l_brace
+leader_bang
+string_rich
+leader_caret
+number
+r_brace
+eof

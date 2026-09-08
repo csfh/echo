@@ -1,0 +1,74 @@
+; Object store — memory or S3-compatible (R2 via endpoint + keys).
+; Returns `{ status, body, etag }`.
+
+/ runtime
+/ std/test
+/ std/str
+/ std/bytes
+
+$ memory = () {
+    ^ runtime.store_memory_new()
+}
+
+$ s3 = () {
+    ^ runtime.store_s3_new()
+}
+
+$ close = (s) {
+    runtime.store_close(s)
+    ^
+}
+
+$ get = (s, key) {
+    ^ runtime.store_get(s, key)
+}
+
+$ get_if_none_match = (s, key, etag) {
+    ^ runtime.store_get_if_none_match(s, key, etag)
+}
+
+$ get_range = (s, key, start, end) {
+    ^ runtime.store_get_range(s, key, start, end)
+}
+
+$ head = (s, key) {
+    ^ runtime.store_head(s, key)
+}
+
+$ put = (s, key, data) {
+    ^ runtime.store_put(s, key, data)
+}
+
+$ cas = (s, key, etag, data) {
+    ^ runtime.store_cas(s, key, etag, data)
+}
+
+$ cas_create = (s, key, data) {
+    ^ runtime.store_cas_create(s, key, data)
+}
+
+$ keys = (s) {
+    ^ runtime.store_keys(s)
+}
+
+test.it("memory_put_get_cas", () {
+    $ s = memory()
+    $ miss = get(s, "k")
+    test.eq(miss.status, 404)
+    $ p = put(s, "k", bytes.from_str("v1"))
+    test.eq(p.status, 200)
+    $ got = get(s, "k")
+    test.eq(got.status, 200)
+    test.eq(str.from_bytes(got.body), "v1")
+    $ again = get_if_none_match(s, "k", p.etag)
+    test.eq(again.status, 304)
+    $ clash = cas_create(s, "k", bytes.from_str("x"))
+    test.eq(clash.status, 412)
+    $ ok = cas(s, "k", p.etag, bytes.from_str("v2"))
+    test.eq(ok.status, 200)
+    $ v2 = get(s, "k")
+    test.eq(str.from_bytes(v2.body), "v2")
+    close(s)
+})
+
+\ memory, s3, close, get, get_if_none_match, get_range, head, put, cas, cas_create, keys

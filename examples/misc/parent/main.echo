@@ -1,0 +1,6 @@
+; Parent-relative import: sibling folder `../multi/lib`
+/ std/io
+/ std/str
+/ ../multi/lib
+
+io.print(str.from_int(lib.add(20, 22)))

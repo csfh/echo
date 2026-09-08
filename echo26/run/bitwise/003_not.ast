@@ -1,0 +1,4 @@
+file
+  return
+    unary BitNot
+      number 0

@@ -1,0 +1,15 @@
+/ std/io
+/ std/str
+
+$ x = 2
+| x {
+    1 {
+        io.print(str.from_int(10))
+    }
+    2 {
+        io.print(str.from_int(20))
+    }
+    : {
+        io.print(str.from_int(0))
+    }
+}

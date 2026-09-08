@@ -1,0 +1,23 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg path
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field file_name
+          name path
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field extension
+          name path
+        string_rich

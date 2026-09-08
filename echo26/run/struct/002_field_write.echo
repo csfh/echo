@@ -1,0 +1,13 @@
+/ std/io
+/ std/str
+
+% counter {
+    ~ n
+}
+
+$ c = counter { n: 0 }
+io.print(str.from_int(c.n))
+~ c.n = 5
+io.print(str.from_int(c.n))
+~ c.n = c.n + 1
+io.print(str.from_int(c.n))

@@ -1,0 +1,14 @@
+leader_at
+ident
+l_brace
+leader_dollar
+ident
+eq
+l_paren
+r_paren
+l_brace
+leader_caret
+string_rich
+r_brace
+r_brace
+eof

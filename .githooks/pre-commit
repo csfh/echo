@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Reject commits that leave the Rust workspace with errors or warnings.
+#
+# Install once (from repo root):
+#   scripts/install-hooks.sh
+#   # or:  git config core.hooksPath .githooks
+#
+# Skip for a single commit when needed:
+#   git commit --no-verify
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+# Only run when the index touches Rust / Cargo / hook tooling.
+if ! git diff --cached --name-only --diff-filter=ACMR | grep -qE \
+  '(\.rs$|(^|/)Cargo\.(toml|lock)$|(^|/)\.cargo/|(^|/)\.githooks/|(^|/)scripts/install-hooks\.sh$)'; then
+  exit 0
+fi
+
+echo "pre-commit: cargo check --workspace (warnings = errors)"
+
+# RUSTFLAGS replaces config rustflags — keep the Linux mold linker when present.
+flags="-Dwarnings"
+if [[ "$(uname -s)" == "Linux" ]] && command -v mold >/dev/null 2>&1; then
+  flags="$flags -C link-arg=-fuse-ld=mold"
+fi
+export RUSTFLAGS="${RUSTFLAGS:+${RUSTFLAGS} }$flags"
+
+if ! cargo check --workspace --locked; then
+  echo >&2
+  echo "pre-commit: cargo check failed (errors or warnings)." >&2
+  echo "  Fix them, or skip once with: git commit --no-verify" >&2
+  exit 1
+fi
+
+echo "pre-commit: ok"

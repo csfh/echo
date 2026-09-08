@@ -1,0 +1,69 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  bind_dollar
+    name b
+    call
+      field from_int
+        name bytes
+      number 0x0102
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name bytes
+          name b
+  match
+    call
+      field get
+        name bytes
+      name b
+      number 0
+    arm_ok x
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name x
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field get
+        name bytes
+      name b
+      number 1
+    arm_ok x
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name x
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

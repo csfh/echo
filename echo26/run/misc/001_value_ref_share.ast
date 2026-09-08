@@ -1,0 +1,106 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct cell
+    bind_tilde
+      name n
+      number 0
+    bind_dollar
+      name set
+      fn
+        param v
+        assign
+          target_field n
+            receiver
+          name v
+        return
+          receiver
+    bind_dollar
+      name get
+      fn
+        return
+          field n
+            receiver
+  bind_tilde
+    name a
+    struct_lit cell
+      field n
+        number 1
+  bind_tilde
+    name b
+    name a
+  bind_tilde
+    name b
+    call
+      field set
+        name b
+      number 7
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field get
+            name a
+  bind_dollar
+    name bump0
+    fn
+      param xs
+      assign
+        target_index
+          name xs
+          number 0
+        binary Add
+          index
+            name xs
+            number 0
+          number 1
+      return
+        index
+          name xs
+          number 0
+  bind_tilde
+    name xs
+    list
+      number 10
+  bind_dollar
+    name y
+    call
+      name bump0
+      name xs
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          name xs
+          number 0
+  bind_tilde
+    name i
+    number 3
+  bind_tilde
+    name j
+    name i
+  bind_tilde
+    name j
+    binary Add
+      name j
+      number 1
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name i

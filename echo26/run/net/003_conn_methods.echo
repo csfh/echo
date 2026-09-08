@@ -1,0 +1,14 @@
+; Methods on % conn after tcp.connect / accept.
+/ std/io
+/ std/str
+/ std/net/tcp
+
+$ lis = tcp.listen("127.0.0.1:39881")
+$ client = tcp.connect("127.0.0.1:39881")
+$ server = lis.accept()
+client.write("ping")
+$ got = server.read(64)
+io.print(str.from_bytes(got))
+client.close()
+server.close()
+lis.close()

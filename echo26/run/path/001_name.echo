@@ -1,0 +1,4 @@
+/ std/io
+/ std/path
+io.print(path.file_name("/x/y.z"))
+io.print(path.extension("/x/y.z"))

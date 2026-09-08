@@ -1,0 +1,106 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field contains
+            name bytes
+          bytes_pure
+          bytes_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field contains
+            name bytes
+          bytes_pure
+          bytes_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field contains
+            name bytes
+          bytes_pure
+          bytes_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field contains
+            name bytes
+          bytes_rich
+          bytes_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field starts_with
+            name bytes
+          bytes_pure
+          bytes_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field starts_with
+            name bytes
+          bytes_pure
+          bytes_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field ends_with
+            name bytes
+          bytes_pure
+          bytes_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field ends_with
+            name bytes
+          bytes_pure
+          bytes_pure

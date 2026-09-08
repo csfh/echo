@@ -1,0 +1,11 @@
+; std/reflect kind codes and names.
+/ std/io
+/ std/str
+/ std/reflect
+
+io.print(str.from_int(reflect.kind(42)))
+io.print(reflect.kind_name(42))
+io.print(reflect.kind_name("hi"))
+io.print(str.from_int(reflect.kind("hi") == reflect.KIND_STRING))
+io.print(str.from_int(reflect.is_int(42)))
+io.print(str.from_int(reflect.is_string(42)))

@@ -1,0 +1,74 @@
+; std/net/url — thin URL parse/build (http/https).
+; Runtime product { ok, scheme, host, port, path } (ok internal).
+;
+; Public API:
+;   parse(s) → result of product { scheme, host, port, path } or ! "invalid url"
+;   format(scheme, host, port, path) → string (always emits :port)
+;
+; Suite: xo test std/net/url.echo
+
+/ runtime
+/ std/str
+/ std/test
+
+$ parse = (s) {
+    $ r = runtime.url_parse(s)
+    ? r.ok == 0 {
+        ! "invalid url"
+    }
+    ^ r
+}
+
+$ format = (scheme, host, port, path) {
+    $ a = str.cat(scheme, "://")
+    $ b = str.cat(a, host)
+    $ c = str.cat(b, ":")
+    $ ps = str.from_int(port)
+    $ d = str.cat(c, ps)
+    ^ str.cat(d, path)
+}
+
+test.it("parse_http", () {
+    | parse("http://example.com:8080/a/b") {
+        $ u {
+            test.eq(u.scheme, "http")
+            test.eq(u.host, "example.com")
+            test.eq(u.port, 8080)
+            test.eq(u.path, "/a/b")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("parse_default_path", () {
+    | parse("https://h") {
+        $ u {
+            test.eq(u.scheme, "https")
+            test.eq(u.host, "h")
+            test.eq(u.path, "/")
+            test.eq(u.port, 0)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("parse_bad", () {
+    | parse("not-a-url") {
+        $ u {
+            test.fail("expected invalid")
+        }
+        ! e {
+            test.eq(e, "invalid url")
+        }
+    }
+})
+
+test.it("format_lits", () {
+    test.eq(format("http", "example.com", 8080, "/a/b"), "http://example.com:8080/a/b")
+})
+
+\ parse, format

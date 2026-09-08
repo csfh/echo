@@ -1,0 +1,91 @@
+; std/os — process and platform info.
+/ runtime
+/ std/test
+/ std/str
+
+$ pid = () {
+    ^ runtime.os_pid()
+}
+
+$ cwd = () {
+    $ p = runtime.os_cwd()
+    ? p == 0 {
+        ! "cwd failed"
+    }
+    ^ p
+}
+
+$ chdir = (path) {
+    $ st = runtime.os_chdir(path)
+    ? st < 0 {
+        ! "chdir failed"
+    }
+    ^
+}
+
+$ hostname = () {
+    ^ runtime.os_hostname()
+}
+
+$ platform = () {
+    ^ runtime.os_platform()
+}
+
+test.it("pid_platform", () {
+    test.true(pid() > 0)
+    $ p = platform()
+    test.true(p == "linux" || p == "macos" || p == "windows")
+    test.true(str.len(hostname()) > 0)
+    | cwd() {
+        $ d {
+            test.true(str.len(d) > 0)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("chdir_tmp", () {
+    | cwd() {
+        $ here {
+            | chdir("/tmp") {
+                $ ok {
+                    | cwd() {
+                        $ now {
+                            test.true(str.ends_with(now, "tmp"))
+                        }
+                        ! e {
+                            test.fail(e)
+                        }
+                    }
+                    | chdir(here) {
+                        $ ok2 {}
+                        ! e {
+                            test.fail(e)
+                        }
+                    }
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("chdir_missing", () {
+    | chdir("/tmp/echo_os_chdir_absent") {
+        $ ok {
+            test.fail("expected chdir error")
+        }
+        ! e {
+            test.eq(e, "chdir failed")
+        }
+    }
+})
+
+\ pid, cwd, chdir, hostname, platform

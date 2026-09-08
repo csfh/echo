@@ -1,0 +1,9 @@
+; path.parent of a root child is /, not ".".
+/ std/io
+/ std/path
+
+io.print(path.parent("/foo/bar"))
+io.print(path.parent("/foo"))
+io.print(path.parent("/"))
+io.print(path.parent("foo"))
+io.print(path.parent("foo/bar"))

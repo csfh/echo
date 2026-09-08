@@ -1,0 +1,5 @@
+/ std/io
+/ std/str
+
+io.print(str.from_int(str.len('')))
+io.print(str.from_int(str.len("")))

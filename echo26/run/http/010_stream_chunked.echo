@@ -1,0 +1,47 @@
+; Live TCP: handle_connection_stream writes a hex-chunked body.
+/ std/io
+/ std/str
+/ std/net/http
+/ std/net/tcp
+/ std/net/response
+
+$ stream_hi = (req) {
+    ^ response.response {
+        status: 200,
+        headers: {
+            content_type: "text/plain"
+        },
+        body: "hi",
+        chunked: |
+    }
+}
+
+$ routes = [
+    { path: "/hi", handle: stream_hi }
+]
+
+$ addr = "127.0.0.1:18083"
+$ lis = tcp.listen(addr)
+? lis.handle == 0 {
+    io.print("skip")
+    ^
+}
+
++ srv = () [lis, routes] {
+    $ c = tcp.accept(lis)
+    ? c.handle != 0 {
+        http.handle_connection_stream(c, routes)
+    }
+    ^
+}
+
+$ client = tcp.connect(addr)
+? client.handle != 0 {
+    tcp.write(client, "GET /hi HTTP/1.1\r\nHost: x\r\n\r\n")
+    $ raw = tcp.read(client, 4096)
+    io.print(str.from_bytes(raw))
+    tcp.close(client)
+}
+
+- srv
+tcp.close(lis)

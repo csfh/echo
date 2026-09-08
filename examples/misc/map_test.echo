@@ -1,0 +1,36 @@
+; Map std suite (optional separate file; map.echo also has co-located cases).
+/ std/collections/map
+/ std/test
+
+test.it("from_indexed", () {
+    $ m = map.from_indexed([10, 20, 30])
+    | m.get(0) {
+        $ v {
+            test.eq(v, 10)
+        }
+        : {
+            test.fail("missing 0")
+        }
+    }
+    | m.get(2) {
+        $ v {
+            test.eq(v, 30)
+        }
+        : {
+            test.fail("missing 2")
+        }
+    }
+})
+
+test.it("put_get", () {
+    $ m = map.make()
+    m.put(5, 50)
+    | m.get(5) {
+        $ v {
+            test.eq(v, 50)
+        }
+        : {
+            test.fail("missing")
+        }
+    }
+})

@@ -1,0 +1,11 @@
+/ std/io
+
+% user {
+    $ name
+    $ greet = () {
+        ^ "Hello, {.name}"
+    }
+}
+
+$ u = user { name: "Ada" }
+io.print(u.greet())

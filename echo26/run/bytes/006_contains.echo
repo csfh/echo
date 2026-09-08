@@ -1,0 +1,12 @@
+/ std/io
+/ std/str
+/ std/bytes
+
+io.print(str.from_int(bytes.contains(b'hello', b'ell')))
+io.print(str.from_int(bytes.contains(b'hello', b'xyz')))
+io.print(str.from_int(bytes.contains(b'ab', b'')))
+io.print(str.from_int(bytes.contains(b"\xffAB", b"\xff")))
+io.print(str.from_int(bytes.starts_with(b'foobar', b'foo')))
+io.print(str.from_int(bytes.starts_with(b'foobar', b'bar')))
+io.print(str.from_int(bytes.ends_with(b'foobar', b'bar')))
+io.print(str.from_int(bytes.ends_with(b'foobar', b'foo')))

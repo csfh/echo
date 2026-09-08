@@ -1,0 +1,8 @@
+; path.parent. Run: xo run examples/misc/path_parent.echo
+/ std/io
+/ std/path
+
+io.print(path.parent("/foo/bar"))
+io.print(path.parent("/foo"))
+io.print(path.parent("foo"))
+io.print(path.parent("/"))

@@ -1,0 +1,30 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct site
+    bind_dollar
+      name host
+    bind_dollar
+      name url
+      fn
+        return
+          locator_rich
+  bind_dollar
+    name s
+    struct_lit site
+      field host
+        string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_locator
+          name str
+        call
+          field url
+            name s

@@ -1,0 +1,48 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg net
+    seg http
+  bind_dollar
+    name raw
+    string_rich
+  bind_dollar
+    name req
+    call
+      field parse_request
+        name http
+      name raw
+  expr_stmt
+    call
+      field print
+        name io
+      field method
+        name req
+  expr_stmt
+    call
+      field print
+        name io
+      field path
+        name req
+  if
+    binary Eq
+      field method
+        name req
+      string_rich
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich

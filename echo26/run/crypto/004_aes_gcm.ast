@@ -1,0 +1,67 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  import
+    seg std
+    seg crypto
+    seg aes_gcm
+  bind_dollar
+    name key
+    bytes_rich
+  bind_dollar
+    name nonce
+    bytes_rich
+  match
+    call
+      field encrypt
+        name aes_gcm
+      name key
+      name nonce
+      string_rich
+    arm_ok ct
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            call
+              field len
+                name bytes
+              name ct
+      match
+        call
+          field decrypt
+            name aes_gcm
+          name key
+          name nonce
+          name ct
+        arm_ok pt
+          expr_stmt
+            call
+              field print
+                name io
+              call
+                field from_bytes
+                  name str
+                name pt
+        arm_err e
+          expr_stmt
+            call
+              field print
+                name io
+              name e
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

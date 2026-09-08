@@ -1,0 +1,12 @@
+; Graph promote: return nested list [xs]; child must survive callee frame exit.
+/ std/io
+/ std/str
+
+$ make = () {
+    $ xs = [7]
+    $ holder = [xs]
+    ^ holder
+}
+
+$ r = make()
+io.print(str.from_int(r[0][0]))

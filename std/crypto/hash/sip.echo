@@ -1,0 +1,225 @@
+; std/crypto/hash/sip — SipHash-2-4 (Aumasson & Bernstein).
+; Pure Echo proof load: scalar ui64 state + inlined rotates (logical >> via ui64).
+; Public API: \ sip
+
+/ std/bytes
+/ std/str
+/ std/test
+
+# C0 = <ui64> 0x736f6d6570736575
+# C1 = <ui64> 0x646f72616e646f6d
+# C2 = <ui64> 0x6c7967656e657261
+# C3 = <ui64> 0x7465646279746573
+
+$ byte_u64 = (msg, i) {
+    | bytes.get(msg, i) {
+        $ b {
+            ^ <ui64> b
+        }
+        ! e {
+            ^ <ui64> 0
+        }
+    }
+}
+
+$ load_le = (msg, off, end) {
+    ~ m = <ui64> 0
+    ~ j = 0
+    * j < 8 {
+        $ idx = off + j
+        ? idx < end {
+            ~ m = <ui64> (m | (byte_u64(msg, idx) << (j * 8)))
+        }
+        ~ j = j + 1
+    }
+    ^ m
+}
+
+$ sip = (k0, k1, msg) {
+    ~ v0 = <ui64> (C0 ^ k0)
+    ~ v1 = <ui64> (C1 ^ k1)
+    ~ v2 = <ui64> (C2 ^ k0)
+    ~ v3 = <ui64> (C3 ^ k1)
+
+    $ n = bytes.len(msg)
+    ~ i = 0
+    * i + 8 <= n {
+        $ m = load_le(msg, i, i + 8)
+        ~ v3 = <ui64> (v3 ^ m)
+        ~ v0 = <ui64> (v0 + v1)
+        ~ v1 = <ui64> ((v1 << 13) | (v1 >> 51))
+        ~ v1 = <ui64> (v1 ^ v0)
+        ~ v0 = <ui64> ((v0 << 32) | (v0 >> 32))
+        ~ v2 = <ui64> (v2 + v3)
+        ~ v3 = <ui64> ((v3 << 16) | (v3 >> 48))
+        ~ v3 = <ui64> (v3 ^ v2)
+        ~ v0 = <ui64> (v0 + v3)
+        ~ v3 = <ui64> ((v3 << 21) | (v3 >> 43))
+        ~ v3 = <ui64> (v3 ^ v0)
+        ~ v2 = <ui64> (v2 + v1)
+        ~ v1 = <ui64> ((v1 << 17) | (v1 >> 47))
+        ~ v1 = <ui64> (v1 ^ v2)
+        ~ v2 = <ui64> ((v2 << 32) | (v2 >> 32))
+        ~ v0 = <ui64> (v0 + v1)
+        ~ v1 = <ui64> ((v1 << 13) | (v1 >> 51))
+        ~ v1 = <ui64> (v1 ^ v0)
+        ~ v0 = <ui64> ((v0 << 32) | (v0 >> 32))
+        ~ v2 = <ui64> (v2 + v3)
+        ~ v3 = <ui64> ((v3 << 16) | (v3 >> 48))
+        ~ v3 = <ui64> (v3 ^ v2)
+        ~ v0 = <ui64> (v0 + v3)
+        ~ v3 = <ui64> ((v3 << 21) | (v3 >> 43))
+        ~ v3 = <ui64> (v3 ^ v0)
+        ~ v2 = <ui64> (v2 + v1)
+        ~ v1 = <ui64> ((v1 << 17) | (v1 >> 47))
+        ~ v1 = <ui64> (v1 ^ v2)
+        ~ v2 = <ui64> ((v2 << 32) | (v2 >> 32))
+        ~ v0 = <ui64> (v0 ^ m)
+        ~ i = i + 8
+    }
+
+    ~ b = <ui64> ((<ui64> (n % 256)) << 56)
+    ~ j = 0
+    * i + j < n {
+        ~ b = <ui64> (b | (byte_u64(msg, i + j) << (j * 8)))
+        ~ j = j + 1
+    }
+
+    ~ v3 = <ui64> (v3 ^ b)
+    ~ v0 = <ui64> (v0 + v1)
+    ~ v1 = <ui64> ((v1 << 13) | (v1 >> 51))
+    ~ v1 = <ui64> (v1 ^ v0)
+    ~ v0 = <ui64> ((v0 << 32) | (v0 >> 32))
+    ~ v2 = <ui64> (v2 + v3)
+    ~ v3 = <ui64> ((v3 << 16) | (v3 >> 48))
+    ~ v3 = <ui64> (v3 ^ v2)
+    ~ v0 = <ui64> (v0 + v3)
+    ~ v3 = <ui64> ((v3 << 21) | (v3 >> 43))
+    ~ v3 = <ui64> (v3 ^ v0)
+    ~ v2 = <ui64> (v2 + v1)
+    ~ v1 = <ui64> ((v1 << 17) | (v1 >> 47))
+    ~ v1 = <ui64> (v1 ^ v2)
+    ~ v2 = <ui64> ((v2 << 32) | (v2 >> 32))
+    ~ v0 = <ui64> (v0 + v1)
+    ~ v1 = <ui64> ((v1 << 13) | (v1 >> 51))
+    ~ v1 = <ui64> (v1 ^ v0)
+    ~ v0 = <ui64> ((v0 << 32) | (v0 >> 32))
+    ~ v2 = <ui64> (v2 + v3)
+    ~ v3 = <ui64> ((v3 << 16) | (v3 >> 48))
+    ~ v3 = <ui64> (v3 ^ v2)
+    ~ v0 = <ui64> (v0 + v3)
+    ~ v3 = <ui64> ((v3 << 21) | (v3 >> 43))
+    ~ v3 = <ui64> (v3 ^ v0)
+    ~ v2 = <ui64> (v2 + v1)
+    ~ v1 = <ui64> ((v1 << 17) | (v1 >> 47))
+    ~ v1 = <ui64> (v1 ^ v2)
+    ~ v2 = <ui64> ((v2 << 32) | (v2 >> 32))
+    ~ v0 = <ui64> (v0 ^ b)
+
+    ~ v2 = <ui64> (v2 ^ 0xff)
+    ~ v0 = <ui64> (v0 + v1)
+    ~ v1 = <ui64> ((v1 << 13) | (v1 >> 51))
+    ~ v1 = <ui64> (v1 ^ v0)
+    ~ v0 = <ui64> ((v0 << 32) | (v0 >> 32))
+    ~ v2 = <ui64> (v2 + v3)
+    ~ v3 = <ui64> ((v3 << 16) | (v3 >> 48))
+    ~ v3 = <ui64> (v3 ^ v2)
+    ~ v0 = <ui64> (v0 + v3)
+    ~ v3 = <ui64> ((v3 << 21) | (v3 >> 43))
+    ~ v3 = <ui64> (v3 ^ v0)
+    ~ v2 = <ui64> (v2 + v1)
+    ~ v1 = <ui64> ((v1 << 17) | (v1 >> 47))
+    ~ v1 = <ui64> (v1 ^ v2)
+    ~ v2 = <ui64> ((v2 << 32) | (v2 >> 32))
+    ~ v0 = <ui64> (v0 + v1)
+    ~ v1 = <ui64> ((v1 << 13) | (v1 >> 51))
+    ~ v1 = <ui64> (v1 ^ v0)
+    ~ v0 = <ui64> ((v0 << 32) | (v0 >> 32))
+    ~ v2 = <ui64> (v2 + v3)
+    ~ v3 = <ui64> ((v3 << 16) | (v3 >> 48))
+    ~ v3 = <ui64> (v3 ^ v2)
+    ~ v0 = <ui64> (v0 + v3)
+    ~ v3 = <ui64> ((v3 << 21) | (v3 >> 43))
+    ~ v3 = <ui64> (v3 ^ v0)
+    ~ v2 = <ui64> (v2 + v1)
+    ~ v1 = <ui64> ((v1 << 17) | (v1 >> 47))
+    ~ v1 = <ui64> (v1 ^ v2)
+    ~ v2 = <ui64> ((v2 << 32) | (v2 >> 32))
+    ~ v0 = <ui64> (v0 + v1)
+    ~ v1 = <ui64> ((v1 << 13) | (v1 >> 51))
+    ~ v1 = <ui64> (v1 ^ v0)
+    ~ v0 = <ui64> ((v0 << 32) | (v0 >> 32))
+    ~ v2 = <ui64> (v2 + v3)
+    ~ v3 = <ui64> ((v3 << 16) | (v3 >> 48))
+    ~ v3 = <ui64> (v3 ^ v2)
+    ~ v0 = <ui64> (v0 + v3)
+    ~ v3 = <ui64> ((v3 << 21) | (v3 >> 43))
+    ~ v3 = <ui64> (v3 ^ v0)
+    ~ v2 = <ui64> (v2 + v1)
+    ~ v1 = <ui64> ((v1 << 17) | (v1 >> 47))
+    ~ v1 = <ui64> (v1 ^ v2)
+    ~ v2 = <ui64> ((v2 << 32) | (v2 >> 32))
+    ~ v0 = <ui64> (v0 + v1)
+    ~ v1 = <ui64> ((v1 << 13) | (v1 >> 51))
+    ~ v1 = <ui64> (v1 ^ v0)
+    ~ v0 = <ui64> ((v0 << 32) | (v0 >> 32))
+    ~ v2 = <ui64> (v2 + v3)
+    ~ v3 = <ui64> ((v3 << 16) | (v3 >> 48))
+    ~ v3 = <ui64> (v3 ^ v2)
+    ~ v0 = <ui64> (v0 + v3)
+    ~ v3 = <ui64> ((v3 << 21) | (v3 >> 43))
+    ~ v3 = <ui64> (v3 ^ v0)
+    ~ v2 = <ui64> (v2 + v1)
+    ~ v1 = <ui64> ((v1 << 17) | (v1 >> 47))
+    ~ v1 = <ui64> (v1 ^ v2)
+    ~ v2 = <ui64> ((v2 << 32) | (v2 >> 32))
+
+    ^ <ui64> (v0 ^ v1 ^ v2 ^ v3)
+}
+
+# K0 = <ui64> 0x0706050403020100
+# K1 = <ui64> 0x0f0e0d0c0b0a0908
+
+test.it("empty", () {
+    $ h = sip(K0, K1, b'')
+    test.eq(h, <ui64> 0x726fdb47dd0e0e31)
+})
+
+test.it("one_byte", () {
+    $ h = sip(K0, K1, b"\x00")
+    test.eq(h, <ui64> 0x74f839c593dc67fd)
+})
+
+test.it("eight_bytes", () {
+    $ msg = b"\x00\x01\x02\x03\x04\x05\x06\x07"
+    $ h = sip(K0, K1, msg)
+    test.eq(h, <ui64> 0x93f5f5799a932462)
+})
+
+test.it("fifteen_bytes", () {
+    $ msg = b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e"
+    $ h = sip(K0, K1, msg)
+    test.eq(h, <ui64> 0xa129ca6149be45e5)
+})
+
+; Benches: real sip(k0,k1,msg); build payloads in-body.
+test.bench("sip_empty", () {
+    $ h = sip(K0, K1, b'')
+})
+
+test.bench("sip_15", () {
+    $ msg = b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e"
+    $ h = sip(K0, K1, msg)
+})
+
+test.bench("sip_1k", () {
+    $ b = bytes.from_str(str.repeat("x", 1024))
+    $ h = sip(K0, K1, b)
+})
+
+test.bench("sip_64k", () {
+    $ b = bytes.from_str(str.repeat("x", 65536))
+    $ h = sip(K0, K1, b)
+})
+
+\ sip

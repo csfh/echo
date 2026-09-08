@@ -1,0 +1,11 @@
+; Tiny: if / else — print which branch ran
+/ std/io
+/ std/str
+
+? 3 > 1 {
+    io.print(str.from_int(10))
+}
+: {
+    io.print(str.from_int(20))
+}
+

@@ -1,0 +1,13 @@
+/ std/io
+/ std/str
+/ std/compress/gzip
+
+| gzip.compress("hi") {
+  $ c {
+    | gzip.decompress(c) {
+      $ d { io.print(str.from_bytes(d)) }
+      ! e { io.print(e) }
+    }
+  }
+  ! e { io.print(e) }
+}

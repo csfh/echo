@@ -1,0 +1,5 @@
+file
+  bind_dollar
+    name a
+    unary Neg
+      number_i32 32

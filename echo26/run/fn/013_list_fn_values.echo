@@ -1,0 +1,14 @@
+/ std/io
+/ std/str
+
+$ inc = (n) {
+    ^ n + 1
+}
+
+$ add2 = (n) {
+    ^ n + 2
+}
+
+$ xs = [inc, add2]
+$ f = xs[0]
+io.print(str.from_int(f(10)))

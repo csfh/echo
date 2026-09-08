@@ -1,0 +1,502 @@
+#!/usr/bin/env bash
+# Quiet, focused verification gate for the Echo workspace.
+# Prefer the smallest useful check; grow layer routes as crates gain tests.
+set -euo pipefail
+
+GATE_SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+GATE_ROOT="$(cd -- "$GATE_SCRIPT_DIR/.." && pwd)"
+cd "$GATE_ROOT"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  scripts/gate changed [--list|--explain|--take N]
+  scripts/gate workspace
+  scripts/gate <layer>
+  scripts/gate tools
+  scripts/gate fmt
+  scripts/gate web
+
+Layers (grow with the codebase):
+  source diagnostics syntax lexer ast parser semantics hir mir
+  codegen codegen-abi runtime std std-test index resolver fingerprint
+  cache build reflection lsp wasm oci xo e26 echo26 examples pipeline web docs
+
+Environment:
+  GATE_ECHO_COMMANDS=1       Print each command before running it
+  GATE_MAX_OUTPUT_LINES=N    Bound failure replay (0 = full, default 160)
+EOF
+}
+
+echo_commands_enabled() {
+  [[ "${GATE_ECHO_COMMANDS:-0}" == "1" ]]
+}
+
+run() {
+  if echo_commands_enabled; then
+    printf ':: %s\n' "$*"
+  fi
+  "$@"
+}
+
+replay_failure_output() {
+  local output="$1"
+  local max_lines="${GATE_MAX_OUTPUT_LINES:-160}"
+  local line_count
+  local head_lines
+  local tail_lines
+  local omitted
+
+  if [[ ! "$max_lines" =~ ^[0-9]+$ || "$max_lines" == "0" ]]; then
+    cat "$output" >&2
+    printf '\nfull gate output retained at %s\n' "$output" >&2
+    return
+  fi
+
+  line_count="$(wc -l <"$output" | tr -d '[:space:]')"
+  if ((line_count <= max_lines)); then
+    cat "$output" >&2
+    printf '\nfull gate output retained at %s\n' "$output" >&2
+    return
+  fi
+
+  head_lines=$((max_lines / 2))
+  tail_lines=$((max_lines - head_lines))
+  omitted=$((line_count - max_lines))
+
+  head -n "$head_lines" "$output" >&2
+  printf '\n... omitted %s lines; set GATE_MAX_OUTPUT_LINES=0 for full replay ...\n\n' "$omitted" >&2
+  tail -n "$tail_lines" "$output" >&2
+  printf '\nfull gate output retained at %s\n' "$output" >&2
+}
+
+run_quiet() {
+  local output
+  local status
+
+  output="$(mktemp "${TMPDIR:-/tmp}/echo-gate.XXXXXX")"
+  if echo_commands_enabled; then
+    printf ':: %s\n' "$*"
+  fi
+  if "$@" >"$output" 2>&1; then
+    rm -f "$output"
+    return 0
+  fi
+  status=$?
+  replay_failure_output "$output"
+  return "$status"
+}
+
+test_crate() {
+  run_quiet cargo test -q -p "$1"
+}
+
+layer_to_crate() {
+  case "$1" in
+    source) printf 'echo_source\n' ;;
+    diagnostics) printf 'echo_diagnostics\n' ;;
+    syntax) printf 'echo_syntax\n' ;;
+    lexer) printf 'echo_lexer\n' ;;
+    ast) printf 'echo_ast\n' ;;
+    parser) printf 'echo_parser\n' ;;
+    semantics) printf 'echo_semantics\n' ;;
+    hir) printf 'echo_hir\n' ;;
+    mir) printf 'echo_mir\n' ;;
+    codegen) printf 'echo_codegen\n' ;;
+    codegen-abi) printf 'echo_codegen_abi\n' ;;
+    runtime) printf 'echo_runtime\n' ;;
+    std) printf 'echo_std\n' ;;
+    index) printf 'echo_index\n' ;;
+    resolver) printf 'echo_resolver\n' ;;
+    fingerprint) printf 'echo_fingerprint\n' ;;
+    cache) printf 'echo_cache\n' ;;
+    build) printf 'echo_build\n' ;;
+    reflection) printf 'echo_reflection\n' ;;
+    lsp) printf 'echo_lsp\n' ;;
+    wasm) printf 'echo_wasm\n' ;;
+    oci) printf 'echo_oci\n' ;;
+    xo) printf 'xo\n' ;;
+    e26) printf 'e26\n' ;;
+    *) return 1 ;;
+  esac
+}
+
+changed_files() {
+  {
+    git diff --name-only --diff-filter=ACMRTD 2>/dev/null || true
+    git diff --cached --name-only --diff-filter=ACMRTD 2>/dev/null || true
+    git ls-files --others --exclude-standard 2>/dev/null || true
+  } | sort -u
+}
+
+route_path_to_layer() {
+  local path="$1"
+  case "$path" in
+    crates/echo_source/*) printf 'source\n' ;;
+    crates/echo_diagnostics/*) printf 'diagnostics\n' ;;
+    crates/echo_syntax/*) printf 'syntax\n' ;;
+    crates/echo_lexer/*) printf 'lexer\n' ;;
+    crates/echo_ast/*) printf 'ast\n' ;;
+    crates/echo_parser/*) printf 'parser\n' ;;
+    crates/echo_semantics/*) printf 'semantics\n' ;;
+    crates/echo_hir/*) printf 'hir\n' ;;
+    crates/echo_mir/*) printf 'mir\n' ;;
+    crates/echo_codegen/*) printf 'codegen\n' ;;
+    crates/echo_codegen_abi/*) printf 'codegen-abi\n' ;;
+    crates/echo_runtime/*) printf 'runtime\n' ;;
+    crates/echo_std/*) printf 'std\n' ;;
+    crates/echo_index/*) printf 'index\n' ;;
+    crates/echo_resolver/*) printf 'resolver\n' ;;
+    crates/echo_fingerprint/*) printf 'fingerprint\n' ;;
+    crates/echo_cache/*) printf 'cache\n' ;;
+    crates/echo_build/*) printf 'build\n' ;;
+    crates/echo_reflection/*) printf 'reflection\n' ;;
+    crates/echo_lsp/*) printf 'lsp\n' ;;
+    crates/echo_wasm/*) printf 'wasm\n' ;;
+    crates/echo_oci/*) printf 'oci\n' ;;
+    crates/xo/*) printf 'xo\n' ;;
+    crates/e26/*) printf 'echo26\n' ;;
+    echo26/*) printf 'echo26\n' ;;
+    std/*) printf 'std-test\n' ;;
+    examples/*) printf 'examples\n' ;;
+    Cargo.toml|Cargo.lock|.cargo/*) printf 'workspace\n' ;;
+    scripts/gate|justfile) printf 'tools\n' ;;
+    www/*) printf 'web\n' ;;
+    docs/*|README.md|AGENTS.md|CONTRIBUTING.md) printf 'docs\n' ;;
+    *) printf 'workspace\n' ;;
+  esac
+}
+
+ensure_debug_xo() {
+  if [[ ! -x "$GATE_ROOT/target/debug/xo" ]]; then
+    run_quiet cargo build -q -p xo
+  fi
+  if [[ ! -f "$GATE_ROOT/target/debug/libecho_runtime.a" ]]; then
+    run_quiet cargo build -q -p echo_runtime
+    if [[ -x "$GATE_ROOT/scripts/ci/stage-runtime-lib.sh" ]]; then
+      run_quiet "$GATE_ROOT/scripts/ci/stage-runtime-lib.sh" debug || true
+    fi
+  fi
+}
+
+run_xo() {
+  run_quiet "$GATE_ROOT/target/debug/xo" "$@"
+}
+
+# Per-example AOT run. Whole-suite `xo test std` is unbounded.
+run_xo_timed() {
+  if command -v timeout >/dev/null 2>&1; then
+    run_quiet timeout 60 "$GATE_ROOT/target/debug/xo" "$@"
+  else
+    run_xo "$@"
+  fi
+}
+
+file_has_test_it() {
+  grep -q 'test.it(' "$1" 2>/dev/null
+}
+
+run_std_test() {
+  local -a files=("$@")
+  local -a suites=()
+  local -a checks=()
+  local f
+
+  ensure_debug_xo
+  if ((${#files[@]} == 0)); then
+    run_xo test std
+    return
+  fi
+
+  for f in "${files[@]}"; do
+    [[ "$f" == *.echo ]] || continue
+    if file_has_test_it "$f"; then
+      suites+=("$f")
+    else
+      checks+=("$f")
+    fi
+  done
+
+  if ((${#suites[@]} == 0 && ${#checks[@]} == 0)); then
+    run_xo test std
+    return
+  fi
+  if ((${#suites[@]} > 0)); then
+    run_xo test "${suites[@]}"
+  fi
+  for f in "${checks[@]+"${checks[@]}"}"; do
+    run_xo check "$f"
+  done
+}
+
+# Map a dirty examples path to check / run / test actions (kind:path).
+example_actions_for() {
+  local f="$1"
+  case "$f" in
+    examples/app/server.echo)
+      printf 'check:%s\n' "$f"
+      ;;
+    examples/app/*)
+      printf 'run:examples/app/surface.echo\n'
+      printf 'run:examples/app/main.echo\n'
+      printf 'check:examples/app/server.echo\n'
+      ;;
+    examples/misc/smoke_test.echo|examples/misc/map_test.echo)
+      printf 'test:%s\n' "$f"
+      ;;
+    examples/misc/multi/*)
+      printf 'run:examples/misc/multi/main.echo\n'
+      ;;
+    examples/misc/parent/*)
+      printf 'run:examples/misc/parent/main.echo\n'
+      ;;
+    examples/misc/at_method/*)
+      printf 'run:examples/misc/at_method/main.echo\n'
+      ;;
+    examples/misc/*.echo)
+      printf 'run:%s\n' "$f"
+      ;;
+    examples/algos/*.echo)
+      printf 'run:%s\n' "$f"
+      ;;
+    examples/*.echo)
+      printf 'check:%s\n' "$f"
+      ;;
+  esac
+}
+
+all_example_actions() {
+  local f
+  for f in examples/misc/*.echo; do
+    [[ -f "$f" ]] || continue
+    example_actions_for "$f"
+  done
+  for f in examples/misc/*/main.echo; do
+    [[ -f "$f" ]] || continue
+    printf 'run:%s\n' "$f"
+  done
+  for f in examples/algos/*.echo; do
+    [[ -f "$f" ]] || continue
+    printf 'run:%s\n' "$f"
+  done
+  printf 'run:examples/app/surface.echo\n'
+  printf 'run:examples/app/main.echo\n'
+  printf 'check:examples/app/server.echo\n'
+}
+
+run_examples() {
+  local -a files=("$@")
+  local -a actions=()
+  local act path
+
+  ensure_debug_xo
+  if ((${#files[@]} == 0)); then
+    mapfile -t actions < <(all_example_actions | sort -u)
+  else
+    mapfile -t actions < <(
+      for f in "${files[@]}"; do
+        example_actions_for "$f"
+      done | sort -u
+    )
+  fi
+
+  if ((${#actions[@]} == 0)); then
+    return 0
+  fi
+
+  for act in "${actions[@]}"; do
+    path="${act#*:}"
+    case "$act" in
+      test:*) run_xo test "$path" ;;
+      check:*) run_xo check "$path" ;;
+      run:*)
+        if [[ "$path" == examples/misc/stdin.echo ]]; then
+          printf 'ping' | run_xo_timed run --no-cache "$path"
+        else
+          run_xo_timed run --no-cache "$path"
+        fi
+        ;;
+    esac
+  done
+}
+
+changed_files_for_layer() {
+  local want="$1"
+  local path
+  while IFS= read -r path; do
+    [[ -z "$path" ]] && continue
+    if [[ "$(route_path_to_layer "$path")" == "$want" ]]; then
+      printf '%s\n' "$path"
+    fi
+  done < <(changed_files)
+}
+
+run_layer() {
+  local layer="$1"
+  shift
+  local -a focus=("$@")
+  local crate
+
+  case "$layer" in
+    pipeline)
+      test_crate echo_parser
+      test_crate echo_semantics
+      test_crate echo_hir
+      test_crate echo_mir
+      ;;
+    std-test)
+      run_std_test "${focus[@]+"${focus[@]}"}"
+      ;;
+    examples)
+      run_examples "${focus[@]+"${focus[@]}"}"
+      ;;
+    echo26)
+      run_quiet cargo build -q -p xo -p e26
+      run_quiet cargo run -q -p e26 -- --binary "$GATE_ROOT/target/debug/xo"
+      ;;
+    workspace)
+      run_quiet cargo fmt --all -- --check
+      run_quiet cargo check -q --workspace
+      if cargo nextest --version >/dev/null 2>&1; then
+        # --no-tests=pass keeps an empty bootstrap suite green.
+        run_quiet cargo nextest run --workspace --no-tests=pass
+      else
+        run_quiet cargo test -q --workspace
+      fi
+      ;;
+    tools)
+      command -v clang >/dev/null
+      command -v mold >/dev/null
+      command -v sccache >/dev/null
+      command -v just >/dev/null
+      cargo nextest --version >/dev/null
+      ;;
+    fmt)
+      run_quiet cargo fmt --all -- --check
+      ;;
+    web)
+      if [[ ! -d www/node_modules ]]; then
+        run_quiet npm --prefix www install
+      fi
+      run_quiet npm --prefix www run lint
+      run_quiet npm --prefix www run format
+      run_quiet npm --prefix www run test
+      run_quiet npm --prefix www run build
+      ;;
+    docs)
+      # Contributor markdown docs only; site content is under web.
+      run_quiet cargo check -q --workspace
+      ;;
+    *)
+      if crate="$(layer_to_crate "$layer")"; then
+        test_crate "$crate"
+      else
+        printf 'unknown layer: %s\n\n' "$layer" >&2
+        usage >&2
+        return 2
+      fi
+      ;;
+  esac
+}
+
+run_changed() {
+  local mode="${1:-run}"
+  local take="${2:-0}"
+  local path
+  local layer
+  local -a layers=()
+  local -a reasons=()
+  local existing
+  local count=0
+
+  add_layer() {
+    local candidate="$1"
+    local reason="$2"
+    local item
+    for item in "${layers[@]+"${layers[@]}"}"; do
+      [[ "$item" == "$candidate" ]] && return
+    done
+    layers+=("$candidate")
+    reasons+=("$candidate|$reason")
+  }
+
+  while IFS= read -r path; do
+    [[ -z "$path" ]] && continue
+    layer="$(route_path_to_layer "$path")"
+    add_layer "$layer" "$path"
+  done < <(changed_files)
+
+  if ((${#layers[@]} == 0)); then
+    add_layer "workspace" "no dirty files; full gate"
+  fi
+
+  if [[ "$take" =~ ^[0-9]+$ ]] && ((take > 0)) && ((${#layers[@]} > take)); then
+    layers=("${layers[@]:0:take}")
+    reasons=("${reasons[@]:0:take}")
+  fi
+
+  case "$mode" in
+    list)
+      printf '%s\n' "${layers[@]}"
+      return 0
+      ;;
+    explain)
+      local entry
+      for entry in "${reasons[@]}"; do
+        printf '%s  (%s)\n' "${entry%%|*}" "${entry#*|}"
+      done
+      return 0
+      ;;
+    run)
+      local -a focus=()
+      local focus_path
+      for layer in "${layers[@]}"; do
+        focus=()
+        while IFS= read -r focus_path; do
+          [[ -n "$focus_path" ]] && focus+=("$focus_path")
+        done < <(changed_files_for_layer "$layer")
+        run_layer "$layer" "${focus[@]+"${focus[@]}"}"
+      done
+      ;;
+    *)
+      printf 'unknown changed mode: %s\n' "$mode" >&2
+      return 2
+      ;;
+  esac
+}
+
+if (($# == 0)); then
+  usage >&2
+  exit 2
+fi
+
+command="$1"
+shift
+
+case "$command" in
+  -h|--help|help)
+    usage
+    ;;
+  changed)
+    mode="run"
+    take=0
+    while (($# > 0)); do
+      case "$1" in
+        --list) mode="list"; shift ;;
+        --explain) mode="explain"; shift ;;
+        --take)
+          take="${2:-}"
+          shift 2
+          ;;
+        *)
+          printf 'unknown changed option: %s\n' "$1" >&2
+          exit 2
+          ;;
+      esac
+    done
+    run_changed "$mode" "$take"
+    ;;
+  *)
+    run_layer "$command"
+    ;;
+esac

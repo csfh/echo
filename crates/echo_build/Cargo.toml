@@ -1,0 +1,11 @@
+[package]
+name = "echo_build"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+echo_cache = { path = "../echo_cache" }
+echo_fingerprint = { path = "../echo_fingerprint" }
+echo_index = { path = "../echo_index" }

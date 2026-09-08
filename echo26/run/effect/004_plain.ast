@@ -1,0 +1,25 @@
+file
+  bind_dollar
+    name add
+    fn
+      param a
+      param b
+      return
+        binary Add
+          name a
+          name b
+  effect_block
+    bind out
+    block
+      bind_dollar
+        name x
+        call
+          name add
+          number 2
+          number 3
+      return
+        binary Mul
+          name x
+          number 2
+  return
+    name out

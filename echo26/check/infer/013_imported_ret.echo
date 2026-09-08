@@ -1,0 +1,3 @@
+/ std/str
+
+$ x = str.from_int(1) + 1

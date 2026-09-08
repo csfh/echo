@@ -1,0 +1,9 @@
+; List append: ~ xs[] = expr
+/ std/io
+/ std/str
+
+$ xs = []
+~ xs[] = 1
+~ xs[] = 2
+io.print(str.from_int(xs[0]))
+io.print(str.from_int(xs[1]))

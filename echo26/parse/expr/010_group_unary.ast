@@ -1,0 +1,8 @@
+file
+  bind_dollar
+    name n
+    unary Neg
+      group
+        binary Add
+          number 1
+          number 2

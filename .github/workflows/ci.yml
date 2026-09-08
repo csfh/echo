@@ -1,0 +1,264 @@
+# Multi-platform xo release builds + Linux language gate.
+#
+# Runs only when a GitHub Release is published (not tags alone, push, or PR).
+# Matrix: linux x86_64, windows x86_64, macos arm64.
+# Linux also runs smoke tests and scripts/gate echo26 (hard fail).
+#
+# LLVM: official llvm/llvm-project release tarballs only (pinned SHA256 in
+# scripts/ci/llvm.sh). No third-party setup-llvm action.
+#
+# macOS: do NOT put LLVM lib/ on DYLD_LIBRARY_PATH for the job — LLVM’s
+# libc++ shadows the system one and aborts rustc/Node (dyld Symbol not found).
+
+name: CI
+
+on:
+  release:
+    types: [published]
+
+env:
+  CARGO_TERM_COLOR: always
+  # Repo .cargo/config.toml sets sccache; runners may not have it.
+  CARGO_BUILD_RUSTC_WRAPPER: ""
+  RUSTC_WRAPPER: ""
+
+jobs:
+  build:
+    name: build (${{ matrix.artifact }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            artifact: linux-x86_64
+            llvm_target: linux-x64
+            binary: xo
+            runtime_lib: libecho_runtime.a
+          - os: windows-2022
+            artifact: windows-x86_64
+            llvm_target: windows-x64
+            binary: xo.exe
+            runtime_lib: echo_runtime.lib
+          - os: macos-14
+            artifact: macos-arm64
+            llvm_target: macos-arm64
+            binary: xo
+            runtime_lib: libecho_runtime.a
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install LLVM 22 (official release tarball)
+        id: llvm
+        shell: bash
+        run: |
+          set -euo pipefail
+          prefix="${RUNNER_TEMP}/llvm-22"
+          path="$(scripts/ci/llvm.sh "${{ matrix.llvm_target }}" "$prefix")"
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+          echo "LLVM_SYS_221_PREFIX=$path" >> "$GITHUB_ENV"
+          echo "LLVM_CONFIG_PATH=$path/bin/llvm-config" >> "$GITHUB_ENV"
+          # Prefer absolute llvm-config; only put LLVM bin on PATH on Linux.
+          # On macOS, LLVM’s lib/ on LIBRARY_PATH or bin/ on PATH can make
+          # build-scripts pick up LLVM’s libunwind and abort (missing @rpath).
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            echo "$path/bin" >> "$GITHUB_PATH"
+            if [[ -d "$path/lib" ]]; then
+              echo "LIBRARY_PATH=$path/lib${LIBRARY_PATH:+:$LIBRARY_PATH}" >> "$GITHUB_ENV"
+              echo "LD_LIBRARY_PATH=$path/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+            fi
+          fi
+          # Windows: add bin for llvm-config.exe discovery if env var is ignored.
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            echo "$path/bin" >> "$GITHUB_PATH"
+          fi
+
+      - name: Windows — libxml2 (xml2s.lib) for LLVM static link
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          scripts/ci/windows-llvm-deps.sh "${LLVM_SYS_221_PREFIX}"
+          # Ensure link.exe searches the LLVM lib dir (xml2s.lib, zlib).
+          lib_win="$(cygpath -aw "${LLVM_SYS_221_PREFIX}/lib")"
+          echo "LIB=${lib_win};${LIB:-}" >> "$GITHUB_ENV"
+
+      - name: Install mold (Linux link speed from .cargo/config.toml)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y mold
+
+      - name: Build xo + runtime staticlib (release)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Explicit -p echo_runtime so staticlib is always produced (not only rlib as a dep).
+          if [[ "$(uname -s)" == "Darwin" ]]; then
+            # Apple ld's libLTO (≈LLVM 15) cannot read bitcode in LLVM 22 static
+            # archives. Keep the *system* clang as the linker driver (SDK + C++
+            # defaults), and swap in the tarball's ld64.lld for the real link.
+            # Do not set CC/CXX to LLVM clang (breaks llvm-sys: missing inttypes.h).
+            llvm_lld="${LLVM_SYS_221_PREFIX}/bin/ld64.lld"
+            if [[ ! -x "$llvm_lld" ]]; then
+              llvm_lld="${LLVM_SYS_221_PREFIX}/bin/lld"
+            fi
+            if [[ ! -x "$llvm_lld" ]]; then
+              echo "error: missing lld under ${LLVM_SYS_221_PREFIX}/bin" >&2
+              ls -la "${LLVM_SYS_221_PREFIX}/bin" | head -40 >&2 || true
+              exit 1
+            fi
+            sdk="$(xcrun --show-sdk-path)"
+            export LIBRARY_PATH="${LLVM_SYS_221_PREFIX}/lib"
+            # libc++ symbols (operator new, __cxa_*) must be explicit with some
+            # lld paths; raise min OS so dylib version warnings don't become traps.
+            export RUSTFLAGS="${RUSTFLAGS:-} -C link-arg=-fuse-ld=${llvm_lld} -C link-arg=-L${LLVM_SYS_221_PREFIX}/lib -C link-arg=-Wl,-rpath,${LLVM_SYS_221_PREFIX}/lib -C link-arg=-lc++ -C link-arg=-lc++abi -C link-arg=-mmacosx-version-min=14.0 -C link-arg=-isysroot${sdk}"
+          fi
+          cargo build -p xo -p echo_runtime --release
+          scripts/ci/stage-runtime-lib.sh release
+
+      - name: Stage artifact + release tarball
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/pkg/bin dist/pkg/std
+          cp "target/release/${{ matrix.binary }}" "dist/pkg/bin/${{ matrix.binary }}"
+          # Prefer documented name; fall back to other cargo staticlib spellings.
+          runtime_copied=0
+          for cand in \
+            "target/release/${{ matrix.runtime_lib }}" \
+            "target/release/libecho_runtime.a" \
+            "target/release/echo_runtime.lib" \
+            "target/release/deps/libecho_runtime.a" \
+            "target/release/deps/echo_runtime.lib"
+          do
+            if [[ -f "$cand" ]]; then
+              # Always ship as the canonical name next to the binary.
+              if [[ "$cand" == *.lib ]]; then
+                cp "$cand" "dist/pkg/bin/echo_runtime.lib"
+                cp "$cand" "dist/echo_runtime.lib"
+              else
+                cp "$cand" "dist/pkg/bin/libecho_runtime.a"
+                cp "$cand" "dist/libecho_runtime.a"
+              fi
+              runtime_copied=1
+              break
+            fi
+          done
+          if [[ "$runtime_copied" -ne 1 ]]; then
+            # Last resort: hashed deps names.
+            hit="$(ls -1t target/release/deps/libecho_runtime-*.a target/release/deps/echo_runtime-*.lib 2>/dev/null | head -1 || true)"
+            if [[ -n "$hit" && -f "$hit" ]]; then
+              if [[ "$hit" == *.lib ]]; then
+                cp "$hit" "dist/pkg/bin/echo_runtime.lib"
+              else
+                cp "$hit" "dist/pkg/bin/libecho_runtime.a"
+              fi
+              runtime_copied=1
+            fi
+          fi
+          if [[ "$runtime_copied" -ne 1 ]]; then
+            echo "error: libecho_runtime staticlib not found" >&2
+            ls -la target/release target/release/deps 2>&1 | head -80 >&2 || true
+            exit 1
+          fi
+          cp "target/release/${{ matrix.binary }}" "dist/${{ matrix.binary }}"
+          # Co-locate std so installers can use the tarball without a git checkout.
+          if [[ -d std ]]; then
+            if command -v rsync >/dev/null 2>&1; then
+              rsync -a std/ dist/pkg/std/
+            else
+              cp -a std/. dist/pkg/std/
+            fi
+          else
+            echo "error: std/ missing from checkout" >&2
+            exit 1
+          fi
+          printf '%s\n' "${{ github.event.release.tag_name }}" >dist/pkg/version
+          # Portable user install archive (bin/xo + runtime + std).
+          tar -C dist/pkg -czf "dist/xo-${{ matrix.artifact }}.tar.gz" .
+          ls -la dist dist/pkg/bin
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xo-${{ matrix.artifact }}
+          path: |
+            dist/${{ matrix.binary }}
+            dist/xo-${{ matrix.artifact }}.tar.gz
+          if-no-files-found: error
+
+      - name: Attach tarball to GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          tag="${{ github.event.release.tag_name }}"
+          archive="dist/xo-${{ matrix.artifact }}.tar.gz"
+          [[ -f "$archive" ]] || { echo "missing $archive" >&2; exit 1; }
+          gh release upload "$tag" "$archive" --clobber --repo "${{ github.repository }}"
+
+  test-linux:
+    name: test-linux (smoke + echo26)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install LLVM 22 (official release tarball)
+        shell: bash
+        run: |
+          set -euo pipefail
+          prefix="${RUNNER_TEMP}/llvm-22"
+          path="$(scripts/ci/llvm.sh linux-x64 "$prefix")"
+          echo "LLVM_SYS_221_PREFIX=$path" >> "$GITHUB_ENV"
+          echo "LLVM_CONFIG_PATH=$path/bin/llvm-config" >> "$GITHUB_ENV"
+          echo "$path/bin" >> "$GITHUB_PATH"
+          if [[ -d "$path/lib" ]]; then
+            echo "LIBRARY_PATH=$path/lib${LIBRARY_PATH:+:$LIBRARY_PATH}" >> "$GITHUB_ENV"
+            echo "LD_LIBRARY_PATH=$path/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install mold + clang (AOT link)
+        run: sudo apt-get update && sudo apt-get install -y mold clang
+
+      - name: Build xo + e26 + runtime staticlib (debug)
+        run: |
+          set -euo pipefail
+          cargo build -p xo -p e26 -p echo_runtime
+          scripts/ci/stage-runtime-lib.sh debug
+
+      - name: Smoke — cargo test -p xo (non-JIT unit tests)
+        # REPL integration tests use LLVM JIT (run_jit_ir) and currently SIGSEGV
+        # under CI/host LLVM loads; language proof is AOT smoke + echo26 below.
+        run: |
+          cargo test -p xo -- --test-threads=1 \
+            brace_delta \
+            buffer_waits \
+            classify_bare \
+            meta_hint \
+            default_opt \
+            short_and_long \
+            invalid_opt \
+            ir_run_build_share \
+            aot_cache_key \
+            windows_msvc_llvm
+
+      - name: Smoke — xo run hello (AOT)
+        run: |
+          set -euo pipefail
+          test -f target/debug/libecho_runtime.a
+          ./target/debug/xo run --no-cache examples/misc/hello.echo
+
+      - name: Hard gate — scripts/gate echo26
+        run: scripts/gate echo26
+        env:
+          GATE_ECHO_COMMANDS: "1"

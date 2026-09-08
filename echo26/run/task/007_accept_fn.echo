@@ -1,0 +1,36 @@
+; Preferred pattern: + handle(conn) with free function args.
+/ std/io
+/ std/str
+/ std/net/tcp
+
+$ handle = (conn) {
+    $ got = tcp.read(conn, 64)
+    io.print(str.from_bytes(got))
+    tcp.close(conn)
+    ^
+}
+
+$ server = (addr) {
+    $ lis = tcp.listen(addr)
+    $ c = tcp.accept(lis)
+    + job = handle(c)
+    - job
+    tcp.close(lis)
+    ^
+}
+
++ s = server("127.0.0.1:39920")
+
+- {
+    * {
+        $ client = tcp.connect("127.0.0.1:39920")
+        ? client.handle != 0 {
+            tcp.write(client, "yo")
+            tcp.close(client)
+            <
+        }
+    }
+    ^
+}
+
+- s

@@ -1,0 +1,42 @@
+; # const-eval: lits + ops on other # only
+/ std/io
+/ std/str
+/ std/list
+
+# A = 21
+# B = A + A
+# D = 5s
+# WAIT = D + 10ms
+# RAW = b'raw'
+# HOME = p'/tmp'
+# XS = [10, 20]
+# R = 1..3
+# Q = { a: 1, b: 2 }
+# QA = Q.a
+# FIRST = XS[0]
+
+% point {
+    $ x
+    $ y
+    ~ z = 0
+}
+# P = point { x: 3, y: 4 }
+# PX = P.x
+# PZ = P.z
+
+io.print(str.from_int(B))
+io.print(str.from_duration(WAIT))
+io.print(str.from_bytes(RAW))
+io.print(str.from_locator(HOME))
+io.print(str.from_int(list.len(XS)))
+~ s = 0
+* x : R {
+    ~ s = s + x
+}
+io.print(str.from_int(s))
+io.print(str.from_int(PX))
+io.print(str.from_int(PZ))
+io.print(str.from_int(QA))
+io.print(str.from_int(FIRST))
+io.print('const ok')
+

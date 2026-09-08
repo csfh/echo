@@ -1,0 +1,10 @@
+file
+  bind_dollar
+    name f
+    fn
+      error_return
+        string_rich
+  bind_dollar
+    name x
+    call
+      name f

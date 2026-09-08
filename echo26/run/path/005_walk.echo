@@ -1,0 +1,55 @@
+; Missing dir → empty list; one file → that path is a child.
+/ std/io
+/ std/str
+/ std/list
+/ std/path
+/ std/fs
+
+$ absent = path.walk("/tmp/echo26_path_walk_absent")
+? list.is_empty(absent) {
+    io.print("empty")
+}
+: {
+    io.print("nonempty")
+}
+$ root = fs.join("/tmp", "echo26_path_005")
+| fs.create_dir_all(root) {
+    $ ok {
+        io.print("dir")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+$ child = fs.join(root, "a.txt")
+| fs.write(child, "x") {
+    $ ok {
+        io.print("write")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+$ kids = path.walk(root)
+? list.contains(kids, child) {
+    io.print("hit")
+}
+: {
+    io.print("miss")
+}
+| fs.remove(child) {
+    $ ok {
+        io.print("rm")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove_dir(root) {
+    $ ok {
+        io.print("rmdir")
+    }
+    ! e {
+        io.print(e)
+    }
+}

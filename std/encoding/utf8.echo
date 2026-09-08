@@ -1,0 +1,54 @@
+; std/encoding/utf8 — strict UTF-8 check/decode (bytes or string).
+; str.from_bytes stays lossy; this module rejects invalid sequences.
+;
+; Public API:
+;   valid(b) — boolean
+;   decode(b) — string, or ! "invalid utf-8"
+;
+; Suite: xo test std/encoding/utf8.echo
+
+/ runtime
+/ std/test
+/ std/bytes
+
+$ valid = (b) {
+    ^ runtime.utf8_valid(b) != 0
+}
+
+$ decode = (b) {
+    $ s = runtime.utf8_decode(b)
+    ? s == 0 {
+        ! "invalid utf-8"
+    }
+    ^ s
+}
+
+test.it("valid_ok", () {
+    test.true(valid(b'hi'))
+    test.true(valid(b''))
+    test.false(valid(b"\xff"))
+})
+
+test.it("decode_ok", () {
+    | decode(b'hi') {
+        $ t {
+            test.eq(t, "hi")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("decode_invalid", () {
+    | decode(b"\xff") {
+        $ t {
+            test.fail("expected invalid utf-8")
+        }
+        ! e {
+            test.eq(e, "invalid utf-8")
+        }
+    }
+})
+
+\ valid, decode

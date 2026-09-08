@@ -1,0 +1,8 @@
+file
+  import
+    seg .
+    seg lib
+  bind_dollar
+    name x
+    field missing
+      name lib

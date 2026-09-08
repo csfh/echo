@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+/ std/path
+
+io.print(str.from_int(path.class(p'mailto:x')))
+io.print(str.from_int(path.class(p"file:///tmp")))
+io.print(str.from_int(path.class(p'')))
+io.print(str.from_int(path.class("C:/Windows")))
+io.print(str.from_int(path.class(".")))

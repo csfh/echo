@@ -1,0 +1,37 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct point
+    bind_dollar
+      name x
+    bind_dollar
+      name y
+  bind_dollar
+    name p
+    struct_lit point
+      field x
+        number 3
+      field y
+        number 4
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field x
+          name p
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field y
+          name p

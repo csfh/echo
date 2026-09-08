@@ -1,0 +1,5 @@
+/ std/io
+/ std/str
+
+$ t = 1s + 500ms
+io.print(str.from_duration(t))

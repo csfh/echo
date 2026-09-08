@@ -1,0 +1,4 @@
+file
+  struct user
+    bind_dollar
+      name name

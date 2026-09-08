@@ -1,0 +1,12 @@
+; Missing directory → chdir err.
+/ std/io
+/ std/os
+
+| os.chdir("/tmp/echo26_os_chdir_absent") {
+    $ ok {
+        io.print("ok")
+    }
+    ! e {
+        io.print(e)
+    }
+}

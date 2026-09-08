@@ -1,0 +1,32 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct box
+    bind_dollar
+      name n
+      number 0
+    bind_dollar
+      name len_ab
+      fn
+        return
+          call
+            field len
+              name str
+            string_rich
+  bind_dollar
+    name b
+    struct_lit box
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len_ab
+            name b

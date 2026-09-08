@@ -1,0 +1,10 @@
+file
+  effect_block
+    block
+      return
+        number 1
+  effect_block
+    bind name
+    block
+      return
+        number 2

@@ -1,0 +1,56 @@
+; Symlink a file; metadata.is_symlink is 1; read follows the link.
+/ std/io
+/ std/str
+/ std/bytes
+/ std/fs
+
+$ tgt = fs.join("/tmp", "echo26_fs_005.txt")
+$ ln = fs.join("/tmp", "echo26_fs_005.link")
+| fs.write(tgt, "hi") {
+    $ ok {
+        io.print("write")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.symlink(tgt, ln) {
+    $ ok {
+        io.print("symlink")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.metadata(ln) {
+    $ m {
+        io.print(str.from_int(m.is_symlink))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.read(ln) {
+    $ b {
+        io.print(str.from_bytes(b))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(ln) {
+    $ ok {
+        io.print("rm")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(tgt) {
+    $ ok {
+        io.print("rm2")
+    }
+    ! e {
+        io.print(e)
+    }
+}

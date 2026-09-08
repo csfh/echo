@@ -1,0 +1,28 @@
+; Chunked response head has Transfer-Encoding, not Content-Length.
+/ std/io
+/ std/str
+/ std/net/http
+/ std/net/response
+
+$ res = response.response {
+    status: 200,
+    headers: {
+        content_type: "text/plain"
+    },
+    body: "hi",
+    chunked: |
+}
+$ head = http.format_head(res)
+? str.contains(head, "Transfer-Encoding: chunked") {
+    io.print("chunked")
+}
+: {
+    io.print("no")
+}
+? str.contains(head, "Content-Length:") {
+    io.print("cl")
+}
+: {
+    io.print("no-cl")
+}
+io.print(http.hex_from_int(10))

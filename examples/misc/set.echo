@@ -1,0 +1,12 @@
+; Set add/has + from_list. Run: xo run examples/misc/set.echo
+/ std/io
+/ std/str
+/ std/collections/set
+
+$ s = set.make()
+s.add("a")
+s.add(2)
+io.print(str.from_int(s.has("a")))
+$ t = set.from_list([10, 20, 10])
+io.print(str.from_int(t.len()))
+io.print(str.from_int(t.has(20)))

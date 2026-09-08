@@ -1,0 +1,46 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  task_spawn
+    bind job
+    block
+      error_return
+        number 5
+  task_join
+    bind r
+    handle
+      name job
+  match
+    name r
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name e

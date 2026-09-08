@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+
+$ apply = (x) {
+    $ double = (n) {
+        ^ n + n
+    }
+    ^ double(x)
+}
+
+io.print(str.from_int(apply(21)))

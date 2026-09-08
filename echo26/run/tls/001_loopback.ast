@@ -1,0 +1,167 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg net
+    seg tls
+  bind_dollar
+    name cert
+    call
+      field load_pem
+        name tls
+      string_rich
+  bind_dollar
+    name key
+    call
+      field load_pem
+        name tls
+      string_rich
+  bind_dollar
+    name ca
+    call
+      field load_pem
+        name tls
+      string_rich
+  if
+    binary Or
+      binary Or
+        binary Eq
+          call
+            field len
+              name str
+            name cert
+          number 0
+        binary Eq
+          call
+            field len
+              name str
+            name key
+          number 0
+      binary Eq
+        call
+          field len
+            name str
+          name ca
+        number 0
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+    return
+  bind_dollar
+    name lis
+    call
+      field listen
+        name tls
+      string_rich
+  if
+    binary Eq
+      field handle
+        name lis
+      number 0
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+    return
+  task_spawn
+    bind srv
+    closure
+      capture lis
+      capture cert
+      capture key
+      bind_dollar
+        name c
+        call
+          field accept
+            name tls
+          name lis
+          name cert
+          name key
+      if
+        binary NotEq
+          field handle
+            name c
+          number 0
+        bind_dollar
+          name b
+          call
+            field read
+              name tls
+            name c
+            number 64
+        expr_stmt
+          call
+            field print
+              name io
+            call
+              field from_bytes
+                name str
+              name b
+        expr_stmt
+          call
+            field write
+              name tls
+            name c
+            string_rich
+        expr_stmt
+          call
+            field close
+              name tls
+            name c
+      return
+  bind_dollar
+    name client
+    call
+      field connect
+        name tls
+      string_rich
+      number 18491
+      string_rich
+      name ca
+  if
+    binary NotEq
+      field handle
+        name client
+      number 0
+    expr_stmt
+      call
+        field write
+          name tls
+        name client
+        string_rich
+    bind_dollar
+      name raw
+      call
+        field read
+          name tls
+        name client
+        number 64
+    expr_stmt
+      call
+        field print
+          name io
+        call
+          field from_bytes
+            name str
+          name raw
+    expr_stmt
+      call
+        field close
+          name tls
+        name client
+  task_join
+    handle
+      name srv
+  expr_stmt
+    call
+      field close_listener
+        name tls
+      name lis

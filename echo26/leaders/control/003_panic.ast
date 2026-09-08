@@ -1,0 +1,8 @@
+file
+  bind_dollar
+    name f
+    fn
+      error_return
+        string_rich
+      return
+        number 0

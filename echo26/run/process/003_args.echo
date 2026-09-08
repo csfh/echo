@@ -1,0 +1,12 @@
+; process.args() returns a non-empty argv list (at least argv0).
+/ std/io
+/ std/list
+/ std/process
+
+$ a = process.args()
+? list.len(a) >= 1 {
+    io.print("ok")
+}
+: {
+    io.print("empty")
+}

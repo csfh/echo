@@ -1,0 +1,50 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg net
+    seg url
+  match
+    call
+      field parse
+        name url
+      string_rich
+    arm_ok u
+      expr_stmt
+        call
+          field print
+            name io
+          field scheme
+            name u
+      expr_stmt
+        call
+          field print
+            name io
+          field host
+            name u
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            field port
+              name u
+      expr_stmt
+        call
+          field print
+            name io
+          field path
+            name u
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

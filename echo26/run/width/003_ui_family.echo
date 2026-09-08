@@ -1,0 +1,12 @@
+/ std/io
+/ std/str
+
+$ a = <ui8> 200
+$ b = <ui8> 55
+io.print(str.from_int(a + b))
+$ c = <i8> -5
+io.print(str.from_int(c + <i8> 10))
+$ d = <ui64> 1
+io.print(str.from_int(d << <ui64> 4))
+$ e = <byte> 7
+io.print(str.from_int(<ui64> e))

@@ -1,0 +1,720 @@
+; std/fs — paths, files, directories, metadata, streaming handles.
+; Privileged std may `/ runtime` and call `runtime.*` (docs/stdlib.md).
+;
+; Path args accept **string** or **locator** (`p'…'`).
+; Whole-file `read` is **bytes**; `write` accepts bytes or string (UTF-8).
+; Streaming uses `% file` with opaque `.handle` (same idea as net conn).
+;
+; Public API:
+;   exists, is_file, is_dir, join
+;   read, write, remove, copy, rename
+;   create_dir, create_dir_all, read_dir, remove_dir
+;   metadata → % meta
+;   open / create / append → % file ; methods read / write / seek / close
+;
+; Suite: xo test std/fs.echo (XO_TEST).
+
+/ runtime
+/ std/test
+/ std/list
+/ std/bytes
+/ std/str
+/ std/os
+
+; --- metadata product ---
+% meta {
+    $ len
+    $ is_file
+    $ is_dir
+    $ is_symlink
+    $ modified_ms
+}
+
+; --- open file handle (streaming) ---
+% file {
+    $ handle
+    ~ open = |
+
+    ; Up to `limit` bytes. Empty bytes = EOF. ! on I/O error.
+    $ read = (limit) {
+        $ b = runtime.fs_file_read(.handle, limit)
+        ? b == 0 {
+            ! "read failed"
+        }
+        ^ b
+    }
+
+    $ write = (data) {
+        $ st = runtime.fs_file_write(.handle, data)
+        ? st < 0 {
+            ! "write failed"
+        }
+        ^
+    }
+
+    ; Absolute seek. ^ new position, or ! on failure.
+    $ seek = (pos) {
+        $ p = runtime.fs_file_seek(.handle, pos)
+        ? p < 0 {
+            ! "seek failed"
+        }
+        ^ p
+    }
+
+    $ close = () {
+        runtime.fs_file_close(.handle)
+        ~ .open = _
+        ^ .
+    }
+}
+
+; --- path queries ---
+
+$ exists = (path) {
+    ^ runtime.fs_exists(path) == 1
+}
+
+$ is_file = (path) {
+    ^ runtime.fs_is_file(path) == 1
+}
+
+$ is_dir = (path) {
+    ^ runtime.fs_is_dir(path) == 1
+}
+
+$ join = (base, rel) {
+    ^ runtime.fs_join(base, rel)
+}
+
+; --- whole-file ---
+
+$ read = (path) {
+    $ b = runtime.fs_read(path)
+    ? b == 0 {
+        ! "read failed"
+    }
+    ^ b
+}
+
+$ write = (path, data) {
+    $ st = runtime.fs_write(path, data)
+    ? st < 0 {
+        ! "write failed"
+    }
+    ^
+}
+
+$ remove = (path) {
+    $ st = runtime.fs_remove(path)
+    ? st < 0 {
+        ! "remove failed"
+    }
+    ^
+}
+
+$ copy = (from, to) {
+    $ st = runtime.fs_copy(from, to)
+    ? st < 0 {
+        ! "copy failed"
+    }
+    ^
+}
+
+$ rename = (from, to) {
+    $ st = runtime.fs_rename(from, to)
+    ? st < 0 {
+        ! "rename failed"
+    }
+    ^
+}
+
+; --- directories ---
+
+$ create_dir = (path) {
+    $ st = runtime.fs_create_dir(path)
+    ? st < 0 {
+        ! "create_dir failed"
+    }
+    ^
+}
+
+$ create_dir_all = (path) {
+    $ st = runtime.fs_create_dir_all(path)
+    ? st < 0 {
+        ! "create_dir_all failed"
+    }
+    ^
+}
+
+$ read_dir = (path) {
+    $ names = runtime.fs_read_dir(path)
+    ? names == 0 {
+        ! "read_dir failed"
+    }
+    ^ names
+}
+
+$ remove_dir = (path) {
+    $ st = runtime.fs_remove_dir(path)
+    ? st < 0 {
+        ! "remove_dir failed"
+    }
+    ^
+}
+
+; --- metadata ---
+
+; Runtime wire: list [len, is_file, is_dir, is_symlink, modified_ms], or 0 fail.
+$ metadata = (path) {
+    $ parts = runtime.fs_metadata(path)
+    $ n = list.len(parts)
+    ? n == 0 {
+        ! "metadata failed"
+    }
+    ^ meta {
+        len: parts[0],
+        is_file: parts[1],
+        is_dir: parts[2],
+        is_symlink: parts[3],
+        modified_ms: parts[4]
+    }
+}
+
+; --- streaming open ---
+
+$ open = (path) {
+    $ h = runtime.fs_open_read(path)
+    ? h == 0 {
+        ! "open failed"
+    }
+    ^ file {
+        handle: h,
+        open: |
+    }
+}
+
+; Create/truncate for writing.
+$ create = (path) {
+    $ h = runtime.fs_open_write(path)
+    ? h == 0 {
+        ! "create failed"
+    }
+    ^ file {
+        handle: h,
+        open: |
+    }
+}
+
+$ append = (path) {
+    $ h = runtime.fs_open_append(path)
+    ? h == 0 {
+        ! "append failed"
+    }
+    ^ file {
+        handle: h,
+        open: |
+    }
+}
+
+; --- suite ---
+
+test.it("join", () {
+    $ p = join("/tmp", "echo_fs_suite")
+    test.true(str.contains(p, "echo_fs_suite"))
+})
+
+test.it("file_roundtrip", () {
+    $ root = join("/tmp", "echo_fs_suite_file")
+    | create_dir_all(root) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    $ path = join(root, "a.txt")
+    | write(path, "hello") {
+        $ ok {
+            test.true(exists(path))
+            test.true(is_file(path))
+            test.false(is_dir(path))
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | read(path) {
+        $ b {
+            test.eq(bytes.len(b), 5)
+            test.eq(str.from_bytes(b), "hello")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove(path) {
+        $ ok {
+            test.false(exists(path))
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove_dir(root) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.eq(1, 1)
+        }
+    }
+})
+
+test.it("copy_rename_meta", () {
+    $ root = join("/tmp", "echo_fs_suite_copy")
+    | create_dir_all(root) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    $ a = join(root, "a.txt")
+    $ b = join(root, "b.txt")
+    $ c = join(root, "c.txt")
+    | write(a, "xy") {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | copy(a, b) {
+        $ ok {
+            test.true(exists(b))
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | rename(b, c) {
+        $ ok {
+            test.false(exists(b))
+            test.true(exists(c))
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | metadata(a) {
+        $ m {
+            test.eq(m.len, 2)
+            test.eq(m.is_file, 1)
+            test.eq(m.is_dir, 0)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove(a) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove(c) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove_dir(root) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.eq(1, 1)
+        }
+    }
+})
+
+test.it("streaming", () {
+    $ root = join("/tmp", "echo_fs_suite_stream")
+    | create_dir_all(root) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    $ path = join(root, "s.bin")
+    | create(path) {
+        $ f {
+            | f.write("ab") {
+                $ ok {
+                    test.eq(1, 1)
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+            | f.write("cd") {
+                $ ok {
+                    test.eq(1, 1)
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+            f.close()
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | open(path) {
+        $ f {
+            | f.read(2) {
+                $ b {
+                    test.eq(str.from_bytes(b), "ab")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+            | f.read(10) {
+                $ b {
+                    test.eq(str.from_bytes(b), "cd")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+            | f.read(10) {
+                $ b {
+                    test.eq(bytes.len(b), 0)
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+            f.close()
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove(path) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove_dir(root) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.eq(1, 1)
+        }
+    }
+})
+
+test.it("append_seek", () {
+    $ root = join("/tmp", "echo_fs_suite_append")
+    | create_dir_all(root) {
+        $ ok {}
+        ! e {
+            test.fail(e)
+        }
+    }
+    $ path = join(root, "a.txt")
+    | write(path, "ab") {
+        $ ok {}
+        ! e {
+            test.fail(e)
+        }
+    }
+    | append(path) {
+        $ f {
+            | f.write("cd") {
+                $ ok {}
+                ! e {
+                    test.fail(e)
+                }
+            }
+            f.close()
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | read(path) {
+        $ b {
+            test.eq(str.from_bytes(b), "abcd")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | open(path) {
+        $ f {
+            | f.seek(2) {
+                $ pos {
+                    test.eq(pos, 2)
+                    | f.read(10) {
+                        $ b {
+                            test.eq(str.from_bytes(b), "cd")
+                        }
+                        ! e {
+                            test.fail(e)
+                        }
+                    }
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+            | f.seek(-1) {
+                $ pos {
+                    test.fail("expected seek error")
+                }
+                ! e {
+                    test.eq(e, "seek failed")
+                }
+            }
+            f.close()
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove(path) {
+        $ ok {}
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove_dir(root) {
+        $ ok {}
+        ! e {}
+    }
+})
+
+test.it("dir_list", () {
+    $ root = join("/tmp", "echo_fs_suite_dir")
+    | create_dir_all(root) {
+        $ ok {
+            test.true(is_dir(root))
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    $ child = join(root, "kid")
+    | create_dir(child) {
+        $ ok {
+            test.true(is_dir(child))
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | read_dir(root) {
+        $ names {
+            test.true(list.len(names) >= 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove_dir(child) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | remove_dir(root) {
+        $ ok {
+            test.eq(1, 1)
+        }
+        ! e {
+            test.eq(1, 1)
+        }
+    }
+})
+
+test.it("read_missing", () {
+    | read("/__echo_fs_missing_xyz__") {
+        $ b {
+            test.fail("expected missing")
+        }
+        ! e {
+            test.eq(e, "read failed")
+        }
+    }
+})
+
+$ temp_dir = () {
+    ^ runtime.fs_temp_dir()
+}
+
+$ create_temp = (prefix) {
+    $ p = runtime.fs_create_temp(prefix)
+    ? p == 0 {
+        ! "create_temp failed"
+    }
+    ^ p
+}
+
+; Unix mode bits (e.g. 0o644 = 420). ! on failure / non-Unix.
+$ chmod = (path, mode) {
+    $ st = runtime.fs_chmod(path, mode)
+    ? st < 0 {
+        ! "chmod failed"
+    }
+    ^
+}
+
+$ symlink = (original, link) {
+    $ st = runtime.fs_symlink(original, link)
+    ? st < 0 {
+        ! "symlink failed"
+    }
+    ^
+}
+
+test.it("temp_dir", () {
+    $ t = temp_dir()
+    test.true(str.len(t) > 0)
+})
+
+test.it("create_temp", () {
+    | create_temp("echo_fs_suite_tmp") {
+        $ p {
+            test.true(exists(p))
+            test.true(is_file(p))
+            test.true(str.contains(p, "echo_fs_suite_tmp"))
+            | remove(p) {
+                $ ok {}
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("chmod_missing", () {
+    | chmod("/tmp/echo_fs_chmod_absent", 420) {
+        $ ok {
+            test.fail("expected chmod error")
+        }
+        ! e {
+            test.eq(e, "chmod failed")
+        }
+    }
+})
+
+; Unix mode 0o644 = 420. Windows native always fails (docs/stdlib.md).
+test.it("chmod_file", () {
+    ? os.platform() == "windows" {
+        test.eq(1, 1)
+    }
+    : {
+        $ path = join("/tmp", "echo_fs_chmod.txt")
+        | write(path, "x") {
+            $ ok {
+                | chmod(path, 420) {
+                    $ done {
+                        test.eq(1, 1)
+                    }
+                    ! e {
+                        test.fail(e)
+                    }
+                }
+            }
+            ! e {
+                test.fail(e)
+            }
+        }
+        | remove(path) {
+            $ ok {}
+            ! e {
+                test.fail(e)
+            }
+        }
+    }
+})
+
+test.it("symlink_missing_parent", () {
+    | symlink("/tmp/echo_fs_symlink_tgt", "/tmp/echo_fs_symlink_absent/link") {
+        $ ok {
+            test.fail("expected symlink error")
+        }
+        ! e {
+            test.eq(e, "symlink failed")
+        }
+    }
+})
+
+test.it("symlink_file", () {
+    ? os.platform() == "windows" {
+        test.eq(1, 1)
+    }
+    : {
+        $ tgt = join("/tmp", "echo_fs_symlink.txt")
+        $ ln = join("/tmp", "echo_fs_symlink.link")
+        | write(tgt, "hi") {
+            $ ok {
+                | symlink(tgt, ln) {
+                    $ done {
+                        | metadata(ln) {
+                            $ m {
+                                test.eq(m.is_symlink, 1)
+                            }
+                            ! e {
+                                test.fail(e)
+                            }
+                        }
+                    }
+                    ! e {
+                        test.fail(e)
+                    }
+                }
+            }
+            ! e {
+                test.fail(e)
+            }
+        }
+        | remove(ln) {
+            $ ok {}
+            ! e {
+                test.fail(e)
+            }
+        }
+        | remove(tgt) {
+            $ ok {}
+            ! e {
+                test.fail(e)
+            }
+        }
+    }
+})
+
+\ exists, is_file, is_dir, join, read, write, remove, copy, rename, create_dir, create_dir_all, read_dir, remove_dir, metadata, open, create, append, meta, file, temp_dir, create_temp, symlink, chmod

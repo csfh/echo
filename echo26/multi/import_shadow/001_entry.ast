@@ -1,0 +1,7 @@
+file
+  import
+    seg .
+    seg lib
+  bind_dollar
+    name lib
+    number 1

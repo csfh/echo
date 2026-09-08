@@ -1,0 +1,5 @@
+file
+  expr_stmt
+    call
+      field visit
+        name u

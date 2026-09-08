@@ -1,0 +1,17 @@
+file
+  struct circle
+    bind_tilde
+      name r
+  bind_dollar
+    name shape
+    struct_lit circle
+      field r
+        number 1
+  match
+    name shape
+    arm_type missing
+      return
+        number 0
+    arm_default
+      return
+        number 1

@@ -1,0 +1,25 @@
+; FIFO queue. Run: xo run examples/misc/queue.echo
+/ std/io
+/ std/str
+/ std/collections/queue
+
+~ q = queue.make()
+q.push(10)
+q.push(20)
+io.print(str.from_int(q.len()))
+| q.pop() {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| q.pop() {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}

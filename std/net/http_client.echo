@@ -1,0 +1,109 @@
+; std/net/http_client — HTTP/1.1 client over TCP (cleartext) and TLS.
+; TLS uses runtime.tls_* directly to avoid % conn clash with std/net/tcp.
+;
+; Public API:
+;   get(host, port, path) → result of response bytes
+;   request(method, host, port, path, headers, body) → result of bytes
+;   get_tls / request_tls — same over TLS (empty ca_pem = platform roots)
+;
+; Suite: xo test std/net/http_client.echo
+
+/ runtime
+/ std/net/tcp
+/ std/str
+/ std/test
+
+$ build_request = (method, host, path, headers, body) {
+    ~ req = str.cat(method, " ")
+    ~ req = str.cat(req, path)
+    ~ req = str.cat(req, " HTTP/1.1\r\nHost: ")
+    ~ req = str.cat(req, host)
+    ~ req = str.cat(req, "\r\nConnection: close\r\n")
+    * h : headers {
+        ~ req = str.cat(req, h)
+        ~ req = str.cat(req, "\r\n")
+    }
+    $ blen = str.len(body)
+    ? blen > 0 {
+        ~ req = str.cat(req, "Content-Length: ")
+        ~ req = str.cat(req, str.from_int(blen))
+        ~ req = str.cat(req, "\r\n")
+    }
+    ~ req = str.cat(req, "\r\n")
+    ~ req = str.cat(req, body)
+    ^ req
+}
+
+$ request = (method, host, port, path, headers, body) {
+    $ addr = str.cat(str.cat(host, ":"), str.from_int(port))
+    $ c = tcp.connect(addr)
+    ? c.open {
+        $ req = build_request(method, host, path, headers, body)
+        c.write(req)
+        $ resp = c.read(65536)
+        c.close()
+        ^ resp
+    }
+    ! "connect failed"
+}
+
+$ get = (host, port, path) {
+    $ empty = []
+    | request("GET", host, port, path, empty, "") {
+        $ b {
+            ^ b
+        }
+        ! e {
+            ! e
+        }
+    }
+}
+
+$ request_tls = (method, host, port, path, headers, body, server_name, ca_pem) {
+    $ h = runtime.tls_connect(host, port, server_name, ca_pem)
+    ? h == 0 {
+        ! "connect failed"
+    }
+    $ req = build_request(method, host, path, headers, body)
+    runtime.tls_write(h, req)
+    $ resp = runtime.tls_read(h, 65536)
+    runtime.tls_close(h)
+    ^ resp
+}
+
+$ get_tls = (host, port, path, server_name, ca_pem) {
+    $ empty = []
+    | request_tls("GET", host, port, path, empty, "", server_name, ca_pem) {
+        $ b {
+            ^ b
+        }
+        ! e {
+            ! e
+        }
+    }
+}
+
+test.it("get_refused_port", () {
+    | get("127.0.0.1", 1, "/") {
+        $ b {
+            test.fail("expected connect failed")
+        }
+        ! e {
+            test.eq(e, "connect failed")
+        }
+    }
+})
+
+test.it("request_refused", () {
+    $ empty = []
+    | request("POST", "127.0.0.1", 1, "/x", empty, "hi") {
+        $ b {
+            test.fail("expected connect failed")
+        }
+        ! e {
+            test.eq(e, "connect failed")
+        }
+    }
+})
+
+\ get, request, get_tls, request_tls

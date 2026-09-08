@@ -1,0 +1,10 @@
+; Suite smoke for `xo test` (Model A).
+/ std/test
+
+test.it("eq_ok", () {
+    test.eq(1, 1)
+})
+
+test.it("true_ok", () {
+    test.true(|)
+})

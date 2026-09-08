@@ -1,0 +1,36 @@
+; Int 1, string "1", and bytes b'x' are distinct keys.
+/ std/io
+/ std/str
+/ std/collections/hash_table
+
+$ t = hash_table.make()
+t.put("a", 1)
+t.put(1, 99)
+t.put(b'x', 7)
+io.print(str.from_int(t.len()))
+| t.get("a") {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss a")
+    }
+}
+| t.get(1) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss 1")
+    }
+}
+io.print(str.from_int(t.has("1")))
+| t.get(b'x') {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("miss x")
+    }
+}
+io.print(str.from_int(t.has("x")))

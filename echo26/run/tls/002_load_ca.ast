@@ -1,0 +1,35 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg net
+    seg tls
+  bind_dollar
+    name ca
+    call
+      field load_pem
+        name tls
+      string_rich
+  if
+    binary Gt
+      call
+        field len
+          name str
+        name ca
+      number 20
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich

@@ -1,0 +1,15 @@
+[package]
+name = "echo_hir"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+echo_ast = { path = "../echo_ast" }
+echo_diagnostics = { path = "../echo_diagnostics" }
+echo_semantics = { path = "../echo_semantics" }
+echo_source = { path = "../echo_source" }
+
+[dev-dependencies]
+echo_parser = { path = "../echo_parser" }

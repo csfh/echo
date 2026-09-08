@@ -1,0 +1,90 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg net
+    seg http
+  import
+    seg std
+    seg net
+    seg tcp
+  bind_dollar
+    name routes
+    list
+  bind_dollar
+    name addr
+    string_rich
+  bind_dollar
+    name lis
+    call
+      field listen
+        name tcp
+      name addr
+  if
+    binary Eq
+      field handle
+        name lis
+      number 0
+    expr_stmt
+      call
+        field print
+          name io
+        string_rich
+    return
+  task_spawn
+    bind srv
+    closure
+      capture lis
+      capture routes
+      bind_dollar
+        name c
+        call
+          field accept
+            name tcp
+          name lis
+      if
+        binary NotEq
+          field handle
+            name c
+          number 0
+        expr_stmt
+          call
+            field handle_connection
+              name http
+            name c
+            name routes
+      return
+  bind_dollar
+    name client
+    call
+      field connect
+        name tcp
+      name addr
+  if
+    binary NotEq
+      field handle
+        name client
+      number 0
+    expr_stmt
+      call
+        field close
+          name tcp
+        name client
+  task_join
+    handle
+      name srv
+  expr_stmt
+    call
+      field close
+        name tcp
+      name lis
+  expr_stmt
+    call
+      field print
+        name io
+      string_rich

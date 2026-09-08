@@ -1,0 +1,12 @@
+; str.parse_float invalid text.
+/ std/io
+/ std/str
+
+| str.parse_float("nope") {
+    $ n {
+        io.print("ok")
+    }
+    ! e {
+        io.print(e)
+    }
+}

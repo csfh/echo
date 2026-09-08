@@ -1,0 +1,14 @@
+; Path helpers demo.
+; Run: xo run examples/misc/path_demo.echo
+
+/ std/io
+/ std/path
+
+$ p = path.join("/tmp", "a.txt")
+io.print(p)
+io.print(path.file_name(p))
+io.print(path.extension(p))
+io.print(path.parent(p))
+? path.is_abs(p) {
+    io.print("abs")
+}

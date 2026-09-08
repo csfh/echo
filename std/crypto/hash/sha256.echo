@@ -1,0 +1,51 @@
+; std/crypto/hash/sha256 — SHA-256 digest of string or bytes → bytes.
+/ runtime
+/ std/test
+/ std/bytes
+/ std/str
+/ std/encoding/hex
+
+$ sha256 = (data) {
+    $ d = runtime.sha256(data)
+    ? d == 0 {
+        ! "sha256 failed"
+    }
+    ^ d
+}
+
+test.it("sha256_empty", () {
+    | sha256("") {
+        $ d {
+            test.eq(bytes.len(d), 32)
+            test.eq(hex.encode(d), "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+; Benches: real sha256(data); build 1k payload in-body.
+test.bench("sha256_empty", () {
+    | sha256("") {
+        $ d {}
+        ! e {}
+    }
+})
+
+test.bench("sha256_msg", () {
+    | sha256("the quick brown fox jumps over the lazy dog") {
+        $ d {}
+        ! e {}
+    }
+})
+
+test.bench("sha256_1k", () {
+    $ b = bytes.from_str(str.repeat("x", 1024))
+    | sha256(b) {
+        $ d {}
+        ! e {}
+    }
+})
+
+\ sha256

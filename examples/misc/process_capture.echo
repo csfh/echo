@@ -1,0 +1,13 @@
+; process.run_capture pwd. Run: xo run examples/misc/process_capture.echo
+/ std/io
+/ std/str
+/ std/process
+
+| process.run_capture("pwd", []) {
+    $ r {
+        io.print(str.from_int(str.contains(r.stdout, "/")))
+    }
+    ! e {
+        io.print(e)
+    }
+}

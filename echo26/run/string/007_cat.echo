@@ -1,0 +1,7 @@
+/ std/io
+/ std/str
+
+$ a = "hel"
+$ b = "lo"
+io.print(str.cat(a, b))
+io.print(str.from_int(str.len(str.cat(a, b))))

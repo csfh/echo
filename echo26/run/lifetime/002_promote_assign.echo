@@ -1,0 +1,10 @@
+; Nested value assigned to outer mutable binding (promotion path).
+/ std/io
+/ std/str
+
+~ result = 0
+? 1 {
+    $ value = 40
+    ~ result = value + 2
+}
+io.print(str.from_int(result))

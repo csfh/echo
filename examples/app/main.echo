@@ -1,0 +1,89 @@
+; HTTP app demo — multi-file + std + live TCP smoke (finite).
+;
+; 1) Build routes and log sample in-process dispatches.
+; 2) One real accept/handle cycle on loopback, then exit (all tasks joined).
+
+/ std/io
+/ std/str
+/ std/net/http
+/ std/net/tcp
+/ std/net/request
+/ std/time
+/ ./config
+/ ./users
+/ ./routes
+
+$ get = (path) {
+    ^ request.request {
+        method: "GET",
+        path: path,
+        headers: {},
+        body: ""
+    }
+}
+
+$ app = config.APP_NAME
+$ ver = config.VERSION
+$ host = config.HOST
+$ port = str.from_int(config.PORT)
+io.log("starting {app} {ver}")
+io.log("host {host} port {port}")
+
+$ roster = users.sample_users()
+$ active = str.from_int(users.count_active(roster))
+io.log("sample active users: {active}")
+
+$ table = routes.build_routes()
+
+$ home = http.dispatch(table, get("/"))
+$ health = http.dispatch(table, get("/health"))
+$ user_list = http.dispatch(table, get("/users"))
+$ one = http.dispatch(table, get("/user"))
+$ missing = http.dispatch(table, get("/nope"))
+
+$ s0 = str.from_int(home.status)
+$ s1 = str.from_int(health.status)
+$ s2 = str.from_int(user_list.status)
+$ s3 = str.from_int(one.status)
+$ s4 = str.from_int(missing.status)
+io.log("GET / → {s0}")
+io.log("GET /health → {s1}")
+io.log("GET /users → {s2}")
+io.log("GET /user → {s3}")
+io.log("GET /nope → {s4}")
+
+io.print(s0)
+io.print(s1)
+io.print(s2)
+io.print(s3)
+io.print(s4)
+
+; --- live TCP: one connection, full parse → dispatch → write ---
+$ addr = "127.0.0.1:18080"
+$ lis = tcp.listen(addr)
+? lis.handle == 0 {
+    io.log("live listen failed (port busy?)")
+    ^
+}
+
++ srv = () [lis, table] {
+    $ c = tcp.accept(lis)
+    ? c.handle != 0 {
+        http.handle_connection(c, table)
+    }
+    ^
+}
+
+$ client = tcp.connect(addr)
+? client.handle != 0 {
+    tcp.write(client, "GET /health HTTP/1.1\r\nHost: echo\r\n\r\n")
+    $ raw = tcp.read(client, 4096)
+    $ text = str.from_bytes(raw)
+    io.log("live /health response:")
+    io.print(text)
+    tcp.close(client)
+}
+
+- srv
+tcp.close(lis)
+io.log("live TCP smoke done")

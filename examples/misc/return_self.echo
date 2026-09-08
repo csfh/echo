@@ -1,0 +1,17 @@
+/ std/io
+/ std/str
+
+% counter {
+    ~ n
+    $ inc = () {
+        ~ .n = .n + 1
+        ; fall-off → .
+    }
+    $ value = () {
+        ^ .n
+    }
+}
+
+$ c = counter { n: 0 }
+$ c2 = c.inc()
+io.print(str.from_int(c2.value()))

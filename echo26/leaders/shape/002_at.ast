@@ -1,0 +1,7 @@
+file
+  struct_ext user
+    bind_dollar
+      name greet
+      fn
+        return
+          string_rich

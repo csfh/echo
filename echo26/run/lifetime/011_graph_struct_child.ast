@@ -1,0 +1,45 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct box
+    bind_dollar
+      name inner
+  bind_dollar
+    name make
+    fn
+      bind_dollar
+        name xs
+        list
+          number 3
+          number 4
+      bind_dollar
+        name o
+        struct_lit box
+          field inner
+            name xs
+      return
+        name o
+  bind_dollar
+    name r
+    call
+      name make
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Add
+          index
+            field inner
+              name r
+            number 0
+          index
+            field inner
+              name r
+            number 1

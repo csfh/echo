@@ -1,0 +1,32 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  match
+    call
+      field read
+        name io
+    arm_ok b
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            call
+              field len
+                name bytes
+              name b
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

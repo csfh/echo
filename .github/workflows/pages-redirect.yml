@@ -1,0 +1,57 @@
+# Publish a static redirect at the GitHub Pages host. The product site is
+# https://xo.run (Cloudflare Pages, sources in www/). This workflow does not
+# build or publish www/.
+
+name: Pages redirect
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/pages-redirect.yml"
+      - ".github/pages-redirect/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Stage redirect
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp .github/pages-redirect/index.html _site/index.html
+          cp .github/pages-redirect/index.html _site/404.html
+          touch _site/.nojekyll
+          grep -q 'https://xo.run/' _site/index.html
+          if grep -q 'modoterra.github.io' _site/index.html; then
+            echo "error: redirect must not name modoterra.github.io" >&2
+            exit 1
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,13 @@
+/ std/io
+/ std/str
+/ std/net/tcp
+
+$ lis = tcp.listen("127.0.0.1:39880")
+$ client = tcp.connect("127.0.0.1:39880")
+$ server = tcp.accept(lis)
+tcp.write(client, "ping")
+$ got = tcp.read(server, 64)
+io.print(str.from_bytes(got))
+tcp.close(client)
+tcp.close(server)
+tcp.close(lis)

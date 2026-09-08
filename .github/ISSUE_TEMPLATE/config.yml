@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/modoterra/echo/blob/main/SECURITY.md
+    about: Report privately to security@modoterra.xyz — do not open a public issue

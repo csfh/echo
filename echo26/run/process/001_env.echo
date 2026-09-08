@@ -1,0 +1,22 @@
+; Env set/get/unset via std/process.
+/ std/io
+/ std/process
+
+process.env_set("ECHO26_PROCESS_ENV", "ok")
+| process.env("ECHO26_PROCESS_ENV") {
+    $ v {
+        io.print(v)
+    }
+    : {
+        io.print("none")
+    }
+}
+process.env_unset("ECHO26_PROCESS_ENV")
+| process.env("ECHO26_PROCESS_ENV") {
+    $ v {
+        io.print(v)
+    }
+    : {
+        io.print("none")
+    }
+}

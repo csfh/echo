@@ -1,0 +1,29 @@
+; Unix chmod 0o644 = 420.
+/ std/io
+/ std/fs
+
+$ p = fs.join("/tmp", "echo26_fs_003.txt")
+| fs.write(p, "x") {
+    $ ok {
+        io.print("write")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.chmod(p, 420) {
+    $ ok {
+        io.print("chmod")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(p) {
+    $ ok {
+        io.print("rm")
+    }
+    ! e {
+        io.print(e)
+    }
+}

@@ -1,0 +1,20 @@
+/ std/io
+/ std/str
+
+% point {
+    $ x
+    $ y
+    ~ z = 0
+}
+
+# X = 3
+# P = point { x: X, y: 4 }
+io.print(str.from_int(P.x))
+io.print(str.from_int(P.y))
+io.print(str.from_int(P.z))
+? P == point { x: 3, y: 4 } {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}

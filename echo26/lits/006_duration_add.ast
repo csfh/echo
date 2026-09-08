@@ -1,0 +1,6 @@
+file
+  bind_dollar
+    name t
+    binary Add
+      duration 5s
+      duration 10ms

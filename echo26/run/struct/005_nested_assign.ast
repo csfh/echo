@@ -1,0 +1,60 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name p
+    object
+      field x
+        number 1
+      field nested
+        object
+          field y
+            number 2
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field y
+          field nested
+            name p
+  assign
+    target_field y
+      field nested
+        name p
+    number 9
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field y
+          field nested
+            name p
+  assign
+    target_field y
+      field nested
+        name p
+    binary Add
+      field y
+        field nested
+          name p
+      number 1
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        field y
+          field nested
+            name p

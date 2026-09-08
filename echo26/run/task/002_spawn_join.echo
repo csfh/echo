@@ -1,0 +1,8 @@
+/ std/io
+/ std/str
+
++ job = {
+    ^ 7
+}
+- v = job
+io.print(str.from_int(v))

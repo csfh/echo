@@ -1,0 +1,27 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  match
+    call
+      field parse_int
+        name str
+      string_rich
+    arm_ok n
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name n
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

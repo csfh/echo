@@ -1,0 +1,11 @@
+leader_slash
+dot
+slash
+ident
+leader_dollar
+ident
+eq
+ident
+dot
+ident
+eof

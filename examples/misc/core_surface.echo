@@ -1,0 +1,64 @@
+; Core surface smoke (see echo26/run/core/001_surface)
+/ std/io
+/ std/str
+
+~ n = 0
+* n < 10 {
+    ? n == 3 {
+        <
+    }
+    ~ n = n + 1
+}
+io.print(str.from_int(n))
+
+$ xs = [1, 2, 3]
+~ xs[1] = 9
+io.print(str.from_int(xs[1]))
+
+$ pure = 'core'
+io.print("ok={pure}")
+
+% box {
+    ~ v
+    $ bump = () {
+        ~ .v = .v + 1
+        ^ .v
+    }
+}
+$ b = box { v: 10 }
+io.print(str.from_int(b.bump()))
+
+$ div = (a, d) {
+    ? d == 0 {
+        ! 0
+    }
+    ^ a / d
+}
+| div(20, 4) {
+    $ q {
+        io.print(str.from_int(q))
+    }
+    ! e {
+        io.print(str.from_int(e))
+    }
+}
+
+$ maybe = (x) {
+    ? x < 0 {
+        ^
+    }
+    ^ x
+}
+| maybe(8) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print(str.from_int(0))
+    }
+}
+
+io.print(str.from_int(<i32> 10 + <i32> 20))
+io.print(str.from_float(<f32> 1.5 + <f32> 2.25))
+io.print(str.from_float(3.0 * 2.0))
+io.print(str.from_bytes(b'raw'))

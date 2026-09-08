@@ -1,0 +1,11 @@
+; Nested for-in: first non-empty chain element early-returns.
+$ first = () {
+    ~ buckets = [[], [7], [9]]
+    * chain : buckets {
+        * e : chain {
+            ^ e
+        }
+    }
+    ^ 0
+}
+^ first()

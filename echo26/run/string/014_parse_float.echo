@@ -1,0 +1,12 @@
+; str.parse_float success.
+/ std/io
+/ std/str
+
+| str.parse_float("3.5") {
+    $ n {
+        io.print(str.from_float(n))
+    }
+    ! e {
+        io.print(e)
+    }
+}

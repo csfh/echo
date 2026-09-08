@@ -1,0 +1,18 @@
+; URL parse demo.
+; Run: xo run examples/misc/url_demo.echo
+
+/ std/io
+/ std/str
+/ std/net/url
+
+| url.parse("http://example.com:8080/hello") {
+    $ u {
+        io.print(u.host)
+        io.print(str.from_int(u.port))
+        io.print(u.path)
+    }
+    ! e {
+        io.print(e)
+    }
+}
+io.print(url.format("http", "example.com", 8080, "/hello"))

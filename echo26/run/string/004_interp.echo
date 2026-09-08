@@ -1,0 +1,6 @@
+/ std/io
+/ std/str
+
+$ n = 3
+io.print("x={n}")
+

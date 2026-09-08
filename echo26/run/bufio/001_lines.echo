@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+/ std/list
+/ std/bufio
+
+$ ls = bufio.lines("a\nb")
+io.print(str.from_int(list.len(ls)))
+| list.get(ls, 0) {
+  $ a { io.print(a) }
+  ! e { io.print(e) }
+}

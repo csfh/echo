@@ -1,0 +1,52 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name xs
+    list
+  assign
+    target_push
+      name xs
+    number 1
+  assign
+    target_push
+      name xs
+    number 2
+  assign
+    target_push
+      name xs
+    number 3
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          name xs
+          number 0
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          name xs
+          number 1
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          name xs
+          number 2

@@ -1,0 +1,11 @@
+file
+  return
+    binary Add
+      group
+        binary Shl
+          number 1
+          number 4
+      group
+        binary Shr
+          number 0b1000
+          number 2

@@ -1,0 +1,12 @@
+; str.contains / starts_with / ends_with (empty needle is true).
+/ std/io
+/ std/str
+
+io.print(str.from_int(str.contains("hello", "ell")))
+io.print(str.from_int(str.contains("hello", "xyz")))
+io.print(str.from_int(str.contains("ab", "")))
+io.print(str.from_int(str.starts_with("foobar", "foo")))
+io.print(str.from_int(str.starts_with("foobar", "bar")))
+io.print(str.from_int(str.starts_with("ab", "")))
+io.print(str.from_int(str.ends_with("foobar", "bar")))
+io.print(str.from_int(str.ends_with("foobar", "foo")))

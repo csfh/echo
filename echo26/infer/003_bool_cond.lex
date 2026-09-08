@@ -1,0 +1,13 @@
+leader_dollar
+ident
+eq
+l_paren
+r_paren
+l_brace
+leader_question
+number
+l_brace
+leader_caret
+r_brace
+r_brace
+eof

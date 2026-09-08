@@ -1,0 +1,71 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name inner
+    fn
+      param n
+      if
+        binary Lt
+          name n
+          number 0
+        error_return
+          number 1
+      return
+        name n
+  task_spawn
+    bind job
+    block
+      match
+        call
+          name inner
+          number 3
+        arm_ok a
+          match
+            call
+              name inner
+              number 4
+            arm_ok b
+              return
+                binary Add
+                  name a
+                  name b
+            arm_err e
+              error_return
+                name e
+        arm_err e
+          error_return
+            name e
+  task_join
+    bind r
+    handle
+      name job
+  match
+    name r
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name e

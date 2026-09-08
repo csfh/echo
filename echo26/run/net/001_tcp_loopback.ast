@@ -1,0 +1,65 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg net
+    seg tcp
+  bind_dollar
+    name lis
+    call
+      field listen
+        name tcp
+      string_rich
+  bind_dollar
+    name client
+    call
+      field connect
+        name tcp
+      string_rich
+  bind_dollar
+    name server
+    call
+      field accept
+        name tcp
+      name lis
+  expr_stmt
+    call
+      field write
+        name tcp
+      name client
+      string_rich
+  bind_dollar
+    name got
+    call
+      field read
+        name tcp
+      name server
+      number 64
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_bytes
+          name str
+        name got
+  expr_stmt
+    call
+      field close
+        name tcp
+      name client
+  expr_stmt
+    call
+      field close
+        name tcp
+      name server
+  expr_stmt
+    call
+      field close
+        name tcp
+      name lis

@@ -1,0 +1,48 @@
+; HTTP handlers as function values
+
+/ std/io
+/ std/str
+/ std/net/http
+/ ./config
+/ ./user
+/ ./users
+
+$ handle_home = (r) {
+    $ app = config.APP_NAME
+    $ ver = config.VERSION
+    $ body = "<!doctype html><html><body><h1>{app}</h1><p>version {ver}</p></body></html>"
+    ^ http.html_response(200, body)
+}
+
+$ handle_health = (r) {
+    ^ http.json_response(200, "ok")
+}
+
+$ handle_users = (r) {
+    $ n = str.from_int(users.count_active(users.sample_users()))
+    ^ http.text_response(200, "active={n}")
+}
+
+$ handle_user = (r) {
+    ; Direct shape lit keeps method type flow (list/call return types not tracked yet).
+    $ u = user.user {
+        name: "Ada",
+        visits: 0,
+        active: |,
+        banned: _
+    }
+    $ msg = u.greet()
+    $ vs = str.from_int(u.visits)
+    ^ http.text_response(200, "{msg} visits={vs}")
+}
+
+$ build_routes = () {
+    ^ [
+        { path: "/", handle: handle_home },
+        { path: "/health", handle: handle_health },
+        { path: "/users", handle: handle_users },
+        { path: "/user", handle: handle_user }
+    ]
+}
+
+\ build_routes, handle_home, handle_health, handle_users, handle_user

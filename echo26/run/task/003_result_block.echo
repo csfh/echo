@@ -1,0 +1,16 @@
+/ std/io
+/ std/str
+
+- r = {
+    ! 3
+}
+| r {
+    $ v {
+        io.print("ok")
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print("err")
+        io.print(str.from_int(e))
+    }
+}

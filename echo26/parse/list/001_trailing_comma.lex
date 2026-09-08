@@ -1,0 +1,10 @@
+leader_dollar
+ident
+eq
+l_bracket
+number
+comma
+number
+comma
+r_bracket
+eof

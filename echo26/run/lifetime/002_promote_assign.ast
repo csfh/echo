@@ -1,0 +1,28 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_tilde
+    name result
+    number 0
+  if
+    number 1
+    bind_dollar
+      name value
+      number 40
+    bind_tilde
+      name result
+      binary Add
+        name value
+        number 2
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name result

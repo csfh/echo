@@ -1,0 +1,9 @@
+; HTTP server handle — shape only
+
+% server {
+    $ addr
+    ~ routes
+    ~ running = _
+}
+
+\ server

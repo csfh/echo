@@ -1,0 +1,93 @@
+; Linear search and binary search.
+; Run: xo run examples/algos/search.echo
+
+/ std/io
+/ std/str
+/ std/list
+
+; First index of target in xs, or none.
+$ linear_search = (xs, target) {
+    ~ i = 0
+    * item : xs {
+        ? item == target {
+            ^ i
+        }
+        ~ i = i + 1
+    }
+    ^
+}
+
+; Binary search on sorted ascending xs[0..n). Returns Option index.
+$ binary_search = (xs, n, target) {
+    ~ lo = 0
+    ~ hi = n
+    * lo < hi {
+        $ mid = lo + (hi - lo) / 2
+        $ v = xs[mid]
+        ? v == target {
+            ^ mid
+        }
+        ? v < target {
+            ~ lo = mid + 1
+        }
+        : {
+            ~ hi = mid
+        }
+    }
+    ^
+}
+
+$ xs = [3, 1, 4, 1, 5, 9, 2, 6]
+| linear_search(xs, 5) {
+    $ i {
+        io.print(str.from_int(i))
+    }
+    : {
+        io.print("not found")
+    }
+}
+| linear_search(xs, 7) {
+    $ i {
+        io.print(str.from_int(i))
+    }
+    : {
+        io.print("not found")
+    }
+}
+
+$ sorted = [1, 2, 3, 5, 8, 13, 21, 34]
+$ n = list.len(sorted)
+| binary_search(sorted, n, 13) {
+    $ i {
+        io.print(str.from_int(i))
+    }
+    : {
+        io.print("not found")
+    }
+}
+| binary_search(sorted, n, 1) {
+    $ i {
+        io.print(str.from_int(i))
+    }
+    : {
+        io.print("not found")
+    }
+}
+| binary_search(sorted, n, 34) {
+    $ i {
+        io.print(str.from_int(i))
+    }
+    : {
+        io.print("not found")
+    }
+}
+| binary_search(sorted, n, 7) {
+    $ i {
+        io.print(str.from_int(i))
+    }
+    : {
+        io.print("not found")
+    }
+}
+
+\ linear_search, binary_search

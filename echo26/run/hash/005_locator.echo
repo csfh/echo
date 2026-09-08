@@ -1,0 +1,11 @@
+/ std/io
+/ std/str
+
+# HOME = p'/tmp'
+io.print(str.from_locator(HOME))
+? HOME == p'/tmp' {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}

@@ -1,0 +1,6 @@
+; os.hostname is non-empty. Run: xo run examples/misc/os_hostname.echo
+/ std/io
+/ std/str
+/ std/os
+
+io.print(str.from_int(str.len(os.hostname()) > 0))

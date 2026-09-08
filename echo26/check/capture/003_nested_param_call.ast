@@ -1,0 +1,15 @@
+file
+  bind_dollar
+    name compose
+    fn
+      param f
+      bind_dollar
+        name h
+        fn
+          param x
+          return
+            call
+              name f
+              name x
+      return
+        name h

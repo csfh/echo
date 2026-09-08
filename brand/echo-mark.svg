@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="120" height="120"
+     viewBox="0 0 120 120"
+     role="img"
+     aria-labelledby="title desc">
+  <title id="title">Echo</title>
+  <desc id="desc">Echo primary mark: three staggered bars on a 5×5 unit grid (bar 1u, gap 1u, lengths 5u / 3u / 3u).</desc>
+  <!--
+    Construction (u = 1 unit):
+      bar thickness      = 1u
+      vertical gap       = 1u
+      top bar length     = 5u  (x=0, y=0)
+      middle bar length  = 3u  (x=0, y=2)  left-aligned
+      bottom bar length  = 3u  (x=2, y=4)  right-aligned
+      mark bounds        = 5u × 5u
+      clear space X      = 5u (height of mark)
+  -->
+  <g fill="#0A0A0A" id="primary-mark">
+    <rect x="0" y="0" width="120" height="24"/>
+    <rect x="0" y="48" width="72" height="24"/>
+    <rect x="48" y="96" width="72" height="24"/>
+  </g>
+</svg>

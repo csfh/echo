@@ -1,0 +1,21 @@
+[package]
+name = "echo_codegen"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+echo_ast = { path = "../echo_ast" }
+echo_codegen_abi = { path = "../echo_codegen_abi" }
+echo_diagnostics = { path = "../echo_diagnostics" }
+echo_hir = { path = "../echo_hir" }
+echo_mir = { path = "../echo_mir" }
+echo_reflection = { path = "../echo_reflection" }
+echo_resolver = { path = "../echo_resolver" }
+echo_runtime = { path = "../echo_runtime" }
+echo_source = { path = "../echo_source" }
+echo_std = { path = "../echo_std" }
+echo_cache = { path = "../echo_cache" }
+echo_fingerprint = { path = "../echo_fingerprint" }
+inkwell = { version = "0.9", default-features = false, features = ["llvm22-1-prefer-dynamic", "target-x86", "target-aarch64"] }

@@ -1,0 +1,15 @@
+; Named struct: shape, lit, field read and mutable write
+/ std/io
+/ std/str
+
+% point {
+    ~ x
+    ~ y
+}
+
+$ p = point { x: 3, y: 4 }
+io.print(str.from_int(p.x))
+io.print(str.from_int(p.y))
+~ p.x = p.x + 10
+io.print(str.from_int(p.x))
+io.print(str.from_int(p))

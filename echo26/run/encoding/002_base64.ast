@@ -1,0 +1,51 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  import
+    seg std
+    seg encoding
+    seg base64
+  bind_dollar
+    name raw
+    call
+      field from_str
+        name bytes
+      string_rich
+  bind_dollar
+    name e
+    call
+      field encode
+        name base64
+      name raw
+  expr_stmt
+    call
+      field print
+        name io
+      name e
+  match
+    call
+      field decode
+        name base64
+      name e
+    arm_ok b
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_bytes
+              name str
+            name b
+    arm_err err
+      expr_stmt
+        call
+          field print
+            name io
+          name err

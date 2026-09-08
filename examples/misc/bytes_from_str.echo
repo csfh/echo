@@ -1,0 +1,34 @@
+; bytes.from_str copies UTF-8 payload. Run: xo run examples/misc/bytes_from_str.echo
+/ std/io
+/ std/str
+/ std/bytes
+
+$ b = bytes.from_str("Hi")
+io.print(str.from_int(bytes.len(b)))
+| bytes.get(b, 0) {
+    $ x {
+        io.print(str.from_int(x))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| bytes.get(b, 1) {
+    $ x {
+        io.print(str.from_int(x))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+$ u = bytes.from_str("\xc3\xa9")
+io.print(str.from_int(bytes.len(u)))
+| bytes.get(u, 0) {
+    $ x {
+        io.print(str.from_int(x))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+io.print(str.from_int(bytes.len(bytes.from_str(""))))

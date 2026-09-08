@@ -1,0 +1,54 @@
+; fs.append + file.seek. Run: xo run examples/misc/fs_append.echo
+/ std/io
+/ std/str
+/ std/bytes
+/ std/fs
+
+$ path = fs.join("/tmp", "echo_fs_append_ex.txt")
+| fs.write(path, "ab") {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+| fs.append(path) {
+    $ f {
+        | f.write("cd") {
+            $ ok {}
+            ! e {
+                io.print(e)
+            }
+        }
+        f.close()
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.open(path) {
+    $ f {
+        | f.seek(2) {
+            $ pos {
+                | f.read(10) {
+                    $ b {
+                        io.print(str.from_bytes(b))
+                    }
+                    ! e {
+                        io.print(e)
+                    }
+                }
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+        f.close()
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(path) {
+    $ ok {}
+    ! e {}
+}

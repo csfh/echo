@@ -1,0 +1,101 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  import
+    seg std
+    seg process
+  match
+    call
+      field spawn_pipes
+        name process
+      string_rich
+      list
+    arm_ok r
+      match
+        call
+          field pipe_write
+            name process
+          field stdin
+            name r
+          string_rich
+        arm_ok ok
+          expr_stmt
+            call
+              field pipe_close
+                name process
+              field stdin
+                name r
+          match
+            call
+              field pipe_read
+                name process
+              field stdout
+                name r
+              number 64
+            arm_ok b
+              expr_stmt
+                call
+                  field print
+                    name io
+                  call
+                    field from_bytes
+                      name str
+                    name b
+              expr_stmt
+                call
+                  field pipe_close
+                    name process
+                  field stdout
+                    name r
+              expr_stmt
+                call
+                  field pipe_close
+                    name process
+                  field stderr
+                    name r
+              match
+                call
+                  field wait
+                    name process
+                  field child
+                    name r
+                arm_ok code
+                  expr_stmt
+                    call
+                      field print
+                        name io
+                      call
+                        field from_int
+                          name str
+                        name code
+                arm_err e
+                  expr_stmt
+                    call
+                      field print
+                        name io
+                      name e
+            arm_err e
+              expr_stmt
+                call
+                  field print
+                    name io
+                  name e
+        arm_err e
+          expr_stmt
+            call
+              field print
+                name io
+              name e
+    arm_err err
+      expr_stmt
+        call
+          field print
+            name io
+          name err

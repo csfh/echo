@@ -1,0 +1,6 @@
+file
+  bind_dollar
+    name x
+    binary Add
+      duration 5s
+      number 1

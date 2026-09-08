@@ -1,0 +1,38 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg time
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        binary Gt
+          call
+            field now_ms
+              name time
+          number 1500000000000
+  expr_stmt
+    call
+      field sleep_ms
+        name time
+      number 0
+  expr_stmt
+    call
+      field sleep_ms
+        name time
+      unary Neg
+        number 1
+  expr_stmt
+    call
+      field print
+        name io
+      string_rich

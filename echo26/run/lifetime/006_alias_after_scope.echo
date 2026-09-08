@@ -1,0 +1,16 @@
+; Outer alias must survive nested scope exit.
+; `~ b = a` shares one list; demotion of b alone would free a under immediate free.
+; Inject must refuse demotion of aliased names (see lifetime::no_demote_when_aliased_*).
+/ std/io
+/ std/str
+
+$ a = [10, 20]
+~ b = a
+? 1 == 1 {
+    $ t = b[0] + b[1]
+    io.print(str.from_int(t))
+}
+; Use a after nested scope — must still be live (not freed via demote of b).
+io.print(str.from_int(a[0] + a[1]))
+; Touch b after as well so both aliases stay live.
+io.print(str.from_int(b[0]))

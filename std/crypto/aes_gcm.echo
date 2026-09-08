@@ -1,0 +1,90 @@
+; std/crypto/aes_gcm — AES-256-GCM (key 32 bytes, nonce 12 bytes).
+; encrypt → ciphertext||tag; decrypt reverses.
+/ runtime
+/ std/test
+/ std/bytes
+/ std/str
+/ std/crypto/random
+
+$ encrypt = (key, nonce, plaintext) {
+    $ d = runtime.aes_gcm_encrypt(key, nonce, plaintext)
+    ? d == 0 {
+        ! "encrypt failed"
+    }
+    ^ d
+}
+
+$ decrypt = (key, nonce, ciphertext) {
+    $ d = runtime.aes_gcm_decrypt(key, nonce, ciphertext)
+    ? d == 0 {
+        ! "decrypt failed"
+    }
+    ^ d
+}
+
+test.it("roundtrip", () {
+    | random.fill(32) {
+        $ key {
+            | random.fill(12) {
+                $ nonce {
+                    | encrypt(key, nonce, "secret") {
+                        $ ct {
+                            | decrypt(key, nonce, ct) {
+                                $ pt {
+                                    test.eq(str.from_bytes(pt), "secret")
+                                }
+                                ! e {
+                                    test.fail(e)
+                                }
+                            }
+                        }
+                        ! e {
+                            test.fail(e)
+                        }
+                    }
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+; Fixed ASCII key/nonce (32 + 12 bytes) so execute proofs need no CSPRNG.
+test.it("roundtrip_fixed", () {
+    $ key = b"0123456789abcdef0123456789abcdef"
+    $ nonce = b"0123456789ab"
+    | encrypt(key, nonce, "secret") {
+        $ ct {
+            test.eq(bytes.len(ct), 22)
+            | decrypt(key, nonce, ct) {
+                $ pt {
+                    test.eq(str.from_bytes(pt), "secret")
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("encrypt_bad_key", () {
+    | encrypt(b"short", b"0123456789ab", "hi") {
+        $ ct {
+            test.fail("expected encrypt fail")
+        }
+        ! e {
+            test.eq(e, "encrypt failed")
+        }
+    }
+})
+
+\ encrypt, decrypt

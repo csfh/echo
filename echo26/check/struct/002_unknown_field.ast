@@ -1,0 +1,11 @@
+file
+  struct user
+    bind_dollar
+      name name
+  bind_dollar
+    name u
+    struct_lit user
+      field name
+        string_rich
+      field extra
+        number 1

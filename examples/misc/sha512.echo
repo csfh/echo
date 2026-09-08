@@ -1,0 +1,15 @@
+; SHA-512 empty message digest (hex)
+/ std/io
+/ std/bytes
+/ std/encoding/hex
+/ std/crypto/hash
+
+$ empty = bytes.from_str("")
+| hash.sha512(empty) {
+    $ dig {
+        io.print(hex.encode(dig))
+    }
+    ! e {
+        io.print(e)
+    }
+}

@@ -1,0 +1,12 @@
+/ std/io
+/ std/str
+
+% pkt {
+    $ id
+    $ payload = () {
+        ^ b"id={.id}"
+    }
+}
+
+$ p = pkt { id: 7 }
+io.print(str.from_bytes(p.payload()))

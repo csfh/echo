@@ -1,0 +1,23 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_hash
+    name MAX
+    number 3
+  bind_hash
+    name TWICE
+    binary Add
+      name MAX
+      name MAX
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name TWICE

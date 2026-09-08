@@ -1,0 +1,29 @@
+; Capture lis into a task body via + () [lis] { … }
+/ std/io
+/ std/str
+/ std/net/tcp
+
+$ lis = tcp.listen("127.0.0.1:39930")
+
++ server = () [lis] {
+    $ c = tcp.accept(lis)
+    $ got = tcp.read(c, 64)
+    io.print(str.from_bytes(got))
+    tcp.close(c)
+    tcp.close(lis)
+    ^
+}
+
+- {
+    * {
+        $ client = tcp.connect("127.0.0.1:39930")
+        ? client.handle != 0 {
+            tcp.write(client, "ok")
+            tcp.close(client)
+            <
+        }
+    }
+    ^
+}
+
+- server

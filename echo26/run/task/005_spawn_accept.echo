@@ -1,0 +1,29 @@
+; Concurrent accept/read in a task; client retries connect (no outer capture).
+; Task bodies are closed — listen lives inside the server task.
+/ std/io
+/ std/str
+/ std/net/tcp
+
++ server = {
+    $ lis = tcp.listen("127.0.0.1:39910")
+    $ c = tcp.accept(lis)
+    $ got = tcp.read(c, 64)
+    io.print(str.from_bytes(got))
+    tcp.close(c)
+    tcp.close(lis)
+    ^
+}
+
+- {
+    * {
+        $ client = tcp.connect("127.0.0.1:39910")
+        ? client.handle != 0 {
+            tcp.write(client, "hi")
+            tcp.close(client)
+            <
+        }
+    }
+    ^
+}
+
+- server

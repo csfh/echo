@@ -1,0 +1,7 @@
+; Integer sum (empty is 0).
+/ std/io
+/ std/str
+/ std/list
+
+io.print(str.from_int(list.sum_ints([1, 2, 3])))
+io.print(str.from_int(list.sum_ints([])))

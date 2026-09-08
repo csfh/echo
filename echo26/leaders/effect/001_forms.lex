@@ -1,0 +1,13 @@
+leader_ampersand
+l_brace
+leader_caret
+number
+r_brace
+leader_ampersand
+ident
+eq
+l_brace
+leader_caret
+number
+r_brace
+eof

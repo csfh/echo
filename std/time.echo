@@ -1,0 +1,93 @@
+; std/time — wall clock and sleep.
+; Privileged std may `/ runtime` and call `runtime.*` (docs/stdlib.md).
+;
+; Public API:
+;   now_ms — milliseconds since Unix epoch (UTC), i64
+;   sleep_ms — sleep at least `ms` milliseconds (no-op if ms ≤ 0)
+;   mono_ms — monotonic milliseconds since process start (not wall clock)
+;
+; Suite: xo test std/time.echo (XO_TEST).
+
+/ runtime
+/ std/test
+/ std/str
+
+$ now_ms = () {
+    ^ runtime.now_ms()
+}
+
+$ sleep_ms = (ms) {
+    runtime.sleep_ms(ms)
+    ^
+}
+
+; Monotonic milliseconds since process start (not wall clock).
+$ mono_ms = () {
+    ^ runtime.now_mono_ms()
+}
+
+; Format wall-ms with a strftime-like pattern (chrono; e.g. "%Y-%m-%d").
+$ format = (ms, fmt) {
+    ^ runtime.time_format(ms, fmt)
+}
+
+; Parse text with pattern → result ms since epoch, or ! "parse failed".
+$ parse = (s, fmt) {
+    $ r = runtime.time_parse(s, fmt)
+    ? r.ok == 0 {
+        ! "parse failed"
+    }
+    ^ r.val
+}
+
+; --- suite ---
+
+test.it("now_ms_nonneg", () {
+    $ t = now_ms()
+    test.true(t >= 0)
+    ; Epoch is far in the past; after 2020-01-01 ≈ 1.5e12 ms.
+    test.true(t > 1500000000000)
+})
+
+test.it("sleep_ms_zero", () {
+    sleep_ms(0)
+    sleep_ms(-1)
+    test.eq(1, 1)
+})
+
+test.it("sleep_ms_advances", () {
+    $ a = now_ms()
+    sleep_ms(30)
+    $ b = now_ms()
+    ; Allow small clock noise; should not go backwards by much and usually advances.
+    test.true(b >= a)
+    test.true(b - a >= 20)
+})
+
+test.it("mono_ms_nonneg", () {
+    test.true(mono_ms() >= 0)
+})
+
+test.it("mono_ms_advances", () {
+    $ a = mono_ms()
+    sleep_ms(30)
+    $ b = mono_ms()
+    test.true(b >= a)
+    test.true(b - a >= 20)
+})
+
+test.it("format_parse_day", () {
+    $ ms = 1700000000000
+    $ s = format(ms, "%Y-%m-%d")
+    test.true(str.starts_with(s, "2023"))
+    | parse(s, "%Y-%m-%d") {
+        $ t {
+            test.true(t > 0)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+\ now_ms, sleep_ms, mono_ms, format, parse

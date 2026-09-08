@@ -1,0 +1,19 @@
+file
+  bind_dollar
+    name f
+    fn
+      error_return
+        number 1
+  match
+    call
+      name f
+    arm_ok v
+      return
+        name v
+    arm_err e
+      return
+        name e
+    arm_values 1
+      number 1
+      return
+        number 0

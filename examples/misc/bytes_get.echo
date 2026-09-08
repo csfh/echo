@@ -1,0 +1,33 @@
+/ std/io
+/ std/str
+/ std/bytes
+
+$ msg = b'ABC'
+io.print(str.from_int(bytes.len(msg)))
+
+| bytes.get(msg, 0) {
+    $ b {
+        io.print(str.from_int(b))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+
+| bytes.get(msg, 1) {
+    $ b {
+        io.print(str.from_int(b))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+
+| bytes.get(msg, 99) {
+    $ b {
+        io.print(str.from_int(b))
+    }
+    ! e {
+        io.print(e)
+    }
+}

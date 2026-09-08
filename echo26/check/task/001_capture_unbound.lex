@@ -1,0 +1,15 @@
+leader_plus
+ident
+eq
+l_paren
+r_paren
+l_bracket
+ident
+r_bracket
+l_brace
+leader_caret
+number
+r_brace
+leader_minus
+ident
+eof

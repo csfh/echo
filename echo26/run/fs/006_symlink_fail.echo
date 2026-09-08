@@ -1,0 +1,12 @@
+; Missing parent dir → symlink err.
+/ std/io
+/ std/fs
+
+| fs.symlink("/tmp/echo26_fs_symlink_tgt", "/tmp/echo26_fs_symlink_absent/link") {
+    $ ok {
+        io.print("ok")
+    }
+    ! e {
+        io.print(e)
+    }
+}

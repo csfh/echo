@@ -1,0 +1,16 @@
+file
+  return
+    binary Add
+      binary Add
+        group
+          binary BitAnd
+            number 0b1100
+            number 0b1010
+        group
+          binary BitOr
+            number 0b1100
+            number 0b1010
+      group
+        binary BitXor
+          number 0b1100
+          number 0b1010

@@ -1,0 +1,13 @@
+; ListLit nest: holder = [xs] must not free xs on nested-scope demote.
+; Under immediate free, demoting xs while holder retains it is UAF.
+/ std/io
+/ std/str
+
+$ xs = [7]
+$ holder = [xs]
+? 1 == 1 {
+    io.print(str.from_int(xs[0]))
+}
+; Both the alias name and the container must still see the value.
+io.print(str.from_int(xs[0]))
+io.print(str.from_int(holder[0][0]))

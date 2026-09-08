@@ -1,0 +1,22 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg time
+  bind_dollar
+    name s
+    call
+      field format
+        name time
+      number 1700000000000
+      string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      name s

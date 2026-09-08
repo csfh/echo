@@ -1,0 +1,15 @@
+file
+  bind_dollar
+    name add
+    fn
+      param a
+      param b
+      return
+        binary Add
+          name a
+          name b
+  return
+    call
+      name add
+      number 20
+      number 22

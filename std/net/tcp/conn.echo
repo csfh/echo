@@ -1,0 +1,27 @@
+; % conn — TCP stream as a named struct (pass by reference).
+; Part of folder module `std/net/tcp`. Opaque id only in .handle
+; (docs/semantics.md § Value vs reference).
+
+/ runtime
+
+% conn {
+    $ remote
+    $ handle
+    ~ open = |
+
+    $ read = (limit) {
+        ^ runtime.tcp_read(.handle, limit)
+    }
+
+    $ write = (data) {
+        ^ runtime.tcp_write(.handle, data)
+    }
+
+    $ close = () {
+        runtime.tcp_close(.handle)
+        ~ .open = _
+        ^ .
+    }
+}
+
+\ conn

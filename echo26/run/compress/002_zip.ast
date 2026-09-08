@@ -1,0 +1,51 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg compress
+    seg zip
+  match
+    call
+      field pack
+        name zip
+      string_rich
+      string_rich
+    arm_ok z
+      match
+        call
+          field unpack_first
+            name zip
+          name z
+        arm_ok e
+          expr_stmt
+            call
+              field print
+                name io
+              field name
+                name e
+          expr_stmt
+            call
+              field print
+                name io
+              call
+                field from_bytes
+                  name str
+                field data
+                  name e
+        arm_err err
+          expr_stmt
+            call
+              field print
+                name io
+              name err
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

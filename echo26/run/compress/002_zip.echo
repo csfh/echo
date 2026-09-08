@@ -1,0 +1,20 @@
+/ std/io
+/ std/str
+/ std/compress/zip
+
+| zip.pack("a.txt", "hi") {
+  $ z {
+    | zip.unpack_first(z) {
+      $ e {
+        io.print(e.name)
+        io.print(str.from_bytes(e.data))
+      }
+      ! err {
+        io.print(err)
+      }
+    }
+  }
+  ! e {
+    io.print(e)
+  }
+}

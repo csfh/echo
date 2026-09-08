@@ -1,0 +1,23 @@
+; list.sum_ints / sort_ints. Run: xo run examples/misc/list_ints.echo
+/ std/io
+/ std/str
+/ std/list
+
+io.print(str.from_int(list.sum_ints([3, 1, 2])))
+$ zs = list.sort_ints([3, 1, 2])
+| list.get(zs, 0) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| list.get(zs, 2) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}

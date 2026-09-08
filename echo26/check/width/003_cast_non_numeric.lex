@@ -1,0 +1,12 @@
+leader_dollar
+ident
+eq
+string_pure
+leader_dollar
+ident
+eq
+lt
+ident
+gt
+ident
+eof

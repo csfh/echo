@@ -1,0 +1,14 @@
+/ std/io
+/ std/str
+/ std/net/http
+
+$ raw = "GET /health HTTP/1.1\r\nHost: xo\r\n\r\n"
+$ req = http.parse_request(raw)
+io.print(req.method)
+io.print(req.path)
+? req.method == "GET" {
+    io.print("get")
+}
+: {
+    io.print("not")
+}

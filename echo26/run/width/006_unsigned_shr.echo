@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+
+$ u = <ui8> 16
+io.print(str.from_int(u >> <ui8> 1))
+$ s = <i8> -8
+io.print(str.from_int(s >> <i8> 1))
+$ w = <ui64> 16
+io.print(str.from_int(w >> <ui64> 2))

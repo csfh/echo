@@ -1,0 +1,6 @@
+/ std/io
+/ std/str
+/ ./b
+
+io.print(str.from_int(b.two()))
+

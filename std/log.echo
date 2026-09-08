@@ -1,0 +1,66 @@
+; std/log — leveled messages (level is caller-supplied; free helpers).
+; Structured: `kv` builds key=value pairs; `info_kv` prints them.
+/ std/io
+/ std/str
+/ std/test
+
+; Levels: 0 debug, 1 info, 2 warn, 3 error. Print if msg_level >= min_level.
+$ emit = (min_level, msg_level, prefix, msg) {
+    ? msg_level >= min_level {
+        io.eprint(str.cat(prefix, msg))
+    }
+    ^
+}
+
+$ debug = (min_level, msg) {
+    emit(min_level, 0, "debug: ", msg)
+    ^
+}
+
+$ info = (min_level, msg) {
+    emit(min_level, 1, "info: ", msg)
+    ^
+}
+
+$ warn = (min_level, msg) {
+    emit(min_level, 2, "warn: ", msg)
+    ^
+}
+
+$ error = (min_level, msg) {
+    emit(min_level, 3, "error: ", msg)
+    ^
+}
+
+; Join key=value pairs from list of "k=v" strings into one message body.
+$ kv = (pairs) {
+    ~ out = ""
+    ~ i = 0
+    * p : pairs {
+        ? i > 0 {
+            ~ out = str.cat(out, " ")
+        }
+        ~ out = str.cat(out, p)
+        ~ i = i + 1
+    }
+    ^ out
+}
+
+$ info_kv = (min_level, msg, pairs) {
+    $ body = str.cat(str.cat(msg, " "), kv(pairs))
+    info(min_level, body)
+    ^
+}
+
+test.it("emit_ok", () {
+    emit(1, 1, "info: ", "hi")
+    test.eq(1, 1)
+})
+
+test.it("kv_join", () {
+    test.eq(kv(["a=1", "b=2"]), "a=1 b=2")
+    test.eq(kv([]), "")
+})
+
+\ emit, debug, info, warn, error, kv, info_kv
+

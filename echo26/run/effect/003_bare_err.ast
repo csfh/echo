@@ -1,0 +1,20 @@
+file
+  bind_dollar
+    name f
+    fn
+      error_return
+        number 1
+  bind_tilde
+    name n
+    number 0
+  effect_block
+    block
+      bind_dollar
+        name x
+        call
+          name f
+      bind_tilde
+        name n
+        number 7
+  return
+    name n

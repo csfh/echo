@@ -1,0 +1,65 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  struct box
+    bind_tilde
+      name n
+      number 0
+    bind_dollar
+      name bump
+      fn
+        assign
+          target_field n
+            receiver
+          binary Add
+            field n
+              receiver
+            number 1
+        return
+          receiver
+    bind_dollar
+      name value
+      fn
+        return
+          field n
+            receiver
+  bind_dollar
+    name make
+    fn
+      return
+        struct_lit box
+          field n
+            number 10
+  bind_dollar
+    name b
+    call
+      name make
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field value
+            name b
+  bind_dollar
+    name b2
+    call
+      field bump
+        name b
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field value
+            name b2

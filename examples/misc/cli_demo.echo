@@ -1,0 +1,31 @@
+; CLI flag parse demo (injected argv).
+; Run: xo run examples/misc/cli_demo.echo
+
+/ std/io
+/ std/str
+/ std/list
+/ std/cli
+
+$ argv = ["demo", "--name=echo", "file.echo", "-v"]
+| cli.parse(argv) {
+    $ t {
+        | cli.get(t, "name") {
+            $ n {
+                io.print(n)
+            }
+            : {
+                io.print("noname")
+            }
+        }
+        ? cli.has(t, "v") {
+            io.print("short-v")
+        }
+        $ pos = cli.positionals(t)
+        * p : pos {
+            io.print(p)
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}

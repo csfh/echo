@@ -1,0 +1,9 @@
+; time.now_ms after 2020; sleep_ms ≤ 0 no-op. Run: xo run examples/misc/time_now.echo
+/ std/io
+/ std/str
+/ std/time
+
+io.print(str.from_int(time.now_ms() > 1500000000000))
+time.sleep_ms(0)
+time.sleep_ms(-1)
+io.print("ok")

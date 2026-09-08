@@ -1,0 +1,9 @@
+[package]
+name = "echo_fingerprint"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[dependencies]
+sha2 = "0.10"

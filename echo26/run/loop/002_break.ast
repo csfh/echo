@@ -1,0 +1,17 @@
+file
+  bind_tilde
+    name i
+    number 0
+  loop
+    if
+      binary Eq
+        name i
+        number 3
+      break
+    bind_tilde
+      name i
+      binary Add
+        name i
+        number 1
+  return
+    name i

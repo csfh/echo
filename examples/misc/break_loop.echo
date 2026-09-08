@@ -1,0 +1,14 @@
+; Tiny: infinite loop + break — print until break
+/ std/io
+/ std/str
+
+~ i = 0
+* {
+    ? i == 3 {
+        <
+    }
+    io.print(str.from_int(i))
+    ~ i = i + 1
+}
+io.print(str.from_int(i))
+

@@ -1,0 +1,331 @@
+; std/str — conversions and UTF-8 string helpers.
+; Privileged std may `/ runtime` and call `runtime.*` (docs/stdlib.md).
+;
+; Public API:
+;   from_int, from_float, from_bytes, from_duration, from_locator, from_debug
+;   len, is_empty, cat
+;   contains, starts_with, ends_with
+;   get    — result-shaped; UTF-8 **byte** at index as ui8; ! "out of bounds"
+;   slice  — result-shaped; UTF-8 **byte** indices [start, end); ! "out of bounds"
+;
+; Indices match `len` (byte length of the original string/bytes payload).
+; Prefer char-safe bounds for non-ASCII. Slice then lossy-decodes that range.
+;
+; Suite: xo test std/str.echo (XO_TEST).
+
+/ runtime
+/ std/test
+
+$ from_int = (n) {
+    ^ runtime.str_from_int(n)
+}
+
+$ from_float = (n) {
+    ^ runtime.str_from_float(n)
+}
+
+$ from_bytes = (b) {
+    ^ runtime.str_from_bytes(b)
+}
+
+$ from_duration = (d) {
+    ^ runtime.str_from_duration(d)
+}
+
+$ from_locator = (loc) {
+    ^ runtime.str_from_locator(loc)
+}
+
+; Shallow debug text for any value (REPL bare-expr display, diagnostics).
+$ from_debug = (v) {
+    ^ runtime.str_from_debug(v)
+}
+
+$ len = (s) {
+    ^ runtime.str_len(s)
+}
+
+$ is_empty = (s) {
+    ^ len(s) == 0
+}
+
+$ cat = (a, b) {
+    ^ runtime.str_cat(a, b)
+}
+
+$ contains = (hay, needle) {
+    ^ runtime.str_contains(hay, needle) != 0
+}
+
+$ starts_with = (s, prefix) {
+    ^ runtime.str_starts_with(s, prefix) != 0
+}
+
+$ ends_with = (s, suffix) {
+    ^ runtime.str_ends_with(s, suffix) != 0
+}
+
+$ trim = (s) {
+    ^ runtime.str_trim(s)
+}
+
+$ to_lower = (s) {
+    ^ runtime.str_to_lower(s)
+}
+
+$ to_upper = (s) {
+    ^ runtime.str_to_upper(s)
+}
+
+$ split = (s, sep) {
+    ^ runtime.str_split(s, sep)
+}
+
+$ replace = (s, from, to) {
+    ^ runtime.str_replace(s, from, to)
+}
+
+; Result-shaped int parse: ^ n or ! "parse failed".
+$ parse_int = (s) {
+    $ r = runtime.parse_i64(s)
+    ? r.ok == 0 {
+        ! "parse failed"
+    }
+    ^ r.val
+}
+
+; Result-shaped float parse: ^ f or ! "parse failed".
+$ parse_float = (s) {
+    $ r = runtime.parse_f64(s)
+    ? r.ok == 0 {
+        ! "parse failed"
+    }
+    ^ r.val
+}
+
+$ join = (parts, sep) {
+    ~ n = 0
+    * p : parts {
+        ~ n = n + 1
+    }
+    ? n == 0 {
+        ^ ""
+    }
+    ~ out = ""
+    ~ i = 0
+    * p : parts {
+        ? i == 0 {
+            ~ out = p
+        }
+        : {
+            ~ out = cat(out, sep)
+            ~ out = cat(out, p)
+        }
+        ~ i = i + 1
+    }
+    ^ out
+}
+
+; O(n·|s|) via runtime (avoids quadratic cat loops that dominated bulk benches).
+$ repeat = (s, n) {
+    ^ runtime.str_repeat(s, n)
+}
+
+; UTF-8 byte at index (same width as bytes.get).
+; Bounds-checked UTF-8 byte index. Runtime get returns -1 for OOB/invalid.
+$ get = (s, i) {
+    $ x = runtime.str_get(s, i)
+    ? x < 0 {
+        ! "out of bounds"
+    }
+    ^ <ui8> x
+}
+
+; Half-open UTF-8 byte range [start, end).
+$ slice = (s, start, end) {
+    $ n = runtime.str_len(s)
+    ? start < 0 || end < start || end > n {
+        ! "out of bounds"
+    }
+    ^ runtime.str_slice(s, start, end)
+}
+
+; --- suite ---
+
+test.it("len_cat", () {
+    test.eq(len(""), 0)
+    test.true(is_empty(""))
+    test.eq(len("hi"), 2)
+    test.false(is_empty("x"))
+    test.eq(cat("a", "b"), "ab")
+    test.eq(from_int(42), "42")
+})
+
+test.it("contains", () {
+    test.true(contains("hello", "ell"))
+    test.false(contains("hello", "xyz"))
+    test.true(contains("ab", ""))
+})
+
+test.it("starts_ends", () {
+    test.true(starts_with("foobar", "foo"))
+    test.false(starts_with("foobar", "bar"))
+    test.true(starts_with("ab", ""))
+    test.true(ends_with("foobar", "bar"))
+    test.false(ends_with("foobar", "foo"))
+    test.true(ends_with("ab", ""))
+})
+
+test.it("slice_ok", () {
+    | slice("abcdef", 1, 4) {
+        $ t {
+            test.eq(t, "bcd")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | slice("hi", 0, 0) {
+        $ t {
+            test.eq(t, "")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | slice("hi", 0, 2) {
+        $ t {
+            test.eq(t, "hi")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("slice_oob", () {
+    | slice("ab", 0, 3) {
+        $ t {
+            test.fail("expected oob")
+        }
+        ! e {
+            test.eq(e, "out of bounds")
+        }
+    }
+    | slice("ab", -1, 1) {
+        $ t {
+            test.fail("expected oob neg")
+        }
+        ! e {
+            test.eq(e, "out of bounds")
+        }
+    }
+    | slice("ab", 2, 1) {
+        $ t {
+            test.fail("expected oob order")
+        }
+        ! e {
+            test.eq(e, "out of bounds")
+        }
+    }
+})
+
+test.it("get_byte", () {
+    | get("AB", 1) {
+        $ b {
+            test.eq(b, 66)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | get("A", 1) {
+        $ b {
+            test.fail("expected oob")
+        }
+        ! e {
+            test.eq(e, "out of bounds")
+        }
+    }
+})
+
+test.it("trim_split_replace", () {
+    test.eq(trim("  hi  "), "hi")
+    test.eq(to_lower("AbC"), "abc")
+    test.eq(to_upper("ab"), "AB")
+    $ parts = split("a,b,c", ",")
+    test.eq(join(parts, "-"), "a-b-c")
+    test.eq(replace("aa", "a", "b"), "bb")
+    test.eq(repeat("x", 3), "xxx")
+})
+
+test.it("parse_int_float", () {
+    | parse_int("42") {
+        $ n {
+            test.eq(n, 42)
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | parse_int("nope") {
+        $ n {
+            test.fail("expected parse fail")
+        }
+        ! e {
+            test.eq(e, "parse failed")
+        }
+    }
+    | parse_float("3.5") {
+        $ f {
+            test.eq(from_float(f), "3.5")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+    | parse_float("nope") {
+        $ f {
+            test.fail("expected parse fail")
+        }
+        ! e {
+            test.eq(e, "parse failed")
+        }
+    }
+})
+
+test.it("from_debug", () {
+    test.eq(from_debug(42), "42")
+    test.eq(from_debug("hi"), "\"hi\"")
+    test.eq(from_debug([1, 2]), "[1, 2]")
+})
+
+; Lossy UTF-8: invalid bytes become U+FFFD (ef bf bd), not an error.
+test.it("from_bytes", () {
+    test.eq(from_bytes(b'hi'), "hi")
+    test.eq(from_bytes(b''), "")
+    test.eq(from_bytes(b"\xff"), "\xef\xbf\xbd")
+})
+
+; Benchmarks: `xo test --bench std/str.echo`
+test.bench("cat", () {
+    $ s = cat("hello", "world")
+})
+
+test.bench("contains", () {
+    $ ok = contains("the quick brown fox", "brown")
+})
+
+test.bench("slice_prefix_4k", () {
+    $ h = repeat("x", 4096)
+    | slice(h, 0, 1) {
+        $ t {}
+        ! e {}
+    }
+})
+
+test.bench("from_int", () {
+    $ s = from_int(123456789)
+})
+
+\ from_int, from_float, from_bytes, from_duration, from_locator, from_debug, len, is_empty, cat, contains, starts_with, ends_with, get, slice, trim, to_lower, to_upper, split, replace, join, repeat, parse_int, parse_float

@@ -1,0 +1,89 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg collections
+    seg hash_table
+  bind_dollar
+    name t
+    call
+      field make
+        name hash_table
+  expr_stmt
+    call
+      field put
+        name t
+      number 7
+      number 42
+  expr_stmt
+    call
+      field put
+        name t
+      number 8
+      number 99
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name t
+  match
+    call
+      field get
+        name t
+      number 7
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_default
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+  match
+    call
+      field remove
+        name t
+      number 8
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_default
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field has
+            name t
+          number 8

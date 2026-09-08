@@ -1,0 +1,27 @@
+file
+  struct box
+    bind_tilde
+      name buckets
+      list
+        list
+        list
+        list
+    bind_dollar
+      name empty
+      fn
+        loop_for chain
+          field buckets
+            receiver
+          loop_for e
+            name chain
+            return
+              number 0
+        return
+          number 1
+  bind_dollar
+    name b
+    struct_lit box
+  return
+    call
+      field empty
+        name b

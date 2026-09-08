@@ -1,0 +1,18 @@
+; Graph promote: struct field holds managed list; promote on escape keeps child live.
+/ std/io
+/ std/str
+
+% box {
+    $ inner
+}
+
+$ make = () {
+    $ xs = [3, 4]
+    $ o = box {
+        inner: xs
+    }
+    ^ o
+}
+
+$ r = make()
+io.print(str.from_int(r.inner[0] + r.inner[1]))

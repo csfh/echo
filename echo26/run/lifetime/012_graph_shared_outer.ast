@@ -1,0 +1,48 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name wrap
+    fn
+      param s
+      bind_dollar
+        name a
+        list
+          name s
+      return
+        name a
+  bind_dollar
+    name shared
+    list
+      number 10
+  bind_dollar
+    name w
+    call
+      name wrap
+      name shared
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          index
+            name w
+            number 0
+          number 0
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        index
+          name shared
+          number 0

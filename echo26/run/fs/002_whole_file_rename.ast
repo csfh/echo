@@ -1,0 +1,172 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  import
+    seg std
+    seg fs
+  bind_dollar
+    name root
+    call
+      field join
+        name fs
+      string_rich
+      string_rich
+  match
+    call
+      field create_dir_all
+        name fs
+      name root
+    arm_ok ok
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  bind_dollar
+    name a
+    call
+      field join
+        name fs
+      name root
+      string_rich
+  bind_dollar
+    name b
+    call
+      field join
+        name fs
+      name root
+      string_rich
+  match
+    call
+      field write
+        name fs
+      name a
+      string_rich
+    arm_ok ok
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field read
+        name fs
+      name a
+    arm_ok data
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_bytes
+              name str
+            name data
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field rename
+        name fs
+      name a
+      name b
+    arm_ok ok
+      if
+        call
+          field exists
+            name fs
+          name a
+        expr_stmt
+          call
+            field print
+              name io
+            string_rich
+      else
+        expr_stmt
+          call
+            field print
+              name io
+            string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field read
+        name fs
+      name b
+    arm_ok data
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_bytes
+              name str
+            name data
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field remove
+        name fs
+      name b
+    arm_ok ok
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e
+  match
+    call
+      field remove_dir
+        name fs
+      name root
+    arm_ok ok
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich

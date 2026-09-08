@@ -1,0 +1,22 @@
+; Structural list helper must not rewrite caller's element kind (no value poison).
+$ count = (xs) {
+    ~ n = 0
+    * item : xs {
+        ~ n = n + 1
+    }
+    ^ n
+}
+$ bubble = (xs) {
+    $ n = count(xs)
+    ~ j = 0
+    * j < n - 1 {
+        ? xs[j] > xs[j + 1] {
+            ^ 1
+        }
+        ~ j = j + 1
+    }
+    ^ 0
+}
+$ main = () {
+    ^ bubble([3, 1, 2])
+}

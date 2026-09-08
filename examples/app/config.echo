@@ -1,0 +1,9 @@
+; Application configuration (compile-time constants)
+
+# HOST = "0.0.0.0"
+# PORT = 8080
+# MAX_BODY = 65536
+# APP_NAME = "echo-http"
+# VERSION = "0.1.0"
+
+\ HOST, PORT, MAX_BODY, APP_NAME, VERSION

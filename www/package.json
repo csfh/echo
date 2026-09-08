@@ -1,0 +1,48 @@
+{
+  "name": "xo-www",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run sync:tree-sitter && tsc -b && vite build && node scripts/verify-static-dist.mjs",
+    "build:semantic": "DOCS_EMBEDDINGS=true npm run build",
+    "format": "oxfmt --check .",
+    "lint": "oxlint . --ignore-pattern public/echo-wasm",
+    "preview": "vite preview",
+    "test": "npm run test:docs && npm run test:prose && npm run test:std-ref && npm run test:try && npm run test:sitemap && npm run test:spa-redirects",
+    "test:docs": "node scripts/verify-docs-pages.mjs",
+    "test:std-ref": "node scripts/verify-std-reference.mjs",
+    "test:prose": "node scripts/verify-prose.mjs",
+    "test:try": "node scripts/verify-try.mjs",
+    "test:sitemap": "node scripts/verify-sitemap.mjs",
+    "test:spa-redirects": "node scripts/verify-spa-redirects.mjs",
+    "sync:tree-sitter": "node scripts/sync-tree-sitter.mjs",
+    "postinstall": "npm run sync:tree-sitter"
+  },
+  "dependencies": {
+    "@fontsource/geist-mono": "^5.2.8",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/space-grotesk": "^5.2.10",
+    "@huggingface/transformers": "^4.2.0",
+    "@remixicon/react": "^4.9.0",
+    "@tanstack/react-router": "^1.170.16",
+    "minisearch": "^7.2.0",
+    "motion": "^12.40.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "web-tree-sitter": "^0.26.11"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.1",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.70.0",
+    "tailwindcss": "^4.3.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12"
+  }
+}

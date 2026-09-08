@@ -1,0 +1,17 @@
+[package]
+name = "echo_std"
+version = "0.0.1"
+edition = "2024"
+license.workspace = true
+publish = false
+
+[features]
+default = ["link-runtime"]
+# Native hosts keep std facts and the runtime crate in one cargo graph.
+# Browser check (`echo_wasm`) must not compile `echo_runtime` (LLVM-era
+# native deps: mio, rustls, getrandom).
+link-runtime = ["dep:echo_runtime"]
+
+[dependencies]
+echo_codegen_abi = { path = "../echo_codegen_abi" }
+echo_runtime = { path = "../echo_runtime", optional = true }

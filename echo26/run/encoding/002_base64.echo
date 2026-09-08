@@ -1,0 +1,16 @@
+/ std/io
+/ std/str
+/ std/bytes
+/ std/encoding/base64
+
+$ raw = bytes.from_str("hi")
+$ e = base64.encode(raw)
+io.print(e)
+| base64.decode(e) {
+    $ b {
+        io.print(str.from_bytes(b))
+    }
+    ! err {
+        io.print(err)
+    }
+}

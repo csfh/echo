@@ -1,0 +1,13 @@
+file
+  bind_dollar
+    name f
+    fn
+      return
+      return
+        number 1
+  match
+    call
+      name f
+    arm_ok v
+      return
+        name v

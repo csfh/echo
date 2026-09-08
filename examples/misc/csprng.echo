@@ -1,0 +1,14 @@
+; CSPRNG fill length (contents are not stable)
+/ std/io
+/ std/str
+/ std/bytes
+/ std/crypto/random
+
+| random.fill(16) {
+    $ b {
+        io.print(str.from_int(bytes.len(b)))
+    }
+    ! e {
+        io.print(e)
+    }
+}

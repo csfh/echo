@@ -1,0 +1,18 @@
+; Inclusive range values: for-in and match
+/ std/io
+/ std/str
+
+~ s = 0
+* x : 1..4 {
+    ~ s = s + x
+}
+io.print(str.from_int(s))
+
+| s {
+    1..5 {
+        io.print("small")
+    }
+    : {
+        io.print("big")
+    }
+}

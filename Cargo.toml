@@ -1,0 +1,42 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/echo_source",
+  "crates/echo_diagnostics",
+  "crates/echo_syntax",
+  "crates/echo_lexer",
+  "crates/echo_ast",
+  "crates/echo_parser",
+  "crates/echo_semantics",
+  "crates/echo_hir",
+  "crates/echo_mir",
+  "crates/echo_codegen_abi",
+  "crates/echo_codegen",
+  "crates/echo_runtime",
+  "crates/echo_std",
+  "crates/echo_index",
+  "crates/echo_resolver",
+  "crates/echo_pipeline",
+  "crates/echo_fingerprint",
+  "crates/echo_cache",
+  "crates/echo_build",
+  "crates/echo_reflection",
+  "crates/echo_lsp",
+  "crates/echo_wasm",
+  "crates/echo_oci",
+  "crates/xo",
+  "crates/e26",
+]
+
+# Crates stay private (`publish = false`); license is declared for clarity and
+# tooling. Echo is not published to crates.io.
+[workspace.package]
+license = "MIT"
+
+[profile.dev]
+debug = 1
+incremental = true
+
+[profile.test]
+debug = 1
+incremental = false

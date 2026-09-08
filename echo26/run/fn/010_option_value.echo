@@ -1,0 +1,16 @@
+/ std/io
+/ std/str
+
+$ maybe = () {
+    ^
+}
+
+$ f = maybe
+| f() {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    : {
+        io.print("none")
+    }
+}

@@ -1,0 +1,49 @@
+; FizzBuzz — classic interview warm-up.
+; Run: xo run examples/algos/fizzbuzz.echo
+
+/ std/io
+/ std/str
+
+; Kind codes: 0 = number, 1 = fizz, 2 = buzz, 3 = fizzbuzz
+$ fizzbuzz_kind = (n) {
+    ? n % 15 == 0 {
+        ^ 3
+    }
+    ? n % 3 == 0 {
+        ^ 1
+    }
+    ? n % 5 == 0 {
+        ^ 2
+    }
+    ^ 0
+}
+
+; Run FizzBuzz for 1..limit inclusive (side-effect prints).
+$ fizzbuzz = (limit) {
+    ~ i = 1
+    * i <= limit {
+        | fizzbuzz_kind(i) {
+            0 {
+                io.print(str.from_int(i))
+            }
+            1 {
+                io.print("fizz")
+            }
+            2 {
+                io.print("buzz")
+            }
+            3 {
+                io.print("fizzbuzz")
+            }
+            : {
+                io.print(str.from_int(i))
+            }
+        }
+        ~ i = i + 1
+    }
+    ^
+}
+
+fizzbuzz(20)
+
+\ fizzbuzz, fizzbuzz_kind

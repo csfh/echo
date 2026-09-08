@@ -1,0 +1,8 @@
+/ std/io
+/ std/str
+
+$ row = { xs: [1, 2] }
+io.print(str.from_int(row.xs[0]))
+~ row.xs[0] = 5
+io.print(str.from_int(row.xs[0]))
+io.print(str.from_int(row.xs[1]))

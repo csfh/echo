@@ -1,0 +1,10 @@
+/ std/io
+/ std/str
+
+# BASE = 10
+% item {
+    $ name
+    ~ n = BASE
+}
+$ i = item { name: 'x' }
+io.print(str.from_int(i.n))

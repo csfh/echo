@@ -1,0 +1,10 @@
+file
+  bind_hash
+    name XS
+    list
+      number 1
+  bind_hash
+    name A
+    index
+      name XS
+      number 2

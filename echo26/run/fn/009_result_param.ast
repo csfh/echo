@@ -1,0 +1,47 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name load
+    fn
+      error_return
+        number 99
+  bind_dollar
+    name run
+    fn
+      param g
+      match
+        call
+          name g
+        arm_ok v
+          return
+            name v
+        arm_err e
+          error_return
+            name e
+  match
+    call
+      name run
+      name load
+    arm_ok v
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name v
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          call
+            field from_int
+              name str
+            name e

@@ -1,0 +1,9 @@
+; Multi-file user package: ./lib + std/io
+/ std/io
+/ std/str
+/ ./lib
+
+io.print('multi-file')
+io.print(str.from_int(lib.add(20, 22)))
+io.print(str.from_int(lib.answer))
+

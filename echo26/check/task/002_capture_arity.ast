@@ -1,0 +1,45 @@
+file
+  bind_dollar
+    name a
+    number 1
+  bind_dollar
+    name b
+    number 2
+  bind_dollar
+    name c
+    number 3
+  bind_dollar
+    name d
+    number 4
+  bind_dollar
+    name e
+    number 5
+  bind_dollar
+    name f
+    number 6
+  bind_dollar
+    name g
+    number 7
+  bind_dollar
+    name h
+    number 8
+  bind_dollar
+    name i
+    number 9
+  task_spawn
+    bind job
+    closure
+      capture a
+      capture b
+      capture c
+      capture d
+      capture e
+      capture f
+      capture g
+      capture h
+      capture i
+      return
+        name a
+  task_join
+    handle
+      name job

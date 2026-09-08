@@ -1,0 +1,90 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name t
+    duration 5s
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_duration
+          name str
+        name t
+  bind_dollar
+    name u
+    duration 10ms
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_duration
+          name str
+        name u
+  bind_dollar
+    name v
+    duration 100us
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_duration
+          name str
+        name v
+  bind_dollar
+    name w
+    duration 2m
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_duration
+          name str
+        name w
+  bind_dollar
+    name x
+    duration 1h
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_duration
+          name str
+        name x
+  bind_dollar
+    name sum
+    binary Add
+      duration 5s
+      duration 10ms
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_duration
+          name str
+        name sum
+  if
+    binary Eq
+      name sum
+      duration 5010ms
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure

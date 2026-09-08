@@ -1,0 +1,33 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_hash
+    name RAW
+    bytes_pure
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_bytes
+          name str
+        name RAW
+  if
+    binary Eq
+      name RAW
+      bytes_pure
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure
+  else
+    expr_stmt
+      call
+        field print
+          name io
+        string_pure

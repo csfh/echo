@@ -1,0 +1,48 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg list
+  import
+    seg std
+    seg bufio
+  bind_dollar
+    name ls
+    call
+      field lines
+        name bufio
+      string_rich
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        call
+          field len
+            name list
+          name ls
+  match
+    call
+      field get
+        name list
+      name ls
+      number 0
+    arm_ok a
+      expr_stmt
+        call
+          field print
+            name io
+          name a
+    arm_err e
+      expr_stmt
+        call
+          field print
+            name io
+          name e

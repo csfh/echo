@@ -1,0 +1,28 @@
+file
+  bind_dollar
+    name id
+    fn
+      param x
+      return
+        name x
+  bind_dollar
+    name main
+    fn
+      bind_dollar
+        name a
+        call
+          name id
+          number 1
+      bind_dollar
+        name b
+        call
+          name id
+          number 2
+      if
+        binary Gt
+          name a
+          name b
+        return
+          number 1
+      return
+        number 0

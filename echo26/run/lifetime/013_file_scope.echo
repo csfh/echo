@@ -1,0 +1,29 @@
+/ std/io
+/ std/fs
+/ std/str
+
+$ p = fs.join(fs.temp_dir(), "echo26_lifetime_013")
+| fs.create(p) {
+    $ f {
+        | f.write("ok") {
+            $ w {
+                io.print("wrote")
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+        f.close()
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(p) {
+    $ r {
+        io.print("ok")
+    }
+    ! e {
+        io.print("ok")
+    }
+}

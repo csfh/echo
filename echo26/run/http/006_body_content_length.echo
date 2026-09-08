@@ -1,0 +1,40 @@
+; Live TCP: POST with Content-Length body must be fully read before dispatch.
+/ std/io
+/ std/str
+/ std/net/http
+/ std/net/tcp
+
+$ echo_body = (req) {
+    ^ http.text_response(200, req.body)
+}
+
+$ routes = [
+    { path: "/echo", handle: echo_body }
+]
+
+$ addr = "127.0.0.1:18082"
+$ lis = tcp.listen(addr)
+? lis.handle == 0 {
+    io.print("skip")
+    ^
+}
+
++ srv = () [lis, routes] {
+    $ c = tcp.accept(lis)
+    ? c.handle != 0 {
+        http.handle_connection(c, routes)
+    }
+    ^
+}
+
+$ client = tcp.connect(addr)
+? client.handle != 0 {
+    ; Body sent after headers in one write (still exercises CL complete path).
+    tcp.write(client, "POST /echo HTTP/1.1\r\nHost: x\r\nContent-Length: 5\r\n\r\nhello")
+    $ raw = tcp.read(client, 4096)
+    io.print(str.from_bytes(raw))
+    tcp.close(client)
+}
+
+- srv
+tcp.close(lis)

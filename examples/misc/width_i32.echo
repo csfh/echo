@@ -1,0 +1,10 @@
+/ std/io
+/ std/str
+
+$ a = <i32> 10
+$ b = <i32> 20
+io.print(str.from_int(a + b))
+$ n = <i32> -32
+io.print(str.from_int(n + <i32> 40))
+$ c = <i64> 100
+io.print(str.from_int(c + 3))

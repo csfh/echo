@@ -1,0 +1,3 @@
+$ abs = p'/home/user'
+$ rel = p'home/user'
+$ url = p"http://xo.run"

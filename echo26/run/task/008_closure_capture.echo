@@ -1,0 +1,9 @@
+/ std/io
+/ std/str
+
+$ n = 40
++ job = () [n] {
+    ^ n + 2
+}
+- v = job
+io.print(str.from_int(v))

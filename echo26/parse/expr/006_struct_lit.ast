@@ -1,0 +1,8 @@
+file
+  bind_dollar
+    name p
+    struct_lit point
+      field x
+        number 1
+      field y
+        number 2

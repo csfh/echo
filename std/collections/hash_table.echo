@@ -1,0 +1,455 @@
+; std/collections/hash_table — SipHash-2-4 bucketed key→value table.
+; Backing store for map and set; also a public low-level API.
+;
+; Keys may be int, string, or bytes (via std/reflect.key_bytes kind tags).
+; Equality still uses deep `==` on the stored key value.
+;
+; Fluent: hash_table.make().seed(k0, k1) (plain; no empty check — map/set enforce that).
+; Methods: is_empty, len, has, seed, hash_key, bucket_index, put, get, remove,
+;   keys, values, entries (snapshot lists — order undefined).
+; Field `capacity` is the live power-of-two bucket count (read directly; no getter).
+; Grows (power-of-two rehash) when load would exceed ~0.75 on insert.
+;
+; Public API (export discipline — docs/stdlib.md):
+;   \ hash_table, make
+; Private: entry, empty_buckets, INITIAL_*, SipHash constants, suite.
+;
+; Suite: xo test std/collections/hash_table.echo (XO_TEST).
+
+/ runtime
+/ std/test
+/ std/crypto/hash
+/ std/bytes
+/ std/list
+/ std/reflect
+
+; Start larger so common seed sizes (≤1k) rehash fewer times. empty_buckets
+; allocates one list per bucket — rehash cost dominated small tables.
+# INITIAL_N_BUCKETS = 64
+; Load: grow when count * 4 >= capacity * 3 (≈ 0.75).
+
+# DEFAULT_K0 = <ui64> 0x0706050403020100
+# DEFAULT_K1 = <ui64> 0x0f0e0d0c0b0a0908
+
+; One runtime call builds n empty chain lists (avoids Echo loop of n×`[]`).
+$ empty_buckets = (n) {
+    ^ runtime.list_new_empty_lists(n)
+}
+
+% entry {
+    $ key
+    ~ value
+}
+
+% hash_table {
+    ~ buckets = []
+    ; Power-of-two bucket count (read as `.capacity`; grows on load).
+    ~ capacity = 0
+    ~ k0 = <ui64> 0
+    ~ k1 = <ui64> 0
+    ~ count = 0
+
+    $ len = () {
+        ^ .count
+    }
+
+    $ is_empty = () {
+        ^ .count == 0
+    }
+
+    $ has = (key) {
+        | .get(key) {
+            $ v {
+                ^ |
+            }
+            : {
+                ^ _
+            }
+        }
+    }
+
+    ; Set SipHash key halves (ui64). In-place; returns . for fluent make().seed(…).
+    ; Map/set layer refuse reseed when non-empty.
+    $ seed = (k0, k1) {
+        ~ .k0 = k0
+        ~ .k1 = k1
+        ^ .
+    }
+
+    $ hash_key = (key) {
+        $ raw = reflect.key_bytes(key)
+        ^ hash.sip(.k0, .k1, raw)
+    }
+
+    $ bucket_index = (key) {
+        $ h = .hash_key(key)
+        $ mask = <ui64> (.capacity - 1)
+        ^ <i64> (h & mask)
+    }
+
+    ; Rebuild into `new_n` buckets (power of two). Does not change count.
+    $ rehash = (new_n) {
+        $ old = .buckets
+        ~ .capacity = new_n
+        $ me = .
+        ~ me.buckets = empty_buckets(new_n)
+        * chain : old {
+            * e : chain {
+                $ i = .bucket_index(e.key)
+                $ chain2 = .buckets[i]
+                ~ chain2[] = e
+            }
+        }
+        ^ .
+    }
+
+    ; Grow if the next new key would push load over ~0.75.
+    ; Jump by 4× while small so seed paths rehash fewer times.
+    $ maybe_grow = () {
+        ? .count * 4 >= .capacity * 3 {
+            ~ next = .capacity * 2
+            ? .capacity < 512 {
+                ~ next = .capacity * 4
+            }
+            .rehash(next)
+        }
+        ^ .
+    }
+
+    $ put = (key, value) {
+        $ i = .bucket_index(key)
+        $ chain = .buckets[i]
+        * e : chain {
+            ? e.key == key {
+                ~ e.value = value
+                ^ .
+            }
+        }
+        .maybe_grow()
+        $ j = .bucket_index(key)
+        $ chain2 = .buckets[j]
+        ~ chain2[] = entry { key: key, value: value }
+        ~ .count = .count + 1
+        ^ .
+    }
+
+    $ get = (key) {
+        $ i = .bucket_index(key)
+        $ chain = .buckets[i]
+        * e : chain {
+            ? e.key == key {
+                ^ e.value
+            }
+        }
+        ^
+    }
+
+    ; Option of removed value (none if key absent).
+    $ remove = (key) {
+        $ i = .bucket_index(key)
+        $ chain = .buckets[i]
+        ~ out = []
+        ~ found = _
+        ~ old = 0
+        * e : chain {
+            ? e.key == key {
+                ~ found = |
+                ~ old = e.value
+            }
+            ? e.key != key {
+                ~ out[] = e
+            }
+        }
+        ? found {
+            $ me = .
+            ~ me.buckets[i] = out
+            ~ .count = .count - 1
+            ^ old
+        }
+        ^
+    }
+
+    ; Snapshot iteration (allocates; order undefined / not insertion order).
+    $ keys = () {
+        ~ ks = []
+        * chain : .buckets {
+            * e : chain {
+                ~ ks[] = e.key
+            }
+        }
+        ^ ks
+    }
+
+    $ values = () {
+        ~ vs = []
+        * chain : .buckets {
+            * e : chain {
+                ~ vs[] = e.value
+            }
+        }
+        ^ vs
+    }
+
+    ; List of `{ key, value }` (anon structs; not the private `entry` type).
+    $ entries = () {
+        ~ es = []
+        * chain : .buckets {
+            * e : chain {
+                ~ es[] = { key: e.key, value: e.value }
+            }
+        }
+        ^ es
+    }
+}
+
+$ make = () {
+    ^ hash_table {
+        buckets: empty_buckets(INITIAL_N_BUCKETS),
+        capacity: INITIAL_N_BUCKETS,
+        k0: DEFAULT_K0,
+        k1: DEFAULT_K1,
+        count: 0
+    }
+}
+
+; --- suite ---
+
+test.it("put_get", () {
+    $ t = make()
+    t.put(7, 42)
+    | t.get(7) {
+        $ v {
+            test.eq(v, 42)
+        }
+        : {
+            test.fail("missing")
+        }
+    }
+})
+
+; Heterogeneous keys (dynamic `value` + kind-tagged hash). Same file as int keys.
+test.it("string_key_put_get", () {
+    $ t = make()
+    t.put("a", 1)
+    t.put("b", 2)
+    | t.get("a") {
+        $ v {
+            test.eq(v, 1)
+        }
+        : {
+            test.fail("missing a")
+        }
+    }
+    | t.get("b") {
+        $ v {
+            test.eq(v, 2)
+        }
+        : {
+            test.fail("missing b")
+        }
+    }
+    test.true(t.has("a"))
+    test.false(t.has("c"))
+    ; Int key must not collide with string "1" material.
+    t.put(1, 99)
+    | t.get(1) {
+        $ v {
+            test.eq(v, 99)
+        }
+        : {
+            test.fail("missing int 1")
+        }
+    }
+    | t.get("1") {
+        $ v {
+            test.fail("string 1 should be absent")
+        }
+        : {
+            test.eq(1, 1)
+        }
+    }
+    | t.remove("a") {
+        $ v {
+            test.eq(v, 1)
+        }
+        : {
+            test.fail("remove a")
+        }
+    }
+    test.false(t.has("a"))
+})
+
+test.it("bytes_key", () {
+    $ t = make()
+    t.put(b'x', 7)
+    | t.get(b'x') {
+        $ v {
+            test.eq(v, 7)
+        }
+        : {
+            test.fail("missing bytes")
+        }
+    }
+    test.true(t.has(b'x'))
+    test.false(t.has("x"))
+})
+
+test.it("len_has_remove", () {
+    $ t = make()
+    test.true(t.is_empty())
+    test.eq(t.len(), 0)
+    test.false(t.has(1))
+    t.put(1, 10)
+    t.put(2, 20)
+    t.put(1, 11)
+    test.eq(t.len(), 2)
+    test.true(t.has(1))
+    test.false(t.has(3))
+    | t.remove(1) {
+        $ v {
+            test.eq(v, 11)
+        }
+        : {
+            test.fail("remove miss")
+        }
+    }
+    test.eq(t.len(), 1)
+    test.false(t.has(1))
+    | t.get(2) {
+        $ v {
+            test.eq(v, 20)
+        }
+        : {
+            test.fail("lost 2")
+        }
+    }
+    | t.remove(9) {
+        $ v {
+            test.fail("expected none")
+        }
+        : {
+            test.eq(1, 1)
+        }
+    }
+    test.eq(t.len(), 1)
+    | t.remove(2) {
+        $ v {
+            test.eq(v, 20)
+        }
+        : {
+            test.fail("remove 2")
+        }
+    }
+    test.true(t.is_empty())
+})
+
+test.it("bucket_stable", () {
+    $ t = make()
+    $ a = t.bucket_index(99)
+    $ b = t.bucket_index(99)
+    test.eq(a, b)
+    ? a < 0 || a >= t.capacity {
+        test.fail("oob bucket")
+    }
+})
+
+test.it("grows_and_keeps_entries", () {
+    $ t = make()
+    test.eq(t.capacity, INITIAL_N_BUCKETS)
+    ; Insert past ~0.75 load of initial capacity to force at least one grow.
+    $ n = INITIAL_N_BUCKETS
+    ~ k = 0
+    * k < n {
+        t.put(k, k * 10)
+        ~ k = k + 1
+    }
+    test.eq(t.len(), n)
+    ? t.capacity <= INITIAL_N_BUCKETS {
+        test.fail("expected grow")
+    }
+    ~ j = 0
+    * j < n {
+        | t.get(j) {
+            $ v {
+                test.eq(v, j * 10)
+            }
+            : {
+                test.fail("lost after grow")
+            }
+        }
+        ~ j = j + 1
+    }
+    t.put(5, 999)
+    | t.get(5) {
+        $ v {
+            test.eq(v, 999)
+        }
+        : {
+            test.fail("overwrite miss")
+        }
+    }
+    test.eq(t.len(), n)
+})
+
+test.it("fluent_seed", () {
+    # K0 = <ui64> 0x1111111111111111
+    # K1 = <ui64> 0x2222222222222222
+    $ t = make().seed(K0, K1)
+    test.eq(t.k0, K0)
+    test.eq(t.k1, K1)
+    test.true(t.is_empty())
+    t.put(1, 2)
+    test.false(t.is_empty())
+    test.eq(t.len(), 1)
+    | t.get(1) {
+        $ v {
+            test.eq(v, 2)
+        }
+        : {
+            test.fail("missing after seed")
+        }
+    }
+})
+
+test.it("keys_values_entries", () {
+    $ t = make()
+    t.put(1, 10)
+    t.put(2, 20)
+    t.put(3, 30)
+    $ ks = t.keys()
+    $ vs = t.values()
+    $ es = t.entries()
+    ; Snapshot lengths match table len (order not specified).
+    test.eq(list.len(ks), 3)
+    test.eq(list.len(vs), 3)
+    test.eq(list.len(es), 3)
+    ~ seen1 = _
+    ~ seen2 = _
+    ~ seen3 = _
+    * k : ks {
+        ? k == 1 {
+            ~ seen1 = |
+        }
+        ? k == 2 {
+            ~ seen2 = |
+        }
+        ? k == 3 {
+            ~ seen3 = |
+        }
+    }
+    test.true(seen1)
+    test.true(seen2)
+    test.true(seen3)
+    * e : es {
+        | t.get(e.key) {
+            $ v {
+                test.eq(v, e.value)
+            }
+            : {
+                test.fail("entry key missing")
+            }
+        }
+    }
+})
+
+\ hash_table, make

@@ -1,0 +1,25 @@
+; fs.chmod Unix mode 0o644 = 420. Run: xo run examples/misc/fs_chmod.echo
+/ std/io
+/ std/fs
+
+$ p = fs.join("/tmp", "echo_fs_chmod_ex.txt")
+| fs.write(p, "x") {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+| fs.chmod(p, 420) {
+    $ ok {
+        io.print("chmod")
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove(p) {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}

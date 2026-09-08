@@ -1,0 +1,55 @@
+; std/compress/zip — single-entry zip pack/unpack (thin).
+; pack(name, data) → zip bytes; unpack_first(zip) → product { name, data }.
+/ runtime
+/ std/test
+/ std/bytes
+/ std/str
+
+$ pack = (name, data) {
+    $ d = runtime.zip_pack(name, data)
+    ? d == 0 {
+        ! "zip pack failed"
+    }
+    ^ d
+}
+
+$ unpack_first = (data) {
+    $ r = runtime.zip_unpack_first(data)
+    ? r.ok == 0 {
+        ! "zip unpack failed"
+    }
+    ^ r
+}
+
+test.it("roundtrip", () {
+    | pack("a.txt", "hi") {
+        $ z {
+            test.true(bytes.len(z) > 0)
+            | unpack_first(z) {
+                $ e {
+                    test.eq(e.name, "a.txt")
+                    test.eq(str.from_bytes(e.data), "hi")
+                }
+                ! err {
+                    test.fail(err)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+test.it("unpack_invalid", () {
+    | unpack_first("not-a-zip") {
+        $ e {
+            test.fail("expected unpack fail")
+        }
+        ! err {
+            test.eq(err, "zip unpack failed")
+        }
+    }
+})
+
+\ pack, unpack_first

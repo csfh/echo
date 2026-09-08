@@ -1,0 +1,14 @@
+; run_capture pwd; stdout is an absolute path.
+/ std/io
+/ std/str
+/ std/process
+
+| process.run_capture("pwd", []) {
+    $ r {
+        io.print(str.from_int(r.code == 0))
+        io.print(str.from_int(str.contains(r.stdout, "/")))
+    }
+    ! e {
+        io.print(e)
+    }
+}

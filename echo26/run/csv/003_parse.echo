@@ -1,0 +1,23 @@
+; csv.parse skips blank lines and splits rows.
+/ std/io
+/ std/str
+/ std/list
+/ std/encoding/csv
+
+$ rows = csv.parse("a,b\n\nc,d\n")
+io.print(str.from_int(list.len(rows)))
+| list.get(rows, 1) {
+    $ r {
+        | list.get(r, 0) {
+            $ c {
+                io.print(c)
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}

@@ -1,0 +1,35 @@
+; Unix domain socket loopback (temp path under /tmp).
+/ std/io
+/ std/str
+/ std/bytes
+/ std/net/unix
+/ std/os
+
+$ path = str.cat("/tmp/echo26_unix_", str.from_int(os.pid()))
+$ lis = unix.listen(path)
+? lis.handle == 0 {
+  io.print("listen-fail")
+  ^
+}
+
++ srv = () [lis] {
+  $ c = unix.accept(lis)
+  ? c.handle != 0 {
+    $ b = unix.read(c, 64)
+    io.print(str.from_bytes(b))
+    unix.write(c, "pong")
+    unix.close(c)
+  }
+  ^
+}
+
+$ client = unix.connect(path)
+? client.handle != 0 {
+  unix.write(client, "ping")
+  $ raw = unix.read(client, 64)
+  io.print(str.from_bytes(raw))
+  unix.close(client)
+}
+
+- srv
+unix.close(lis)

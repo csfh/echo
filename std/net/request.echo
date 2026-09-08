@@ -1,0 +1,22 @@
+; request — shape + methods
+
+% request {
+    $ method
+    $ path
+    $ headers
+    $ body
+
+    $ is_get = () {
+        ^ .method == "GET"
+    }
+
+    $ is_post = () {
+        ^ .method == "POST"
+    }
+
+    $ has_body = () {
+        ^ .body != ""
+    }
+}
+
+\ request

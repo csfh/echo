@@ -1,0 +1,13 @@
+/ std/io
+/ std/str
+
+# A = 1
+# Q = { a: A, b: 2 }
+io.print(str.from_int(Q.a))
+io.print(str.from_int(Q.b))
+? Q == { a: 1, b: 2 } {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}

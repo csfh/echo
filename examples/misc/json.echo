@@ -1,0 +1,35 @@
+; JSON parse/stringify demo.
+; Run: xo run examples/misc/json.echo
+
+/ std/io
+/ std/json
+
+| json.parse('{"ok":true}') {
+    $ v {
+        | json.stringify(v) {
+            $ s {
+                io.print(s)
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}
+
+; Worker-allocated strings must stringify as JSON strings, not as pointer ints.
++ job = {
+    ^ "hello"
+}
+- s = job
+| json.stringify(s) {
+    $ out {
+        io.print(out)
+    }
+    ! e {
+        io.print(e)
+    }
+}

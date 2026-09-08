@@ -1,0 +1,24 @@
+; AES-256-GCM roundtrip with a fixed 32-byte key and 12-byte nonce
+/ std/io
+/ std/str
+/ std/bytes
+/ std/crypto/aes_gcm
+
+$ key = b"0123456789abcdef0123456789abcdef"
+$ nonce = b"0123456789ab"
+| aes_gcm.encrypt(key, nonce, "secret") {
+    $ ct {
+        io.print(str.from_int(bytes.len(ct)))
+        | aes_gcm.decrypt(key, nonce, ct) {
+            $ pt {
+                io.print(str.from_bytes(pt))
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}

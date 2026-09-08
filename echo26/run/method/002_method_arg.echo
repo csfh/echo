@@ -1,0 +1,14 @@
+/ std/io
+/ std/str
+
+% counter {
+    ~ n
+    $ add = (d) {
+        ~ .n = .n + d
+        ^ .n
+    }
+}
+
+$ c = counter { n: 10 }
+io.print(str.from_int(c.add(5)))
+io.print(str.from_int(c.n))

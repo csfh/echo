@@ -1,0 +1,12 @@
+; Tiny: for-in — print each element, then the sum
+/ std/io
+/ std/str
+
+$ xs = [10, 20, 12]
+~ sum = 0
+* x : xs {
+    io.print(str.from_int(x))
+    ~ sum = sum + x
+}
+io.print(str.from_int(sum))
+

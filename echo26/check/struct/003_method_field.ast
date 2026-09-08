@@ -1,0 +1,22 @@
+file
+  struct c
+    bind_tilde
+      name n
+      number 0
+    bind_dollar
+      name inc
+      fn
+        assign
+          target_field n
+            receiver
+          binary Add
+            field n
+              receiver
+            number 1
+  bind_dollar
+    name x
+    struct_lit c
+      field n
+        number 1
+      field inc
+        number 0

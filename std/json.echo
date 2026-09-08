@@ -1,0 +1,77 @@
+; std/json — parse/stringify product values.
+/ runtime
+/ std/test
+/ std/str
+
+$ parse = (s) {
+    $ v = runtime.json_parse(s)
+    ? v == 0 {
+        ! "json parse failed"
+    }
+    ^ v
+}
+
+$ stringify = (v) {
+    $ s = runtime.json_stringify(v)
+    ? s == 0 {
+        ! "json stringify failed"
+    }
+    ^ s
+}
+
+test.it("json_object", () {
+    $ raw = '{"n":1}'
+    | parse(raw) {
+        $ o {
+            | stringify(o) {
+                $ s {
+                    test.true(str.contains(s, "n"))
+                }
+                ! e {
+                    test.fail(e)
+                }
+            }
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+; Stringify a string produced on a task worker (`+`), joined on this thread.
+test.it("stringify_task_string", () {
+    + job = {
+        ^ "hello"
+    }
+    - s = job
+    | stringify(s) {
+        $ out {
+            test.eq(out, "\"hello\"")
+        }
+        ! e {
+            test.fail(e)
+        }
+    }
+})
+
+; Benchmarks: `xo test --bench std/json.echo`
+test.bench("parse", () {
+    | parse('{"n":1,"s":"hi"}') {
+        $ o {}
+        ! e {}
+    }
+})
+
+test.bench("roundtrip", () {
+    | parse('{"n":1}') {
+        $ o {
+            | stringify(o) {
+                $ s {}
+                ! e {}
+            }
+        }
+        ! e {}
+    }
+})
+
+\ parse, stringify

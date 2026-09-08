@@ -1,0 +1,39 @@
+; Live TCP: handle_connection + format_response (finite).
+/ std/io
+/ std/str
+/ std/net/http
+/ std/net/tcp
+
+$ hi = (req) {
+    ^ http.text_response(200, "hi")
+}
+
+$ routes = [
+    { path: "/hi", handle: hi }
+]
+
+$ addr = "127.0.0.1:18081"
+$ lis = tcp.listen(addr)
+? lis.handle == 0 {
+    io.print("skip")
+    ^
+}
+
++ srv = () [lis, routes] {
+    $ c = tcp.accept(lis)
+    ? c.handle != 0 {
+        http.handle_connection(c, routes)
+    }
+    ^
+}
+
+$ client = tcp.connect(addr)
+? client.handle != 0 {
+    tcp.write(client, "GET /hi HTTP/1.1\r\nHost: x\r\n\r\n")
+    $ raw = tcp.read(client, 4096)
+    io.print(str.from_bytes(raw))
+    tcp.close(client)
+}
+
+- srv
+tcp.close(lis)

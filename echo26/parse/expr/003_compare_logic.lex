@@ -1,0 +1,12 @@
+leader_dollar
+ident
+eq
+ident
+lt
+number
+and_and
+bang
+underscore
+or_or
+pipe
+eof

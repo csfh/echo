@@ -1,0 +1,14 @@
+file
+  import
+    seg std
+    seg io
+  expr_stmt
+    call
+      field print
+        name io
+  expr_stmt
+    call
+      field print
+        name io
+      number 1
+      number 2

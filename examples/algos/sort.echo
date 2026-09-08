@@ -1,0 +1,99 @@
+; Bubble sort and insertion sort — in-place on lists.
+; Run: xo run examples/algos/sort.echo
+
+/ std/io
+/ std/str
+/ std/list
+/ std/test
+
+$ swap = (xs, i, j) {
+    $ t = xs[i]
+    ~ xs[i] = xs[j]
+    ~ xs[j] = t
+    ^ xs
+}
+
+$ bubble_sort = (xs) {
+    $ n = list.len(xs)
+    ~ i = 0
+    * i < n {
+        ~ j = 0
+        * j < n - 1 - i {
+            ? xs[j] > xs[j + 1] {
+                swap(xs, j, j + 1)
+            }
+            ~ j = j + 1
+        }
+        ~ i = i + 1
+    }
+    ^ xs
+}
+
+$ insertion_sort = (xs) {
+    $ n = list.len(xs)
+    ~ i = 1
+    * i < n {
+        $ key = xs[i]
+        ~ j = i
+        * j > 0 && xs[j - 1] > key {
+            ~ xs[j] = xs[j - 1]
+            ~ j = j - 1
+        }
+        ~ xs[j] = key
+        ~ i = i + 1
+    }
+    ^ xs
+}
+
+$ print_list = (xs) {
+    * item : xs {
+        io.print(str.from_int(item))
+    }
+    ^
+}
+
+~ a = [5, 1, 4, 2, 8]
+$ sorted_a = bubble_sort(a)
+print_list(sorted_a)
+
+~ b = [9, 3, 7, 1, 4, 6, 2]
+$ sorted_b = insertion_sort(b)
+print_list(sorted_b)
+
+~ c = [1]
+print_list(bubble_sort(c))
+
+~ d = [3, 3, 1, 2, 1]
+print_list(insertion_sort(d))
+
+test.bench("insertion_sort_100", () {
+    ~ xs = []
+    ~ i = 100
+    * i > 0 {
+        ~ i = i - 1
+        ~ xs[] = i
+    }
+    $ zs = insertion_sort(xs)
+})
+
+test.bench("insertion_sort_1k", () {
+    ~ xs = []
+    ~ i = 1000
+    * i > 0 {
+        ~ i = i - 1
+        ~ xs[] = i
+    }
+    $ zs = insertion_sort(xs)
+})
+
+test.bench("bubble_sort_100", () {
+    ~ xs = []
+    ~ i = 100
+    * i > 0 {
+        ~ i = i - 1
+        ~ xs[] = i
+    }
+    $ zs = bubble_sort(xs)
+})
+
+\ bubble_sort, insertion_sort, swap

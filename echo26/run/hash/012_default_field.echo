@@ -1,0 +1,18 @@
+/ std/io
+/ std/str
+
+# BASE = 10
+% item {
+    $ name
+    ~ n = BASE
+}
+
+# I = item { name: 'x' }
+# N = I.n
+io.print(str.from_int(N))
+? N == 10 {
+    io.print('eq')
+}
+: {
+    io.print('ne')
+}

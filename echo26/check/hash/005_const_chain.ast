@@ -1,0 +1,11 @@
+file
+  bind_hash
+    name A
+    number 10
+  bind_hash
+    name B
+    binary Add
+      binary Mul
+        name A
+        number 2
+      number 1

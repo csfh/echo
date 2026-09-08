@@ -1,0 +1,12 @@
+file
+  bind_dollar
+    name wrap
+    fn
+      param f
+      bind_dollar
+        name h
+        fn
+          return
+            name f
+      return
+        name h

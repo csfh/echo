@@ -1,0 +1,12 @@
+/ std/io
+/ std/str
+
+% site {
+    $ host
+    $ url = () {
+        ^ p"http://{.host}"
+    }
+}
+
+$ s = site { host: "xo.run" }
+io.print(str.from_locator(s.url()))

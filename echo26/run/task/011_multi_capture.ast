@@ -1,0 +1,34 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  bind_dollar
+    name a
+    number 10
+  bind_dollar
+    name b
+    number 3
+  task_spawn
+    bind job
+    closure
+      capture a
+      capture b
+      return
+        binary Add
+          name a
+          name b
+  task_join
+    bind v
+    handle
+      name job
+  expr_stmt
+    call
+      field print
+        name io
+      call
+        field from_int
+          name str
+        name v

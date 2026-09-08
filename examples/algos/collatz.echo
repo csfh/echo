@@ -1,0 +1,92 @@
+; Collatz (3n+1) — steps to reach 1, and hailstone iterate.
+; Run: xo run examples/algos/collatz.echo
+
+/ std/io
+/ std/str
+/ std/test
+
+; One Collatz step: n → n/2 if even, else 3n+1.
+$ collatz_step = (n) {
+    ? n % 2 == 0 {
+        ^ n / 2
+    }
+    ^ 3 * n + 1
+}
+
+; Number of steps from n down to 1. Reject non-positive.
+$ collatz_steps = (n) {
+    ? n <= 0 {
+        ! "collatz needs positive n"
+    }
+    ~ x = n
+    ~ steps = 0
+    * x != 1 {
+        ~ x = collatz_step(x)
+        ~ steps = steps + 1
+    }
+    ^ steps
+}
+
+; Write the hailstone sequence into pre-sized buf; return length used.
+$ collatz_seq = (n, buf, cap) {
+    ? n <= 0 {
+        ! "collatz needs positive n"
+    }
+    ~ x = n
+    ~ len = 0
+    * len < cap {
+        ~ buf[len] = x
+        ~ len = len + 1
+        ? x == 1 {
+            ^ len
+        }
+        ~ x = collatz_step(x)
+    }
+    ^ len
+}
+
+| collatz_steps(1) {
+    $ s {
+        io.print(str.from_int(s))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| collatz_steps(6) {
+    $ s {
+        io.print(str.from_int(s))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+| collatz_steps(15) {
+    $ s {
+        io.print(str.from_int(s))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+~ buf = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+| collatz_seq(6, buf, 16) {
+    $ len {
+        ~ i = 0
+        * i < len {
+            io.print(str.from_int(buf[i]))
+            ~ i = i + 1
+        }
+        io.print(str.from_int(len))
+    }
+    ! err {
+        io.print(str.from_int(err))
+    }
+}
+
+; Full collatz_steps can be heavy under auto-N; one step is a stable micro canary.
+test.bench("collatz_step", () {
+    $ x = collatz_step(27)
+})
+
+\ collatz_step, collatz_steps, collatz_seq

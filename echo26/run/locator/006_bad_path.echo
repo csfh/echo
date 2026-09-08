@@ -1,0 +1,2 @@
+; `{module.export}` / `{a.b}` interpolation is locked out of v1.
+$ loc = p"{mod.export}"

@@ -1,0 +1,7 @@
+~ n = 1
+$ outer = () {
+    $ inner = () {
+        ^ n
+    }
+    ^ inner()
+}

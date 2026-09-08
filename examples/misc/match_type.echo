@@ -1,0 +1,23 @@
+/ std/io
+/ std/str
+
+% circle {
+    ~ r
+}
+% rect {
+    ~ w
+    ~ h
+}
+
+$ shape = circle { r: 5 }
+| shape {
+    % circle {
+        io.print(str.from_int(shape.r))
+    }
+    % rect {
+        io.print(str.from_int(shape.w))
+    }
+    : {
+        io.print("other")
+    }
+}

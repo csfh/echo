@@ -1,0 +1,6 @@
+/ std/io
+/ std/str
+/ std/list
+
+$ xs = []
+io.print(str.from_int(list.len(xs)))

@@ -1,0 +1,8 @@
+; process.args() is the program argv (e26 AOT: one slot, the child binary).
+/ std/io
+/ std/str
+/ std/list
+/ std/process
+
+$ a = process.args()
+io.print(str.from_int(list.len(a)))

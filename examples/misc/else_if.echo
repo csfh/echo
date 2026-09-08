@@ -1,0 +1,12 @@
+/ std/io
+
+$ x = 2
+? x == 1 {
+    io.print('one')
+}
+: x == 2 {
+    io.print('two')
+}
+: {
+    io.print('other')
+}

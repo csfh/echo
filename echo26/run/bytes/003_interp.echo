@@ -1,0 +1,26 @@
+/ std/io
+/ std/str
+/ std/bytes
+
+$ n = 3
+io.print(str.from_bytes(b"x={n}"))
+$ raw = b'ab'
+io.print(str.from_bytes(b"{raw}c"))
+$ mix = b"\xff{n}"
+io.print(str.from_int(bytes.len(mix)))
+| bytes.get(mix, 0) {
+    $ b {
+        io.print(str.from_int(b))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| bytes.get(mix, 1) {
+    $ b {
+        io.print(str.from_int(b))
+    }
+    ! e {
+        io.print(e)
+    }
+}

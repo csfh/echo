@@ -1,0 +1,40 @@
+; Shallow path.walk. Run: xo run examples/misc/path_walk.echo
+/ std/io
+/ std/str
+/ std/list
+/ std/path
+/ std/fs
+
+$ root = fs.join("/tmp", "echo_path_walk_ex")
+| fs.create_dir_all(root) {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+$ child = fs.join(root, "a.txt")
+| fs.write(child, "x") {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+$ kids = path.walk(root)
+? list.contains(kids, child) {
+    io.print("hit")
+}
+: {
+    io.print("miss")
+}
+| fs.remove(child) {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
+| fs.remove_dir(root) {
+    $ ok {}
+    ! e {
+        io.print(e)
+    }
+}
