@@ -1,8 +1,9 @@
 /**
  * Verifies Cloudflare Pages serves SPA routes as HTTP 200:
  * - public/_redirects rewrites /* to /index.html with status 200
+ * - public/404.html is absent (Pages serves it as a real 404 and skips the rewrite)
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -27,6 +28,12 @@ const rewrite = source
 
 if (!rewrite) {
   fail("public/_redirects must rewrite /* to /index.html with status 200");
+}
+
+if (existsSync(path.join(root, "public", "404.html"))) {
+  fail(
+    "public/404.html must not exist: Cloudflare Pages would 404 unknown paths instead of rewriting",
+  );
 }
 
 if (failures.length > 0) {

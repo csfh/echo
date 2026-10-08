@@ -228,7 +228,8 @@ Cross-links: Reference ↔ Spec ↔ suite pages keep the triangle explicit.
 `docsPages` (Documents, Packages, Spec, Book, First program, and the rest of
 the Reference / std / suite pages). Each file keeps the SPA shell and a
 noscript body from the same modules the React app renders. Unknown paths
-still use the `404.html` bounce.
+are rewritten to `index.html` with status 200 (`public/_redirects`); the router
+renders the in-app not-found page.
 
 Wasm bindings stay in `www/public/echo-wasm/`.
 

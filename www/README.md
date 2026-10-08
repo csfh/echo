@@ -48,10 +48,10 @@ Content routes (Documents, Packages, Spec, Install, First program, Book, and
 the rest of the docs tree) are written as `dist/<path>/index.html` so those
 URLs are real pages. Unknown paths use `public/_redirects`
 (`/* /index.html 200`) so they are a rewrite, not HTTP 404. Crawlers and
-`curl` see 200. Existing static files still win. `public/404.html` remains
-the older browser bounce for hosts that still fall back to a 404 page;
-`index.html` restores `?/` paths from that bounce. Custom domain:
-`public/CNAME` → `xo.run`. Wasm bindings stay in `public/echo-wasm/`.
+`curl` see 200. Existing static files still win. Do not add a top-level
+`public/404.html`: Cloudflare Pages then serves it with a real 404 for unknown
+paths and the rewrite no longer applies. Custom domain: `public/CNAME` →
+`xo.run`. Wasm bindings stay in `public/echo-wasm/`.
 
 `/robots.txt` is a static file. `/sitemap.xml` is emitted at build from the
 public catalog (`staticPages` and site chrome). Both use `https://xo.run`.
