@@ -47,3 +47,5 @@ grammars/tree-sitter-echo/bindings/
 grammars/tree-sitter-echo/node_modules/
 grammars/tree-sitter-echo/.build/
 
+# cf (Cloudflare CLI) local cache
+.cloudflare/
