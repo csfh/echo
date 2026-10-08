@@ -1,15 +1,16 @@
 /**
- * Verifies Cloudflare Pages serves SPA routes as HTTP 200:
- * - public/_redirects rewrites /* to /index.html with status 200
- * - public/404.html is absent (Pages serves it as a real 404 and skips the rewrite)
+ * Verifies Cloudflare Pages serves unknown paths as the SPA shell with HTTP 200.
+ *
+ * Pages has no rewrite rule for this: with no top-level 404.html it falls back
+ * to SPA mode and serves /index.html with 200. A `/* /index.html 200` line in
+ * _redirects is rejected by Pages as an infinite loop, so it must not exist,
+ * and a public/404.html turns the fallback off (real 404 for unknown paths).
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const redirectsPath = path.join(root, "public", "_redirects");
-const source = readFileSync(redirectsPath, "utf8");
 
 const failures = [];
 
@@ -17,23 +18,12 @@ function fail(message) {
   failures.push(message);
 }
 
-const rewrite = source
-  .split("\n")
-  .map((line) => line.trim())
-  .filter((line) => line && !line.startsWith("#"))
-  .find((line) => {
-    const parts = line.split(/\s+/);
-    return parts[0] === "/*" && parts[1] === "/index.html" && parts[2] === "200";
-  });
-
-if (!rewrite) {
-  fail("public/_redirects must rewrite /* to /index.html with status 200");
+if (existsSync(path.join(root, "public", "404.html"))) {
+  fail("public/404.html must not exist: Pages would 404 unknown paths instead of serving the SPA");
 }
 
-if (existsSync(path.join(root, "public", "404.html"))) {
-  fail(
-    "public/404.html must not exist: Cloudflare Pages would 404 unknown paths instead of rewriting",
-  );
+if (existsSync(path.join(root, "public", "_redirects"))) {
+  fail("public/_redirects must not exist: the SPA fallback is Pages' built-in mode, not a rule");
 }
 
 if (failures.length > 0) {

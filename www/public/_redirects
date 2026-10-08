@@ -1,4 +1,0 @@
-# SPA routes: rewrite unknown paths to the app shell with HTTP 200.
-# Existing static files still win. Without this, Cloudflare Pages serves
-# 404.html (browsers recover; crawlers and curl see HTTP 404).
-/*    /index.html   200

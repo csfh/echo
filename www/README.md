@@ -46,12 +46,12 @@ playground without a Rust toolchain.
 
 Content routes (Documents, Packages, Spec, Install, First program, Book, and
 the rest of the docs tree) are written as `dist/<path>/index.html` so those
-URLs are real pages. Unknown paths use `public/_redirects`
-(`/* /index.html 200`) so they are a rewrite, not HTTP 404. Crawlers and
-`curl` see 200. Existing static files still win. Do not add a top-level
-`public/404.html`: Cloudflare Pages then serves it with a real 404 for unknown
-paths and the rewrite no longer applies. Custom domain: `public/CNAME` →
-`xo.run`. Wasm bindings stay in `public/echo-wasm/`.
+URLs are real pages. Unknown paths get the SPA shell with HTTP 200 from Pages'
+built-in SPA fallback, which is on only while there is **no** top-level
+`public/404.html` (a `/* /index.html 200` rule in `_redirects` is rejected by
+Pages as an infinite loop, so there is none). Crawlers and `curl` see 200;
+`npm run test` fails if either file is added. Existing static files still win.
+Custom domain: `public/CNAME` → `xo.run`. Wasm bindings stay in `public/echo-wasm/`.
 
 `/robots.txt` is a static file. `/sitemap.xml` is emitted at build from the
 public catalog (`staticPages` and site chrome). Both use `https://xo.run`.
