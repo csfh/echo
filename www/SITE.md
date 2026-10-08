@@ -245,10 +245,10 @@ Compile and native run stay on `xo` (LLVM).
 
 Learn, Community, and About. Copy lives in `src/docs/site.ts` (`footerLinkGroups`).
 
-| Group     | Links                                                                                                            |
-| --------- | ---------------------------------------------------------------------------------------------------------------- |
-| Learn     | Install, Try Echo, First program, Documents, Book, Echo 2026                                                     |
-| Community | GitHub. Omit Discord until a public invite URL exists.                                                           |
+| Group     | Links                                                                                                                             |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Learn     | Install, Try Echo, First program, Documents, Book, Echo 2026                                                                      |
+| Community | GitHub. Omit Discord until a public invite URL exists.                                                                            |
 | About     | Christoffer Hallas (`https://christofferhallas.com`), Privacy (`/privacy`), Terms (`/terms`), Security (`/security`), MIT License |
 
 Public project mail on the site is `oss@christofferhallas.com`.

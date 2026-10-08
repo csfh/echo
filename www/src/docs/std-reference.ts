@@ -785,9 +785,9 @@ export const stdModules: StdModule[] = [
         description:
           "Reads process stdin until EOF and returns the payload as bytes. Empty stdin is empty bytes. I/O errors use the result error arm.",
         params: "No parameters.",
-        returns: "Result of bytes, or error \"stdin read failed\".",
+        returns: 'Result of bytes, or error "stdin read failed".',
         example:
-          '/ std/io\n/ std/str\n\n| io.read() {\n    $ b {\n        io.print(str.from_bytes(b))\n    }\n    ! e {\n        io.print(e)\n    }\n}',
+          "/ std/io\n/ std/str\n\n| io.read() {\n    $ b {\n        io.print(str.from_bytes(b))\n    }\n    ! e {\n        io.print(e)\n    }\n}",
       },
     ],
   },
@@ -1187,8 +1187,7 @@ export const stdModules: StdModule[] = [
           "Returns a new list by applying f to each element. f must be a closed function value (no outer $ / ~ capture).",
         params: "xs: list. f: function of one argument.",
         returns: "New list of f results, same length as xs.",
-        example:
-          "/ std/list\n\n$ inc = (n) {\n    ^ n + 1\n}\n$ ys = list.map([1, 2, 3], inc)",
+        example: "/ std/list\n\n$ inc = (n) {\n    ^ n + 1\n}\n$ ys = list.map([1, 2, 3], inc)",
       },
       {
         name: "filter",
@@ -1656,7 +1655,8 @@ export const stdModules: StdModule[] = [
         name: "parent",
         role: "Parent directory path",
         call: "path.parent(p)",
-        description: "Returns the parent directory of path p. Parent of /foo is /. Parent of a name with no slash is . Parent of / is /.",
+        description:
+          "Returns the parent directory of path p. Parent of /foo is /. Parent of a name with no slash is . Parent of / is /.",
         params: "p: path string.",
         returns: "Parent path string.",
         example: '/ std/path\n\n$ dir = path.parent("/foo")',
@@ -1892,9 +1892,10 @@ export const stdModules: StdModule[] = [
         name: "create_temp",
         role: "Create a temporary path",
         call: "fs.create_temp(prefix)",
-        description: "Creates an empty temporary file whose name starts with prefix and returns its path.",
+        description:
+          "Creates an empty temporary file whose name starts with prefix and returns its path.",
         params: "prefix: filename prefix string.",
-        returns: "Result. Ok arm: path string. Err arm: \"create_temp failed\".",
+        returns: 'Result. Ok arm: path string. Err arm: "create_temp failed".',
         example: '/ std/fs\n\n| fs.create_temp("echo") {\n    $ p { }\n    ! e { }\n}',
       },
       {
@@ -1913,7 +1914,7 @@ export const stdModules: StdModule[] = [
         description: "Sets permission bits on path.",
         params: "path: file path as string or locator. mode: mode bits.",
         returns: "None.",
-        example: "/ std/fs\n\nfs.chmod(\"/tmp/a\", 420)",
+        example: '/ std/fs\n\nfs.chmod("/tmp/a", 420)',
       },
     ],
   },
@@ -2212,11 +2213,10 @@ export const stdModules: StdModule[] = [
         role: "Strict UTF-8 decode to a string",
         call: "utf8.decode(b)",
         description:
-          'Decodes well-formed UTF-8 to a string. Invalid sequences fail. Use str.from_bytes for lossy decode.',
+          "Decodes well-formed UTF-8 to a string. Invalid sequences fail. Use str.from_bytes for lossy decode.",
         params: "b: bytes or string.",
         returns: 'Result. Ok arm: string. Err arm: "invalid utf-8".',
-        example:
-          '/ std/encoding/utf8\n\n| utf8.decode(b"hi") {\n    $ t { }\n    ! e { }\n}',
+        example: '/ std/encoding/utf8\n\n| utf8.decode(b"hi") {\n    $ t { }\n    ! e { }\n}',
       },
     ],
   },
@@ -2311,7 +2311,7 @@ export const stdModules: StdModule[] = [
         params: "data: zip bytes.",
         returns: 'Result. Ok arm: product { name, data }. Err arm: "zip unpack failed".',
         example:
-          '/ std/compress/zip\n\n$ e = zip.unpack_first(z)\n$ name = e.name\n$ body = e.data',
+          "/ std/compress/zip\n\n$ e = zip.unpack_first(z)\n$ name = e.name\n$ body = e.data",
       },
     ],
   },
@@ -2529,7 +2529,7 @@ export const stdModules: StdModule[] = [
         params: "key: 32-byte key. nonce: 12-byte nonce. ciphertext: bytes to decrypt.",
         returns: "Plaintext bytes, or failure on auth error.",
         example:
-          '/ std/crypto/aes_gcm\n\n| aes_gcm.decrypt(key, nonce, ciphertext) {\n    $ p { }\n    ! e { }\n}',
+          "/ std/crypto/aes_gcm\n\n| aes_gcm.decrypt(key, nonce, ciphertext) {\n    $ p { }\n    ! e { }\n}",
       },
     ],
   },
@@ -2548,8 +2548,7 @@ export const stdModules: StdModule[] = [
         description: "Fills n cryptographically secure random bytes.",
         params: "n: number of bytes.",
         returns: "n random bytes.",
-        example:
-          "/ std/crypto/random\n\n| random.fill(16) {\n    $ b { }\n    ! e { }\n}",
+        example: "/ std/crypto/random\n\n| random.fill(16) {\n    $ b { }\n    ! e { }\n}",
       },
       {
         name: "u64",
@@ -2842,7 +2841,8 @@ export const stdModules: StdModule[] = [
         name: "listen",
         role: "Start listening; failure yields handle 0",
         call: "unix.listen(path)",
-        description: "Binds a Unix domain listener on path. On Windows the native returns handle 0.",
+        description:
+          "Binds a Unix domain listener on path. On Windows the native returns handle 0.",
         params: "path: socket path.",
         returns: "Unix listener product.",
         example: "/ std/net/unix\n\n$ listener = unix.listen(p'/tmp/echo.sock')",

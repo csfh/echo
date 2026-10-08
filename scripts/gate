@@ -376,7 +376,9 @@ run_layer() {
       ;;
     web)
       if [[ ! -d www/node_modules ]]; then
-        run_quiet npm --prefix www install
+        # sharp (via @huggingface/transformers) tries a source build when the
+        # host has a system libvips; always use its prebuilt binary instead.
+        SHARP_IGNORE_GLOBAL_LIBVIPS=1 run_quiet npm --prefix www install
       fi
       run_quiet npm --prefix www run lint
       run_quiet npm --prefix www run format

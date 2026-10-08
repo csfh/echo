@@ -8,7 +8,7 @@ Public positioning, homepage outline, and nav rules: [`SITE.md`](SITE.md).
 ## Commands
 
 ```bash
-npm install
+npm install   # on a host with a system libvips: SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install
 npm run dev
 npm run lint
 npm run format
