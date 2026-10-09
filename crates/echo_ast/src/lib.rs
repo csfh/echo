@@ -6,7 +6,7 @@
 
 mod pretty;
 
-pub use pretty::format_file;
+pub use pretty::{FormatError, format_file, format_file_with_comments};
 
 use echo_source::{SourceId, Span};
 use echo_syntax::LeaderKind;
@@ -92,6 +92,33 @@ pub enum Stmt {
     Export(ExportStmt),
     /// Bare expression statement (e.g. call).
     Expr(Expr),
+}
+
+impl Stmt {
+    /// Source span of the whole statement, including any braced body.
+    #[must_use]
+    pub fn span(&self) -> Span {
+        match self {
+            Self::Bind(s) => s.span,
+            Self::MultiBind(s) => s.span,
+            Self::Assign(s) => s.span,
+            Self::Struct(s) | Self::StructExt(s) => s.span,
+            Self::If(s) => s.span,
+            Self::ElseIf(s) => s.span,
+            Self::Else(s) => s.span,
+            Self::ErrorReturn(s) => s.span,
+            Self::Return(s) => s.span,
+            Self::Loop(s) => s.span,
+            Self::Break { span } | Self::Continue { span } => *span,
+            Self::Match(s) => s.span,
+            Self::TaskSpawn(s) => s.span,
+            Self::TaskJoin(s) => s.span,
+            Self::EffectBlock(s) => s.span,
+            Self::Import(s) => s.span,
+            Self::Export(s) => s.span,
+            Self::Expr(e) => e.span(),
+        }
+    }
 }
 
 /// `& { … }` or `& name = { … }` — auto-unwrap result/option; short-circuit on fail.

@@ -622,7 +622,8 @@ fn cmd_fmt(path: &Path, write: bool, check: bool) -> ExitCode {
                 let code = d.code.as_deref().unwrap_or("fmt-error");
                 eprintln!("error[{code}] {loc}: {}", d.message);
             }
-            eprintln!("xo fmt: failed (parse errors)");
+            // Parse errors and unplaceable comments both leave the file untouched.
+            eprintln!("xo fmt: failed, {} left unchanged", path.display());
             ExitCode::from(1)
         }
     }

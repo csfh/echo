@@ -51,6 +51,10 @@ pub fn parse(source: &SourceFile) -> Parsed {
 
 /// Format Echo source via shared parse + AST pretty-print (`xo fmt`).
 ///
+/// Keeps `;` comments and blank lines (see `echo_ast::format_file_with_comments`).
+/// A comment that sits inside an expression has no safe place, so it is an error
+/// (`fmt-comment-in-expression`) and the caller must not rewrite the file.
+///
 /// Returns `Ok(canonical)` when parse succeeds with a file and no error
 /// diagnostics. On failure, returns diagnostics (caller must not write success).
 pub fn format_source(source: &SourceFile) -> Result<String, Diagnostics> {
@@ -63,7 +67,16 @@ pub fn format_source(source: &SourceFile) -> Result<String, Diagnostics> {
         d.push(echo_diagnostics::Diagnostic::error("no AST produced").with_code("fmt-no-ast"));
         return Err(d);
     };
-    Ok(echo_ast::format_file(file))
+    let comments = lex(source).comments;
+    echo_ast::format_file_with_comments(file, source.text(), &comments).map_err(|e| {
+        let mut d = Diagnostics::new();
+        d.push(
+            echo_diagnostics::Diagnostic::error(e.message)
+                .with_code(e.code)
+                .with_span(e.span),
+        );
+        d
+    })
 }
 
 fn parse_uncached(source: &SourceFile) -> Parsed {
@@ -154,6 +167,7 @@ fn decode_parsed(bytes: &[u8], source: &SourceFile) -> Option<Parsed> {
         file: blob.file,
         lexed: Lexed {
             tokens: vec![],
+            comments: vec![],
             diagnostics: Diagnostics::new(),
         },
         diagnostics,
@@ -587,6 +601,94 @@ $ a = 1
         let id2 = map.add("fmt2.echo", &once);
         let twice = format_source(map.get(id2).unwrap()).expect("format twice");
         (once, twice)
+    }
+
+    fn fmt(src: &str) -> Result<String, Diagnostics> {
+        let mut map = SourceMap::new();
+        let id = map.add("fmt.echo", src);
+        format_source(map.get(id).unwrap())
+    }
+
+    #[test]
+    fn format_keeps_header_and_own_line_comments() {
+        let out = fmt("; header\n\n\n/ std/io\n; before\n$ x = 1\n").unwrap();
+        assert_eq!(out, "; header\n\n/ std/io\n; before\n$ x = 1\n");
+    }
+
+    #[test]
+    fn format_keeps_same_line_comment_on_its_line() {
+        let out = fmt("$ x = 1 ;   note\n~ y = 2\n").unwrap();
+        assert_eq!(out, "$ x = 1 ;   note\n~ y = 2\n");
+    }
+
+    #[test]
+    fn format_collapses_blank_runs_and_adds_none() {
+        let out = fmt("$ a = 1\n\n\n\n$ b = 2\n$ c = 3\n").unwrap();
+        assert_eq!(out, "$ a = 1\n\n$ b = 2\n$ c = 3\n");
+    }
+
+    #[test]
+    fn format_drops_blank_lines_at_block_edges() {
+        let out = fmt("? 1 == 1 {\n\n    $ a = 1\n\n}\n").unwrap();
+        assert_eq!(out, "? 1 == 1 {\n    $ a = 1\n}\n");
+    }
+
+    #[test]
+    fn format_keeps_dangling_and_empty_block_comments() {
+        let out = fmt("? 1 == 1 {\n    $ a = 1\n    ; last\n}\n? 2 == 2 {\n; only\n}\n").unwrap();
+        assert_eq!(
+            out,
+            "? 1 == 1 {\n    $ a = 1\n    ; last\n}\n? 2 == 2 {\n    ; only\n}\n"
+        );
+    }
+
+    #[test]
+    fn format_keeps_comments_between_match_arms() {
+        let src =
+            "| 1 {\n    ; one\n    1 {\n        $ a = 1\n    }\n\n    ; rest\n    : {\n    }\n}\n";
+        assert_eq!(fmt(src).unwrap(), src);
+    }
+
+    #[test]
+    fn format_keeps_header_line_comments_on_the_header() {
+        for src in [
+            "? 1 == 1 { ; why\n    $ a = 1\n}\n",
+            "~ i = 0\n* i < 3 { ; note\n    ~ i = i + 1\n}\n",
+            "| 1 {\n    1 { ; one\n        $ a = 1\n    }\n}\n",
+            "$ f = (a) { ; doc\n    ^ a\n}\n",
+            "? 1 == 1 { ; empty\n}\n",
+        ] {
+            assert_eq!(fmt(src).unwrap(), src, "{src}");
+        }
+    }
+
+    #[test]
+    fn format_comment_after_one_line_block_stays_after_it() {
+        // The comment follows `}`, so it trails the whole statement.
+        let out = fmt("? 1 == 1 { f() } ; after\n").unwrap();
+        assert_eq!(out, "? 1 == 1 {\n    f()\n} ; after\n");
+    }
+
+    #[test]
+    fn format_leaves_semicolon_in_string_alone() {
+        let out = fmt("$ s = \"a;b\" ; real\n").unwrap();
+        assert_eq!(out, "$ s = \"a;b\" ; real\n");
+    }
+
+    #[test]
+    fn format_with_comments_is_idempotent() {
+        let src = "; h\n\n$ x = 1 ; t\n? x == 1 {\n    ; in\n    $ y = 2\n\n    ; tail\n}\n";
+        let once = fmt(src).unwrap();
+        assert_eq!(fmt(&once).unwrap(), once);
+    }
+
+    #[test]
+    fn format_rejects_comment_inside_expression() {
+        let err = fmt("$ xs = [\n    1, ; one\n    2\n]\n").unwrap_err();
+        assert_eq!(
+            err.items()[0].code.as_deref(),
+            Some("fmt-comment-in-expression")
+        );
     }
 
     #[test]

@@ -168,6 +168,10 @@ pub struct Token {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Lexed {
     pub tokens: Vec<Token>,
+    /// `;` line comments in source order. The span runs from `;` to the end of
+    /// the line (newline excluded). Comments are not tokens; the formatter uses
+    /// this list so it never re-scans source and mistakes a `;` inside a string.
+    pub comments: Vec<Span>,
     pub diagnostics: Diagnostics,
 }
 
@@ -185,6 +189,7 @@ struct Lexer<'a> {
     /// Next non-trivia token is at statement start (after newline / BOF / indent).
     at_statement_start: bool,
     tokens: Vec<Token>,
+    comments: Vec<Span>,
     diagnostics: Diagnostics,
 }
 
@@ -197,6 +202,7 @@ impl<'a> Lexer<'a> {
             pos: 0,
             at_statement_start: true,
             tokens: Vec::new(),
+            comments: Vec::new(),
             diagnostics: Diagnostics::new(),
         }
     }
@@ -250,6 +256,7 @@ impl<'a> Lexer<'a> {
 
         Lexed {
             tokens: self.tokens,
+            comments: self.comments,
             diagnostics: self.diagnostics,
         }
     }
@@ -265,6 +272,7 @@ impl<'a> Lexer<'a> {
 
     fn skip_line_comment(&mut self) {
         // `;` already at pos
+        let start = self.pos;
         while self.pos < self.bytes.len() {
             let b = self.bytes[self.pos];
             if b == b'\n' || b == b'\r' {
@@ -272,6 +280,8 @@ impl<'a> Lexer<'a> {
             }
             self.pos += 1;
         }
+        let span = self.span_from(start);
+        self.comments.push(span);
         // Do not consume newline here — let main loop handle it so
         // at_statement_start is set correctly.
     }
@@ -793,6 +803,21 @@ mod tests {
         let mut map = SourceMap::new();
         let id = map.add("test.echo", src);
         lex(map.get(id).unwrap())
+    }
+
+    #[test]
+    fn comments_are_recorded_with_spans() {
+        let src = "; head\n$ x = 1 ; tail\n$ s = \"a;b\"\n";
+        let mut map = SourceMap::new();
+        let id = map.add("test.echo", src);
+        let lexed = lex(map.get(id).unwrap());
+        let texts: Vec<&str> = lexed
+            .comments
+            .iter()
+            .map(|c| &src[c.start.0 as usize..c.end.0 as usize])
+            .collect();
+        // The `;` inside the string literal is not a comment.
+        assert_eq!(texts, vec!["; head", "; tail"]);
     }
 
     fn kinds(lexed: &Lexed) -> Vec<TokenKind> {

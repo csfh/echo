@@ -156,7 +156,7 @@ language form:
 | semantics | Crate tests for the rule, and `.check` (omit the file when no `sem-*`). Add a reject fixture when the feature is a hard error. |
 | HIR / MIR / codegen / runtime | Crate tests for lowering / ABI / values, and opt-in `.run` / `.runexit` when we claim Run. |
 | CLI | `xo` flags used by `e26` (`lex` / `ast` / `check` / `run --diag-codes`). |
-| fmt | `echo_ast` pretty unit tests (idempotence). No echo26 fmt stage yet. |
+| fmt | `echo_parser` unit tests for comment and blank-line rules, plus `crates/echo_parser/tests/fmt_corpus.rs`: every `.echo` under `examples/`, `echo26/`, and `std/` must format to the same AST, keep every comment, and be idempotent. No echo26 fmt stage yet. |
 | LSP | `echo_lsp` crate tests over `echo_pipeline::analyze`. |
 | REPL | `crates/xo/tests/repl_forms.rs` (JIT). Language meaning stays in e26 AOT. |
 | wasm / www | `cargo test -p echo_wasm`; `scripts/gate web`. Playground run is a host demo. |
