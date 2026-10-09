@@ -2599,6 +2599,134 @@ export const stdModules: StdModule[] = [
     ],
   },
   {
+    path: "std/store",
+    name: "store",
+    title: "Store",
+    summary:
+      "Object store in memory or on an S3-compatible endpoint, with etag-conditional writes.",
+    group: "Data",
+    docsPath: "/docs/std/store",
+    exports: [
+      {
+        name: "memory",
+        role: "Create an in-memory object store",
+        call: "store.memory()",
+        description:
+          "Creates an object store that keeps objects in process memory. Objects disappear when the program exits.",
+        params: "None.",
+        returns: "Store handle.",
+        example: "/ std/store\n\n$ s = store.memory()",
+      },
+      {
+        name: "s3",
+        role: "Create an S3-compatible object store",
+        call: "store.s3()",
+        description:
+          "Creates an object store backed by an S3-compatible endpoint, such as R2. It reads ECHO_S3_ENDPOINT, ECHO_S3_BUCKET, ECHO_S3_ACCESS_KEY, ECHO_S3_SECRET_KEY, and optionally ECHO_S3_REGION (default auto) from the environment. When the endpoint or bucket is missing, the handle is 0 and every call returns status 0.",
+        params: "None. Configuration comes from environment variables.",
+        returns: "Store handle.",
+        example: "/ std/store\n\n$ s = store.s3()",
+      },
+      {
+        name: "close",
+        role: "Release a store handle",
+        call: "store.close(s)",
+        description: "Releases the store. The handle is not valid afterwards.",
+        params: "s: store handle.",
+        returns: "Nothing.",
+        example: "/ std/store\n\n$ s = store.memory()\nstore.close(s)",
+      },
+      {
+        name: "get",
+        role: "Read an object",
+        call: "store.get(s, key)",
+        description:
+          "Reads the object at key. Status is 200 with the object in body, or 404 with an empty body.",
+        params: "s: store handle. key: object key string.",
+        returns: "Result with status, body, and etag.",
+        example:
+          '/ std/store\n\n$ s = store.memory()\n$ r = store.get(s, "k")\n; r.status is 404 here',
+      },
+      {
+        name: "get_if_none_match",
+        role: "Read an object unless its etag matches",
+        call: "store.get_if_none_match(s, key, etag)",
+        description:
+          "Reads the object at key only when its etag differs from etag. Status is 200 with the body, 304 when the etag matches, or 404 when the key is missing.",
+        params:
+          "s: store handle. key: object key string. etag: etag string from an earlier result.",
+        returns: "Result with status, body, and etag.",
+        example:
+          '/ std/store\n\n$ s = store.memory()\n$ put = store.put(s, "k", b"v1")\n$ r = store.get_if_none_match(s, "k", put.etag)\n; r.status is 304',
+      },
+      {
+        name: "get_range",
+        role: "Read part of an object",
+        call: "store.get_range(s, key, start, end)",
+        description:
+          "Reads bytes from start (inclusive) to end (exclusive) of the object at key. Status is 200 or 404.",
+        params:
+          "s: store handle. key: object key string. start: first byte offset. end: byte offset after the last byte.",
+        returns: "Result with status, body, and etag.",
+        example:
+          '/ std/store\n\n$ s = store.memory()\n$ put = store.put(s, "k", b"v1")\n$ r = store.get_range(s, "k", 0, 1)\n; r.body holds the bytes of "v"',
+      },
+      {
+        name: "head",
+        role: "Read object metadata",
+        call: "store.head(s, key)",
+        description:
+          "Looks up the object at key without its contents. Status is 200 with the etag set, or 404. The body is empty.",
+        params: "s: store handle. key: object key string.",
+        returns: "Result with status, an empty body, and etag.",
+        example: '/ std/store\n\n$ s = store.memory()\n$ r = store.head(s, "k")\n; r.status is 404',
+      },
+      {
+        name: "put",
+        role: "Write an object",
+        call: "store.put(s, key, data)",
+        description:
+          "Writes data at key and replaces any existing object. Status is 200 and etag holds the new etag.",
+        params: "s: store handle. key: object key string. data: bytes to store.",
+        returns: "Result with status and etag.",
+        example: '/ std/store\n\n$ s = store.memory()\n$ r = store.put(s, "k", b"v1")',
+      },
+      {
+        name: "cas",
+        role: "Replace an object when its etag matches",
+        call: "store.cas(s, key, etag, data)",
+        description:
+          "Writes data at key only when the stored etag equals etag. Status is 200 on success and 412 when the etag differs or the key is missing.",
+        params:
+          "s: store handle. key: object key string. etag: expected current etag. data: bytes to store.",
+        returns: "Result with status and etag.",
+        example:
+          '/ std/store\n\n$ s = store.memory()\n$ first = store.put(s, "k", b"v1")\n$ r = store.cas(s, "k", first.etag, b"v2")\n; r.status is 200',
+      },
+      {
+        name: "cas_create",
+        role: "Create an object only when the key is free",
+        call: "store.cas_create(s, key, data)",
+        description:
+          "Writes data at key only when no object exists there. Status is 200 on success and 412 when the key already exists.",
+        params: "s: store handle. key: object key string. data: bytes to store.",
+        returns: "Result with status and etag.",
+        example:
+          '/ std/store\n\n$ s = store.memory()\n$ r = store.cas_create(s, "k", b"v1")\n; a second call returns status 412',
+      },
+      {
+        name: "keys",
+        role: "List keys in a memory store",
+        call: "store.keys(s)",
+        description:
+          "Lists every key in a memory store. For an S3 store the list is empty, so this call serves debugging and tests.",
+        params: "s: store handle.",
+        returns: "List of key strings.",
+        example: "/ std/store\n\n$ s = store.memory()\n$ ks = store.keys(s)",
+      },
+    ],
+  },
+  {
     path: "std/log",
     name: "log",
     title: "Logging",

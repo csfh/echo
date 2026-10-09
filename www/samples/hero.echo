@@ -1,4 +1,4 @@
-; Homepage hero — must match app.tsx sample (top-level, no entry keyword).
+; Homepage hero. Must match homePage.sample in src/docs/site.ts (npm run test:samples).
 / std/io
 
 $ xs = [1, 2, 3]

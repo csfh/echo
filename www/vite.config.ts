@@ -12,6 +12,7 @@ import {
 } from "./src/docs/search";
 import {
   collectPublicCatalogPaths,
+  publicCatalogUrl,
   renderRobotsTxt,
   renderSitemapXml,
   renderStaticHomeAndHub,
@@ -220,19 +221,40 @@ function docsIndexFileName(name: "search" | "semantic", checksum: string) {
   return `indices/${name}.${checksum}.json`;
 }
 
+/** Replace the `content` of one `<meta name|property="key">` tag in built index.html. */
+function setMetaContent(html: string, attribute: "name" | "property", key: string, value: string) {
+  const pattern = new RegExp(`(<meta\\s+${attribute}="${key}"\\s+content=")[^"]*("\\s*/?>)`);
+  if (!pattern.test(html)) {
+    throw new Error(`built index.html is missing <meta ${attribute}="${key}">`);
+  }
+  return html.replace(pattern, (_match, open: string, close: string) => {
+    return `${open}${escapeHtml(value)}${close}`;
+  });
+}
+
 function applyStaticPage(html: string, page: StaticPage): string {
-  const titled = html.replace(
+  const url = publicCatalogUrl(page.path);
+  let next = html.replace(
     /<title>[^<]*<\/title>/,
     () => `<title>${escapeHtml(page.title)}</title>`,
   );
-  const described = titled.replace(
-    /<meta name="description" content="[^"]*"\s*\/?>/,
-    () => `<meta name="description" content="${escapeHtml(page.description)}" />`,
+  next = setMetaContent(next, "name", "description", page.description);
+  next = setMetaContent(next, "property", "og:title", page.title);
+  next = setMetaContent(next, "property", "og:description", page.description);
+  next = setMetaContent(next, "property", "og:url", url);
+  next = setMetaContent(next, "name", "twitter:title", page.title);
+  next = setMetaContent(next, "name", "twitter:description", page.description);
+  if (!/<link rel="canonical" href="[^"]*"\s*\/?>/.test(next)) {
+    throw new Error('built index.html is missing <link rel="canonical">');
+  }
+  next = next.replace(
+    /<link rel="canonical" href="[^"]*"\s*\/?>/,
+    () => `<link rel="canonical" href="${escapeHtml(url)}" />`,
   );
-  if (!described.includes('<noscript id="docs-first-fallback">')) {
+  if (!next.includes('<noscript id="docs-first-fallback">')) {
     throw new Error("built index.html is missing the docs-first noscript marker");
   }
-  return described.replace(/<noscript id="docs-first-fallback">[\s\S]*?<\/noscript>/, () => {
+  return next.replace(/<noscript id="docs-first-fallback">[\s\S]*?<\/noscript>/, () => {
     return `<noscript id="docs-first-fallback">${page.body}</noscript>`;
   });
 }

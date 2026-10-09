@@ -151,7 +151,16 @@ try {
   }
 
   prose.push({ where: "home definition", text: homePage.definition });
+  prose.push({ where: "home description", text: homePage.description });
   prose.push({ where: "home lead", text: homePage.lead });
+  prose.push({ where: "home examples title", text: homePage.examplesTitle });
+  prose.push({ where: "home examples lead", text: homePage.examplesLead });
+  for (const item of homePage.highlights) {
+    prose.push({ where: `home highlight ${item.title}`, text: item.text });
+  }
+  for (const example of homePage.examples) {
+    prose.push({ where: `home example ${example.caption}`, text: example.note });
+  }
   prose.push({ where: "home status", text: homePage.status });
   prose.push({ where: "footer blurb", text: footerBlurb });
   prose.push({ where: "try lead", text: tryPage.lead });

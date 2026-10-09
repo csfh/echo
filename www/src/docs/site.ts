@@ -33,20 +33,46 @@ export type DocsCatalogGroup = {
   entries: SiteLink[];
 };
 
+export type HomeHighlight = {
+  title: string;
+  text: string;
+  to: string;
+};
+
+/**
+ * A runnable program shown with its real output. `source` is the file under the
+ * repository root that the snippet must match (see `scripts/verify-samples.mjs`).
+ */
+export type HomeExample = {
+  caption: string;
+  source: string;
+  note: string;
+  code: string;
+  output: string;
+};
+
 export type HomePageContent = {
   definition: string;
+  /** Meta and social description. Keep near 160 characters. */
+  description: string;
   lead: string;
   status: string;
   sampleCaption: string;
   sample: string;
+  sampleOutput: string;
+  highlights: HomeHighlight[];
+  examplesTitle: string;
+  examplesLead: string;
+  examples: HomeExample[];
   links: SiteLink[];
 };
 
 /** Top-bar links. The logo goes home. Install stays the solid CTA. */
 export const primaryNav: SiteNavItem[] = [
   { label: "Documents", to: "/docs" },
+  { label: "Book", to: "/book" },
   { label: "Packages", to: "/docs/std" },
-  { label: "Echo 2026", to: "/e26" },
+  { label: "Spec", to: "/e26" },
   { label: "Try", to: "/try" },
 ];
 
@@ -92,7 +118,7 @@ export const footerLinkGroups: FooterLinkGroup[] = [
       { label: "First program", href: "/docs/first-program" },
       { label: "Documents", href: "/docs" },
       { label: "Book", href: "/book" },
-      { label: "Echo 2026", href: "/e26" },
+      { label: "Spec", href: "/e26" },
     ],
   },
   {
@@ -123,7 +149,7 @@ export const footerLinkGroups: FooterLinkGroup[] = [
 ];
 
 export const footerBlurb =
-  "Echo is a compiled language. xo checks a program and emits a native binary from the same LLVM pipeline. Echo 2026 is the current edition, published as prerelease tags and licensed under MIT.";
+  "Echo is a small compiled language. xo checks a program, runs it, and builds a native binary through one LLVM pipeline. Echo 2026 is the current edition, published as alpha prerelease tags and licensed under MIT.";
 
 export const tryPage = {
   title: "Try Echo",
@@ -293,10 +319,118 @@ export function primaryNavItemIsActive(to: string, pathname: string): boolean {
 }
 
 export const homePage: HomePageContent = {
-  definition: "Echo is a compiled language.",
-  lead: "Statement leaders mark control and binding. The rest of each line is an ordinary expression. xo checks a program and emits a native binary from the same LLVM pipeline.",
+  definition: "Echo is a small compiled language with glyph-led statements.",
+  description:
+    "Echo is a small compiled language with glyph-led statements. xo checks, runs, and builds native binaries through one LLVM pipeline.",
+  lead: "A glyph opens each statement and names its role: $ binds, ~ changes, ? branches, * loops, ^ returns. xo checks a program, runs it, and builds a native binary through one LLVM pipeline.",
   status:
-    "Echo 2026 is the public edition. A Rust toolchain ships as prerelease tags on GitHub. The repository is MIT licensed.",
+    "Echo 2026 is the public edition. The Rust toolchain ships as alpha prerelease tags on GitHub, so forms and std APIs can still change. The repository is MIT licensed.",
+  highlights: [
+    {
+      title: "Glyph leaders",
+      text: "The first character of a statement tells you what it does. The rest of the line is an ordinary expression, so a block reads from its left edge.",
+      to: "/docs/leaders",
+    },
+    {
+      title: "Errors are values",
+      text: "A function returns a value with ^ or an error with !. A match with | handles both, and options follow the same shape.",
+      to: "/docs/result-option",
+    },
+    {
+      title: "One LLVM pipeline",
+      text: "xo run compiles and runs a file. xo run --jit executes the same LLVM output in process, and xo build writes a native executable. On Linux, --static builds a fully static binary and --image wraps it in a scratch OCI image.",
+      to: "/docs/toolchain",
+    },
+    {
+      title: "Standard library",
+      text: "std/ ships packages for files, processes, TCP and HTTP, JSON, CSV, compression, and crypto. Tasks spawn with + and join with -.",
+      to: "/docs/std",
+    },
+  ],
+  examplesTitle: "Programs and their output",
+  examplesLead:
+    "Each snippet is a file in the examples directory of the repository. The output beside it comes from xo run.",
+  examples: [
+    {
+      caption: "result_match.echo",
+      source: "examples/misc/result_match.echo",
+      note: "half returns a value with ^ or an error with !. The match arms $ and ! receive each case.",
+      code: `/ std/io
+/ std/str
+
+$ half = (n) {
+    ? n % 2 != 0 {
+        ! "odd"
+    }
+    ^ n / 2
+}
+
+| half(10) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}
+| half(7) {
+    $ v {
+        io.print(str.from_int(v))
+    }
+    ! e {
+        io.print(e)
+    }
+}`,
+      output: "5\nodd",
+    },
+    {
+      caption: "first_class_fn.echo",
+      source: "examples/misc/first_class_fn.echo",
+      note: "Functions are values. apply receives double as a parameter and calls it.",
+      code: `/ std/io
+/ std/str
+
+$ double = (n) {
+    ^ n + n
+}
+
+$ apply = (f, x) {
+    ^ f(x)
+}
+
+io.print(str.from_int(apply(double, 21)))`,
+      output: "42",
+    },
+    {
+      caption: "match_type.echo",
+      source: "examples/misc/match_type.echo",
+      note: "% declares a struct. A match on a struct value picks the arm by its type.",
+      code: `/ std/io
+/ std/str
+
+% circle {
+    ~ r
+}
+% rect {
+    ~ w
+    ~ h
+}
+
+$ shape = circle { r: 5 }
+| shape {
+    % circle {
+        io.print(str.from_int(shape.r))
+    }
+    % rect {
+        io.print(str.from_int(shape.w))
+    }
+    : {
+        io.print("other")
+    }
+}`,
+      output: "5",
+    },
+  ],
   sampleCaption: "sum.echo",
   sample: `/ std/io
 
@@ -306,6 +440,7 @@ $ xs = [1, 2, 3]
     ~ sum = sum + x
 }
 io.print("sum={sum}")`,
+  sampleOutput: "sum=6",
   links: [
     {
       title: "Documents",
@@ -399,6 +534,11 @@ export const docsHubCatalog: DocsCatalogGroup[] = [
         to: "/docs/project",
         description: "Create an entry file and a local workflow.",
       },
+      {
+        title: "Book",
+        to: "/book",
+        description: "Why each construct exists, when to use it, and how to read a program.",
+      },
     ],
   },
   {
@@ -463,6 +603,11 @@ export function collectPublicCatalogPaths(existingPagePaths: readonly string[]):
   return [...paths].sort((left, right) => left.localeCompare(right));
 }
 
+/**
+ * Absolute public URL for a catalog path. Cloudflare Pages serves each page as
+ * `path/index.html` and 308-redirects `/docs/x` to `/docs/x/`, so the canonical
+ * form ends in a slash. Sitemap, canonical, and og:url all use this form.
+ */
 export function publicCatalogUrl(path: string): string {
   if (!path.startsWith("/")) {
     throw new Error(`catalog path must be absolute, got ${path}`);
@@ -470,7 +615,7 @@ export function publicCatalogUrl(path: string): string {
   if (path === "/") {
     return `${publicSiteOrigin}/`;
   }
-  return `${publicSiteOrigin}${path}`;
+  return `${publicSiteOrigin}${path}/`;
 }
 
 export function renderSitemapXml(paths: readonly string[]): string {
@@ -527,6 +672,18 @@ export function renderStaticHomeAndHub(): string {
       ].join("");
     })
     .join("");
+  const highlights = homePage.highlights
+    .map(
+      (item) =>
+        `<section><h2><a href="${escapeHtml(item.to)}">${escapeHtml(item.title)}</a></h2><p>${escapeHtml(item.text)}</p></section>`,
+    )
+    .join("");
+  const examples = homePage.examples
+    .map(
+      (example) =>
+        `<figure><p>${escapeHtml(example.note)}</p><figcaption>${escapeHtml(example.caption)}</figcaption><pre>${escapeHtml(example.code)}</pre><p>xo run output</p><pre>${escapeHtml(example.output)}</pre></figure>`,
+    )
+    .join("");
 
   return [
     `<main>`,
@@ -534,6 +691,9 @@ export function renderStaticHomeAndHub(): string {
     `<p>${escapeHtml(homePage.lead)}</p>`,
     `<p>${escapeHtml(homePage.status)}</p>`,
     `<pre>${escapeHtml(homePage.sample)}</pre>`,
+    `<p>xo run output</p><pre>${escapeHtml(homePage.sampleOutput)}</pre>`,
+    highlights,
+    `<section><h2>${escapeHtml(homePage.examplesTitle)}</h2><p>${escapeHtml(homePage.examplesLead)}</p>${examples}</section>`,
     `<nav aria-label="Language surfaces"><ul>${surfaceLinks}</ul></nav>`,
     catalog,
     `<aside>`,

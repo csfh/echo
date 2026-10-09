@@ -1,0 +1,196 @@
+<!doctype html>
+<!--
+  Source for public/og.png (1200x630 social card). Regenerate with:
+    chromium --headless --disable-gpu --hide-scrollbars --window-size=1200,630 \
+      --screenshot=public/og.png file://$PWD/scripts/og-image.html
+  Run from www/ after npm ci. Fonts load from node_modules/@fontsource.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Echo social card</title>
+    <style>
+      @font-face {
+        font-family: "Space Grotesk";
+        font-weight: 700;
+        src: url("../node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2")
+          format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        src: url("../node_modules/@fontsource/geist-mono/files/geist-mono-latin-500-normal.woff2")
+          format("woff2");
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        background: #fff;
+        overflow: hidden;
+      }
+      body {
+        position: relative;
+        font-family: "Space Grotesk", system-ui, sans-serif;
+        color: #0b1018;
+      }
+      .band {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 10px;
+        background: linear-gradient(90deg, #a855f7, #6366f1 40%, #0ea5e9 70%, #06b6d4);
+      }
+      .logo {
+        position: absolute;
+        left: 72px;
+        top: 64px;
+        width: 126px;
+        height: 80px;
+      }
+      h1 {
+        position: absolute;
+        left: 72px;
+        top: 196px;
+        width: 520px;
+        font-size: 58px;
+        line-height: 1.04;
+        letter-spacing: -0.04em;
+        font-weight: 700;
+      }
+      .sub {
+        position: absolute;
+        left: 72px;
+        bottom: 64px;
+        font-family: "Geist Mono", monospace;
+        font-weight: 500;
+        font-size: 26px;
+        color: #64748b;
+      }
+      .card {
+        position: absolute;
+        left: 640px;
+        top: 66px;
+        width: 488px;
+        border: 2px solid #e2e8f0;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+      }
+      .bar {
+        padding: 14px 22px;
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+        font-family: "Geist Mono", monospace;
+        font-weight: 500;
+        font-size: 20px;
+        color: #64748b;
+      }
+      pre {
+        padding: 24px 22px;
+        font-family: "Geist Mono", monospace;
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 1.55;
+        color: #1e293b;
+      }
+      .g {
+        color: #7c3aed;
+      }
+      .out {
+        padding: 16px 22px 20px;
+        border-top: 2px solid #e2e8f0;
+        background: #f8fafc;
+        font-family: "Geist Mono", monospace;
+        font-weight: 500;
+        font-size: 24px;
+        color: #1e293b;
+      }
+      .out small {
+        display: block;
+        font-size: 15px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #64748b;
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="band"></div>
+    <svg
+      class="logo"
+      viewBox="0 0 470 300"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="g" x1="0" y1="14" x2="0" y2="286" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#A855F7" />
+          <stop offset="38%" stop-color="#6366F1" />
+          <stop offset="68%" stop-color="#0EA5E9" />
+          <stop offset="100%" stop-color="#06B6D4" />
+        </linearGradient>
+        <mask id="m" x="300" y="0" width="160" height="300" maskUnits="userSpaceOnUse">
+          <path
+            d="M350 36 C415 86 415 214 350 264"
+            fill="none"
+            stroke="#fff"
+            stroke-width="32"
+            stroke-linecap="butt"
+            stroke-linejoin="round"
+          />
+          <rect
+            x="-16"
+            y="-6"
+            width="32"
+            height="12"
+            rx="5"
+            fill="#fff"
+            transform="translate(350 36) rotate(128)"
+          />
+          <rect
+            x="-16"
+            y="-6"
+            width="32"
+            height="12"
+            rx="5"
+            fill="#fff"
+            transform="translate(350 264) rotate(52)"
+          />
+        </mask>
+      </defs>
+      <text
+        x="0"
+        y="220"
+        fill="#0B1018"
+        font-family="Space Grotesk"
+        font-size="300"
+        font-weight="700"
+        letter-spacing="-0.07em"
+      >
+        xo
+      </text>
+      <rect x="300" y="0" width="160" height="300" fill="url(#g)" mask="url(#m)" />
+    </svg>
+    <h1>A small compiled language with glyph-led statements.</h1>
+    <div class="sub">xo.run</div>
+    <div class="card">
+      <div class="bar">sum.echo</div>
+      <pre><span class="g">/</span> std/io
+
+<span class="g">$</span> xs = [1, 2, 3]
+<span class="g">~</span> sum = 0
+<span class="g">*</span> x : xs {
+    <span class="g">~</span> sum = sum + x
+}
+io.print("sum={sum}")</pre>
+      <div class="out"><small>xo run output</small>sum=6</div>
+    </div>
+  </body>
+</html>
