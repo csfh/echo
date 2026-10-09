@@ -261,6 +261,20 @@ Remaining language work is honesty slices on already-locked surface (see
 - Pretty-print canonical form from `syntax.md` (leaders, braces, no trailing commas).
 - **Idempotent:** `fmt(fmt(x)) == fmt(x)`.
 - Must **not** change program meaning.
+- **Comments and blank lines** (rules chosen for `xo fmt`, not inherited from
+  `syntax.md`):
+  - Every `;` comment is kept, in source order. The lexer records comment spans
+    (`Lexed::comments`) so a `;` inside a string is never mistaken for one.
+  - A comment on its own line stays on its own line at the indent of the next
+    item. A comment on the same line as a statement stays on that line, one
+    space after the statement.
+  - One blank line is kept wherever the source has one or more. Runs collapse to
+    one. None is added, and none starts or ends a block.
+  - Comments are placed between statements, between match arms, before the
+    closing `}`, and inside empty blocks. A comment inside an expression has no
+    safe place: `fmt-comment-in-expression` is an error and nothing is written.
+- The one entry point is `echo_parser::format_source`; `xo fmt`, `echo_lsp`, and
+  `echo_wasm` all call it, so none of them can drop a comment on its own.
 - Optional: range format; still shared pipeline.
 
 ### Language server (`echo_lsp`)

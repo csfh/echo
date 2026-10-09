@@ -279,6 +279,19 @@ io.print("sum={sum}")
         assert_eq!(result.text.as_deref(), Some("$ x = 1\n"));
     }
 
+    /// The Try page Format button rewrites the editor buffer, so it must keep
+    /// comments and refuse (not drop) one it cannot place.
+    #[test]
+    fn format_keeps_comments_and_refuses_unplaceable_ones() {
+        let kept = format_source_text("; note\n$ x=1 ; tail\n");
+        assert!(kept.ok, "{kept:?}");
+        assert_eq!(kept.text.as_deref(), Some("; note\n$ x = 1 ; tail\n"));
+
+        let refused = format_source_text("$ xs = [\n    1, ; one\n    2\n]\n");
+        assert!(!refused.ok);
+        assert!(refused.text.is_none());
+    }
+
     #[test]
     fn format_reports_parse_errors() {
         let result = format_source_text("$ = \n");

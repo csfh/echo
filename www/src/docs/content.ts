@@ -5093,6 +5093,23 @@ $binary run path.echo
             ],
           },
           {
+            kind: "paragraph",
+            text: [
+              { code: "xo fmt" },
+              " prints canonical source. ",
+              { code: "--write" },
+              " rewrites the file and ",
+              { code: "--check" },
+              " exits 1 when the file would change. The formatter keeps every ",
+              { code: ";" },
+              " comment, keeps a comment on the same line as its statement, and keeps one blank line wherever the source has one or more. A comment inside an expression has no safe place, so ",
+              { code: "xo fmt" },
+              " reports ",
+              { code: "fmt-comment-in-expression" },
+              " and leaves the file unchanged.",
+            ],
+          },
+          {
             kind: "code",
             language: "shellscript",
             code: `xo check <entry.echo>

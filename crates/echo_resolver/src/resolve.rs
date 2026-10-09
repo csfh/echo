@@ -479,6 +479,7 @@ fn synthetic_runtime_unit(map: &mut SourceMap) -> ModuleUnit {
             file: None,
             lexed: Lexed {
                 tokens: vec![],
+                comments: vec![],
                 diagnostics: Diagnostics::new(),
             },
             diagnostics: Diagnostics::new(),
