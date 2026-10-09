@@ -221,6 +221,7 @@ pub extern "C" fn echo_runtime_json_stringify(v: i64) -> i64 {
 fn json_to_echo(v: &serde_json::Value) -> i64 {
     use serde_json::Value;
     match v {
+        // Lossy by design until JSON values get a tagged representation.
         Value::Null => 0,
         Value::Bool(b) => {
             if *b {
@@ -265,13 +266,9 @@ fn echo_to_json(v: i64) -> Option<serde_json::Value> {
         struct_fields,
     };
     use serde_json::{Map, Value, json};
-    if v == 0 {
-        return Some(Value::Null);
-    }
-    if v == 1 {
-        // ambiguous bool/int — prefer int in stringify of bare 1
-        return Some(json!(1));
-    }
+    // Echo values are untagged integers, so 0 and 1 are plain numbers here.
+    // JSON `null`, `false`, and `true` parse to 0, 0, and 1 and stringify back
+    // as the numbers 0 and 1 (docs/stdlib.md, std/json).
     if !is_live_heap(v) {
         return Some(json!(v));
     }
@@ -694,6 +691,21 @@ mod tests {
         let text = string_data(out).unwrap();
         assert!(text.contains("\"a\""));
         assert!(text.contains('1'));
+    }
+
+    #[test]
+    fn json_zero_and_one_stringify_as_numbers() {
+        assert_eq!(string_data(echo_runtime_json_stringify(0)).unwrap(), "0");
+        assert_eq!(string_data(echo_runtime_json_stringify(1)).unwrap(), "1");
+    }
+
+    /// `null`, `false`, and `true` map to 0, 0, and 1 and come back as numbers.
+    #[test]
+    fn json_null_and_bool_map_to_integers() {
+        let v = echo_runtime_json_parse(s(r#"{"a":0,"f":false,"n":null,"t":true}"#));
+        assert_ne!(v, 0);
+        let out = string_data(echo_runtime_json_stringify(v)).unwrap();
+        assert_eq!(out, r#"{"a":0,"f":0,"n":0,"t":1}"#);
     }
 
     /// `+` bodies run on the worker pool. Stringify must not treat a

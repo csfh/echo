@@ -264,7 +264,7 @@ See also [`runtime-abi.md`](runtime-abi.md).
 | **Math** | `math_*` f64 | `std/math` | min/max/abs pure ints |
 | **Encoding** | — or thin | `std/encoding/hex`, `base64`, `utf8` | hex/base64 roundtrip; strict utf8 valid/decode |
 | **Path** | `locator_class` + `fs_join` | `std/path` | class/is_abs/is_uri; other helpers; locators |
-| **JSON** | `json_parse`, `json_stringify` | `std/json` | product types only |
+| **JSON** | `json_parse`, `json_stringify` | `std/json` | product types only; true/false/null are untagged ints (see gap below) |
 | **Random** | `random_*` | `std/random` | **non-crypto** unless `crypto/random` |
 | **Log** | — | `std/log` | pure over `io` |
 | **OS** | `os_*` | `std/os` | pid/cwd/hostname/platform |
@@ -448,7 +448,7 @@ Exports must match the `\ ` line in each module. Status of expansive rows is in
 | `std/encoding/base64` | `encode`, `decode` | suite |
 | `std/encoding/utf8` | `valid`, `decode` | suite; strict; `str.from_bytes` stays lossy |
 | `std/path` | `join`, `class`, `is_abs`, `is_uri`, `file_name`, `parent`, `extension`, `clean`, `rel`, `walk` | suite; class 0/1/2 on string or locator; walk is shallow |
-| `std/json` | `parse`, `stringify` | suite; product types only |
+| `std/json` | `parse`, `stringify` | suite; product types only; true→1, false/null→0 (lossy, see below) |
 | `std/random` | `seed`, `u64`, `float` | suite; **not** CSPRNG — use `std/crypto/random` |
 | `std/log` | `emit`, `debug`, `info`, `warn`, `error`, `kv`, `info_kv` | suite; caller passes `min_level` (no global `set_level`) |
 | `std/os` | `pid`, `cwd`, `chdir`, `hostname`, `platform` | suite |
@@ -507,7 +507,7 @@ or suite failures remain.
 | `std/str` growth | **Done** (thin) | trim/split/replace/case; e26 `013_trim_split` + `014_parse_float` / `015_parse_float_fail` / `016_from_debug` / `017_from_bytes` / `018_contains`; suite; examples `str_text.echo` / `str_parse.echo` / `str_debug.echo` / `str_from_bytes.echo` / `str_search.echo` |
 | `std/bytes` growth | **Done** (thin) | contains/starts_with/ends_with; `from_int` LE e26 `007_from_int`; `from_str` UTF-8 e26 `008_from_str`; `slice` e26 `009_slice`; encoding under `std/encoding/*` |
 | `std/path` | **Done** (thin) | class/is_uri/is_abs on string or locator; e26 `locator/002_class` + suite |
-| `std/json` | **Done** (thin) | e26 parse/stringify; product types |
+| `std/json` | **Partial** (thin) | e26 parse/stringify (`run/json/003`); product types; **gap:** no tagged bool/null |
 | `std/random` | **Done** (thin) | seeded e26; **not** CSPRNG |
 | `std/log` | **Done** (thin) | e26 level filter + `002_kv`; caller-supplied min level |
 | `std/os` | **Done** (thin) | e26 `001_pid` + `002_platform` + `003_cwd_chdir` / `004_chdir_fail` / `005_hostname`; suite |
@@ -554,3 +554,24 @@ strings after `fs.create_dir_all` / other result-returning callees.
 [ ] scripts/gate echo26 (or filter) green
 [ ] No userland / runtime; no std/task
 ```
+
+## JSON value gap
+
+Echo values are untagged integers at runtime, so `std/json` cannot tell JSON
+`true`, `false`, `null`, `1`, and `0` apart. Behavior today (e26
+`run/json/003_zero_bool_null_map`):
+
+| JSON in | Echo value | `stringify` out |
+|---------|------------|-----------------|
+| `true` | `1` | `1` |
+| `false` | `0` | `0` |
+| `null` | `0` | `0` |
+| `0` | `0` | `0` |
+
+`{"n":0,"f":false,"t":true}` therefore stringifies as `{"f":0,"n":0,"t":1}`.
+A top-level `0`, `false`, or `null` document fails to parse because `0` also
+signals failure in `std/json.parse`.
+
+A faithful round trip needs a tagged JSON value (bool, null) and a rule for how
+it behaves under `?` and `==`. That is a language decision, tracked in
+[`roadmap.md`](roadmap.md). Until it lands, treat booleans and null as lossy.

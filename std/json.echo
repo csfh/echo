@@ -1,4 +1,7 @@
 ; std/json — parse/stringify product values.
+; Echo values are untagged integers: JSON true parses to 1, false and null to 0,
+; and 0 and 1 stringify as numbers. A top-level 0, false, or null cannot be
+; parsed because 0 also signals failure (docs/stdlib.md).
 / runtime
 / std/test
 / std/str

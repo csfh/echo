@@ -1,10 +1,12 @@
 ; JSON parse/stringify demo.
 ; Run: xo run examples/misc/json.echo
+; Echo values are untagged integers: true parses to 1, false and null to 0,
+; and all of them stringify back as numbers.
 
 / std/io
 / std/json
 
-| json.parse('{"ok":true}') {
+| json.parse('{"n":0,"ok":true}') {
     $ v {
         | json.stringify(v) {
             $ s {

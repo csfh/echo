@@ -1,0 +1,20 @@
+; JSON 0 stringifies as 0. null and false parse to 0, true parses to 1
+; (Echo values are untagged integers, see docs/stdlib.md std/json).
+/ std/io
+/ std/json
+
+| json.parse('{"a":0,"f":false,"n":null,"t":true}') {
+    $ v {
+        | json.stringify(v) {
+            $ s {
+                io.print(s)
+            }
+            ! e {
+                io.print(e)
+            }
+        }
+    }
+    ! e {
+        io.print(e)
+    }
+}
