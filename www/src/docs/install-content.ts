@@ -36,8 +36,7 @@ curl -fsSL https://raw.githubusercontent.com/csfh/echo/main/scripts/install.sh \
 # Pin this tag
 # … | bash -s -- from-release ${currentPrereleaseTag}
 
-xo --help
-xo doctor 2>/dev/null || true`;
+xo --help`;
 
 export const CLONE_BUILD = `git clone https://github.com/csfh/echo.git
 cd echo
@@ -119,6 +118,23 @@ export const installPage = {
           { href: releasesIndexUrl, label: "releases list" },
           ".",
         ],
+        [
+          "The script prints the install paths and checks ",
+          { code: "xo --help" },
+          " when it finishes. On Windows the archive holds ",
+          { code: "xo.exe" },
+          ", which supports ",
+          { code: "xo check" },
+          ", ",
+          { code: "xo fmt" },
+          ", ",
+          { code: "xo lsp" },
+          ", and ",
+          { code: "xo repl" },
+          ". Native ",
+          { code: "xo run" },
+          " on Windows is not first-class yet.",
+        ],
       ],
       assets: true,
       code: PREBUILT_INSTALL,
@@ -186,10 +202,10 @@ export const installPage = {
       label: "First program",
     },
     {
-      title: "Reference",
+      title: "Documents",
       text: "form sheets for leaders, Result, structs, and the rest of Echo 2026.",
       to: "/docs",
-      label: "Reference",
+      label: "Documents",
       variant: "secondary",
     },
     {

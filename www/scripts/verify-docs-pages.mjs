@@ -108,8 +108,9 @@ try {
   const navByLabel = new Map(primaryNav.map((item) => [item.label, item.to]));
   const expectedNav = [
     ["Documents", "/docs"],
+    ["Book", "/book"],
     ["Packages", "/docs/std"],
-    ["Echo 2026", "/e26"],
+    ["Spec", "/e26"],
     ["Try", "/try"],
   ];
   for (const [label, to] of expectedNav) {

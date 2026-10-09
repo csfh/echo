@@ -170,7 +170,7 @@ export function staticPages(): StaticPage[] {
     {
       path: "/",
       title: "Echo Programming Language",
-      description: homePage.lead,
+      description: homePage.description,
       body: renderStaticHomeAndHub(),
     },
     {

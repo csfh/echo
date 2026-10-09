@@ -118,14 +118,17 @@ xo build emits a native executable from that same pipeline.
 
 ## Positioning
 
-**H1 (definition):** Echo is a compiled language.
+**H1 (definition):** Echo is a small compiled language with glyph-led statements.
 
-**Lead:** Statement leaders mark control and binding. The rest of each line is
-an ordinary expression. `xo` checks a program and emits a native binary from
-the same LLVM pipeline.
+**Lead:** A glyph opens each statement and names its role. `xo` checks a
+program, runs it, and builds a native binary through one LLVM pipeline.
 
-**Status:** Echo 2026 is the public edition. A Rust toolchain ships as
-prerelease tags on GitHub. The repository is MIT licensed.
+**Status:** Echo 2026 is the public edition. The Rust toolchain ships as alpha
+prerelease tags on GitHub, so forms and std APIs can still change. The
+repository is MIT licensed.
+
+**Meta description:** `homePage.description` in `src/docs/site.ts`. It feeds
+`<meta name="description">`, `og:description`, and `twitter:description` for `/`.
 
 Keep product claims factual. Do not invent APIs, partner logos, or unearned
 maturity.
@@ -151,19 +154,21 @@ while there is no live invite. Public project mail is `oss@christofferhallas.com
 
 1. **Leaders** — `$` `~` `?` `*` `^` (and the rest of the glyph set) mark statement roles
 2. **Errors as values** — `!` / match; optionals follow the same idea
-3. **Small loop, native output** — `xo check` / `run` / `build`; I/O from `std`
+3. **One LLVM pipeline** — `xo check` / `run` / `run --jit` / `build`; I/O and
+   more from `std`
 
 ## Primary nav
 
-The logo is the only Home control. Book stays at `/book` and in the footer.
+The logo is the only Home control. Book is in the nav and the footer.
 Security lives at `/security` and in the footer About group.
 Catalog, footer, and nav destinations are real HTML files at those paths.
 
 | Item              | Path        | Notes                                         |
 | ----------------- | ----------- | --------------------------------------------- |
 | Documents         | `/docs`     | Language reference hub                        |
+| Book              | `/book`     | Why each construct exists, how to read code   |
 | Packages          | `/docs/std` | Standard library                              |
-| Echo 2026         | `/e26`      | Edition + Spec TOC + suite                    |
+| Spec              | `/e26`      | Echo 2026 edition + Spec TOC + suite          |
 | Try               | `/try`      | In-browser check + playground run (wasm host) |
 | **Install** (CTA) | `/install`  | Solid button; get `xo`                        |
 | Security          | `/security` | Vulnerability mailbox + `SECURITY.md`         |
@@ -179,11 +184,22 @@ add a second rail or nested train.
 The home page is a language-docs front door. Copy and links live in
 `src/docs/site.ts` (`homePage`, `primaryNav`, `docsHubCatalog`, `footerLinkGroups`).
 
-1. Language definition (`Echo is a compiled language`) plus the lead
-2. Status line: Echo 2026, Rust, prerelease tags, MIT
-3. Representative sample that shows statement leaders and binds
-4. First-class links: Documents (`/docs`), Packages (`/docs/std`), Spec (`/e26`)
-5. Footer (compiled language, `xo`, LLVM, Echo 2026, prerelease, MIT)
+1. Language definition plus the lead, the status line, and the CTAs
+   (Install xo, Try Echo, Documents)
+2. Hero sample (`sum.echo`) with its `xo run` output
+3. Four highlights (`homePage.highlights`): glyph leaders, errors as values,
+   one LLVM pipeline, standard library
+4. "Programs and their output" (`homePage.examples`): files from `examples/`
+   shown with real output
+5. First-class links: Documents (`/docs`), Packages (`/docs/std`), Spec (`/e26`)
+6. Footer (small compiled language, `xo`, LLVM, Echo 2026, alpha prerelease, MIT)
+
+Every snippet on the homepage is a real file. `npm run test:samples` asserts
+that `homePage.sample` equals `samples/hero.echo`, that each example equals its
+`source` file under the repository root (leading `;` comment lines are not
+shown), and, when `target/debug/xo` or `XO_BIN` exists, that `xo run` prints the
+output shown. Add a new homepage example by adding the file under `examples/`
+first.
 
 Each of those links, plus Install, First program, Book, Try, Privacy, Terms,
 and Security, is a real page (`path/index.html`) with that page title and
@@ -268,3 +284,12 @@ list the GitHub Pages host.
 
 Richer download tabs, `/e26` URL rename to `/echo-2026`. Discord footer link
 when a real invite exists.
+
+## Social card and metadata
+
+Every built page gets `canonical`, `og:*`, and `twitter:*` tags from
+`applyStaticPage` in `vite.config.ts`, using `publicCatalogUrl(path)`. The
+shared image is `public/og.png` (1200x630). Its source is
+`scripts/og-image.html`; the regeneration command is in that file's header
+comment. Re-render it when the homepage definition or hero sample changes.
+`npm run build` fails if `dist/og.png` or a page's head tags are missing.

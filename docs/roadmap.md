@@ -273,7 +273,7 @@ are the public API shape.
 | Import / export syntax | Locked | `syntax.md` |
 | Closed compilation graph | Locked (ADR) | [ADR 0006](adr/0006-closed-compilation-graph.md) |
 | `%` / `@` merge across files | Locked | `syntax.md` |
-| Module identity / optional package | **Locked** (ADR 0014) | [`modules.md`](modules.md) · store + `xo get` to implement |
+| Module identity / optional package | **Locked** (ADR 0014) | [`modules.md`](modules.md) · `xo get` / `xo home` implemented (package cache) |
 | Reserved `std` | Specified in samples | `stdlib.md` |
 
 Multi-file **syntax** is locked; **resolver policy details** fill in with

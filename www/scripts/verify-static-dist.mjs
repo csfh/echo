@@ -33,6 +33,9 @@ try {
   if (!existsSync(path.join(dist, "index.html"))) {
     fail("dist/index.html is missing; run this script after vite build");
   }
+  if (!existsSync(path.join(dist, "og.png"))) {
+    fail("dist/og.png is missing; the social card is referenced from every page head");
+  }
 
   for (const route of publicChromePaths()) {
     const page = pages.get(route);
@@ -53,6 +56,19 @@ try {
     }
     if (!html.includes(page.body)) {
       fail(`${route}: ${path.relative(root, file)} is missing the page body`);
+    }
+    const url = site.publicCatalogUrl(route);
+    for (const needle of [
+      `<link rel="canonical" href="${url}" />`,
+      `property="og:url"\n      content="${url}"`,
+    ]) {
+      const flat = needle.replace(/\s+/g, " ");
+      if (!html.replace(/\s+/g, " ").includes(flat)) {
+        fail(`${route}: head is missing ${flat}`);
+      }
+    }
+    if (!/<meta\s+property="og:title"\s+content="[^"]+"/.test(html)) {
+      fail(`${route}: head is missing og:title`);
     }
     if (route !== "/" && html.includes(`<h1>${site.homePage.definition}</h1>`)) {
       fail(`${route}: ${path.relative(root, file)} still has the homepage snapshot`);
