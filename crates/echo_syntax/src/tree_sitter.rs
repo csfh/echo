@@ -774,6 +774,22 @@ fn emit_highlights_scm() -> String {
          ; Captures: leaders vs idents vs literals vs comments.\n\n",
     );
     out.push_str("; Line comments (; → EOL)\n(comment) @comment\n\n");
+    // Generic operators and punctuation come first. Consumers resolve two
+    // captures on one range by taking the last match, so every statement-scoped
+    // leader capture below must stay after this block or `*`, `%`, `!`, ...
+    // would render as operators at the start of a statement.
+    out.push_str(
+        "; Operators / punctuation (expression dual-use surface)\n\
+         ; Keep before the leader captures: later patterns win on the same range.\n\
+         [\n\
+           \"=\" \"==\" \"!=\" \"===\" \"!==\"\n\
+           \"<\" \">\" \"<=\" \">=\" \"<<\" \">>\"\n\
+           \"+\" \"-\" \"*\" \"/\" \"%\"\n\
+           \"&&\" \"||\" \"&\" \"^\" \"|\" \"~\" \"!\" \"..\"\n\
+           \".\" \",\" \":\"\n\
+           \"(\" \")\" \"[\" \"]\" \"{\" \"}\"\n\
+         ] @operator\n\n",
+    );
     out.push_str("; Leader-only tokens (named rules)\n");
     for kind in LEADERS.iter().filter(|k| !k.is_dual_use()) {
         out.push_str(&format!("({}) @keyword\n", kind.token_name()));
@@ -789,7 +805,10 @@ fn emit_highlights_scm() -> String {
     }
     // Statement-scoped dual-use glyphs → keyword
     out.push_str(
-        "(struct_statement leader: \"%\" @keyword)\n\
+        "(bind_statement leader: \"~\" @keyword)\n\
+         (return_statement leader: \"^\" @keyword)\n\
+         (effect_block_statement leader: \"&\" @keyword)\n\
+         (struct_statement leader: \"%\" @keyword)\n\
          (match_arm leader: \"%\" @keyword)\n\
          (else_if_statement leader: \":\" @keyword)\n\
          (else_statement leader: \":\" @keyword)\n\
@@ -834,18 +853,7 @@ fn emit_highlights_scm() -> String {
          (false_atom) @constant.builtin\n\
          (receiver) @variable.builtin\n\
          (self_field field: (ident) @property)\n\
-         (width_cast type: (ident) @type)\n\n\
-         ; Operators / punctuation (expression dual-use surface)\n\
-         ; Listed before more-specific leader captures win via query order in editors\n\
-         ; that last-match-wins; leaders above already mark statement glyphs.\n\
-         [\n\
-           \"=\" \"==\" \"!=\" \"===\" \"!==\"\n\
-           \"<\" \">\" \"<=\" \">=\" \"<<\" \">>\"\n\
-           \"+\" \"-\" \"*\" \"/\" \"%\"\n\
-           \"&&\" \"||\" \"&\" \"^\" \"|\" \"~\" \"!\" \"..\"\n\
-           \".\" \",\" \":\"\n\
-           \"(\" \")\" \"[\" \"]\" \"{\" \"}\"\n\
-         ] @operator\n",
+         (width_cast type: (ident) @type)\n",
     );
     out
 }
@@ -1015,6 +1023,38 @@ mod tests {
         }
         assert!(h.contains("(string_pure) @string") || h.contains("string_pure"));
         assert!(h.contains("(comment) @comment"));
+    }
+
+    /// Consumers take the last capture on a range, so the generic operator list
+    /// must precede every statement-scoped anonymous leader capture. Otherwise
+    /// the loop leader `*` renders as an operator.
+    #[test]
+    fn highlights_leaders_follow_operator_list() {
+        let h = emit_highlights_scm();
+        let operators = h.find("] @operator").expect("operator block");
+        let mut checked = 0;
+        for line in h.lines().filter(|l| l.contains("leader: \"")) {
+            let at = h.find(line).expect("leader line");
+            assert!(
+                at > operators,
+                "leader capture `{line}` precedes the operator list and would be overridden"
+            );
+            checked += 1;
+        }
+        assert!(
+            checked >= 10,
+            "expected the statement-scoped leader captures, got {checked}"
+        );
+        assert!(h.contains("(loop_statement leader: \"*\" @keyword)"));
+        // Every dual-use glyph is an anonymous token, so each needs its own
+        // statement-scoped capture or it renders as an operator.
+        for capture in [
+            "(bind_statement leader: \"~\" @keyword)",
+            "(return_statement leader: \"^\" @keyword)",
+            "(effect_block_statement leader: \"&\" @keyword)",
+        ] {
+            assert!(h.contains(capture), "missing {capture}");
+        }
     }
 
     #[test]
