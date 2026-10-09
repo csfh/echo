@@ -1,0 +1,28 @@
+; std/git reads headers and splits request bodies. A header-less buffer is not a pack.
+/ std/io
+/ std/str
+/ std/bytes
+/ std/list
+/ std/git
+
+$ show = (label, n) {
+    $ text = str.from_int(n)
+    io.print("{label}={text}")
+}
+
+show("valid", git.pack_valid(bytes.from_str("nope")))
+show("count", git.pack_count(bytes.from_str("nope")))
+$ idx = git.index_pack(bytes.from_str("nope"))
+show("ok", idx.ok)
+show("objects", list.len(idx.objects))
+
+$ oid = "0123456789abcdef0123456789abcdef01234567"
+$ old = "0000000000000000000000000000000000000000"
+$ wants = git.upload_pack_wants("want {oid}\n")
+show("wants", list.len(wants))
+
+$ cmd = "{old} {oid} refs/heads/main"
+$ rp = git.receive_pack_split(bytes.cat(bytes.from_str(cmd), bytes.from_str("PACKrest")))
+$ name = rp.ref_name
+io.print(name)
+show("pack_len", bytes.len(rp.pack))

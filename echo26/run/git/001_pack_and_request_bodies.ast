@@ -1,0 +1,135 @@
+file
+  import
+    seg std
+    seg io
+  import
+    seg std
+    seg str
+  import
+    seg std
+    seg bytes
+  import
+    seg std
+    seg list
+  import
+    seg std
+    seg git
+  bind_dollar
+    name show
+    fn
+      param label
+      param n
+      bind_dollar
+        name text
+        call
+          field from_int
+            name str
+          name n
+      expr_stmt
+        call
+          field print
+            name io
+          string_rich
+  expr_stmt
+    call
+      name show
+      string_rich
+      call
+        field pack_valid
+          name git
+        call
+          field from_str
+            name bytes
+          string_rich
+  expr_stmt
+    call
+      name show
+      string_rich
+      call
+        field pack_count
+          name git
+        call
+          field from_str
+            name bytes
+          string_rich
+  bind_dollar
+    name idx
+    call
+      field index_pack
+        name git
+      call
+        field from_str
+          name bytes
+        string_rich
+  expr_stmt
+    call
+      name show
+      string_rich
+      field ok
+        name idx
+  expr_stmt
+    call
+      name show
+      string_rich
+      call
+        field len
+          name list
+        field objects
+          name idx
+  bind_dollar
+    name oid
+    string_rich
+  bind_dollar
+    name old
+    string_rich
+  bind_dollar
+    name wants
+    call
+      field upload_pack_wants
+        name git
+      string_rich
+  expr_stmt
+    call
+      name show
+      string_rich
+      call
+        field len
+          name list
+        name wants
+  bind_dollar
+    name cmd
+    string_rich
+  bind_dollar
+    name rp
+    call
+      field receive_pack_split
+        name git
+      call
+        field cat
+          name bytes
+        call
+          field from_str
+            name bytes
+          name cmd
+        call
+          field from_str
+            name bytes
+          string_rich
+  bind_dollar
+    name name
+    field ref_name
+      name rp
+  expr_stmt
+    call
+      field print
+        name io
+      name name
+  expr_stmt
+    call
+      name show
+      string_rich
+      call
+        field len
+          name bytes
+        field pack
+          name rp
