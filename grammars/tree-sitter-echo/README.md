@@ -16,7 +16,7 @@ cargo build -p xo
 Do not treat hand edits to this tree as language authority — re-run the
 generator after leader or lexer surface changes.
 
-## Leaders (17)
+## Leaders (18)
 
 | Token | Glyph | Dual-use |
 |-------|-------|----------|
@@ -35,10 +35,11 @@ generator after leader or lexer surface changes.
 | `leader_pipe` | `|` | yes |
 | `leader_plus` | `+` | yes |
 | `leader_minus` | `-` | yes |
+| `leader_ampersand` | `&` | yes |
 | `leader_slash` | `/` | yes |
 | `leader_backslash` | `\` | no |
 
-- **Dual-use glyphs** (leader at statement start; operator/token in expressions): `~` (bit-not), `%`, `:`, `!`, `^` (bit-xor), `*`, `<`, `>`, `|` (true atom / bit-or), `+`, `-`, `/`
+- **Dual-use glyphs** (leader at statement start; operator/token in expressions): `~` (leader_tilde), `%` (leader_percent), `:` (leader_colon), `!` (leader_bang), `^` (leader_caret), `*` (leader_star), `<` (leader_lt), `>` (leader_gt), `|` (leader_pipe), `+` (leader_plus), `-` (leader_minus), `&` (leader_ampersand), `/` (leader_slash)
 - **Leader-only** (statement introducers; invalid as free expression glyphs in the real lexer): `$` (leader_dollar), `#` (leader_hash), `@` (leader_at), `?` (leader_question), `\` (leader_backslash)
 
 Dual-use is modeled by **grammar context**: `leader_*` tokens only appear as

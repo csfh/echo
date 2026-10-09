@@ -64,6 +64,7 @@ module.exports = grammar({
       $.match_statement,
       $.task_spawn_statement,
       $.task_join_statement,
+      $.effect_block_statement,
       $.import_statement,
       $.export_statement,
       // Not full _expression: top-level unary !/-/+ would steal dual-use leaders.
@@ -72,8 +73,6 @@ module.exports = grammar({
 
     // ── Statement leaders (full set from echo_syntax::LEADERS) ──
     // Leader-only glyphs: dedicated tokens (invalid as free expr atoms in echo_lexer).
-    // leader_tilde: mutable bind
-    leader_tilde: _ => '~',
     // leader_dollar: immutable bind
     leader_dollar: _ => '$',
     // leader_hash: compile-time constant
@@ -82,30 +81,31 @@ module.exports = grammar({
     leader_at: _ => '@',
     // leader_question: if
     leader_question: _ => '?',
-    // leader_caret: return
-    leader_caret: _ => '^',
     // leader_backslash: export
     leader_backslash: _ => '\\',
     // Dual-use glyphs (* / ! < > | + - % :) are anonymous terminals shared by
 // statement introducers and expression operators — one token per char
 // (docs/lexer.md). Statement rules reference them as string literals;
 // token names still appear in comments + highlights for the full set.
+    // leader_tilde (mutable bind) dual-use — glyph ~ in statements and expressions
     // leader_percent (struct shape) dual-use — glyph % in statements and expressions
     // leader_colon (else-if / else / match default) dual-use — glyph : in statements and expressions
     // leader_bang (error return) dual-use — glyph ! in statements and expressions
+    // leader_caret (return) dual-use — glyph ^ in statements and expressions
     // leader_star (loop) dual-use — glyph * in statements and expressions
     // leader_lt (break) dual-use — glyph < in statements and expressions
     // leader_gt (continue) dual-use — glyph > in statements and expressions
     // leader_pipe (match) dual-use — glyph | in statements and expressions
     // leader_plus (task spawn) dual-use — glyph + in statements and expressions
     // leader_minus (task join) dual-use — glyph - in statements and expressions
+    // leader_ampersand (effect block) dual-use — glyph & in statements and expressions
     // leader_slash (import) dual-use — glyph / in statements and expressions
 
     // ── Statements (leaders only at statement start via grammar context) ──
 
     // Multi bind: `~ a = 1, b = 2`. Targets may be paths: `~ p.x =`, `~ xs[i] =`.
     bind_statement: $ => seq(
-      field('leader', choice($.leader_tilde, $.leader_dollar, $.leader_hash)),
+      field('leader', choice('~', $.leader_dollar, $.leader_hash)),
       commaSep1($.bind_clause),
     ),
 
@@ -131,7 +131,7 @@ module.exports = grammar({
         $.ident,
         repeat(choice(
           seq('.', field('field', $.ident)),
-          seq('[', field('index', $._expression), ']'),
+          seq('[', optional(field('index', $._expression)), ']'),
         )),
       ),
     )),
@@ -179,10 +179,10 @@ module.exports = grammar({
     // Prefer including an optional value (`^ expr`) over bare `^` before next item.
     return_statement: $ => choice(
       prec.right(2, seq(
-        field('leader', $.leader_caret),
+        field('leader', '^'),
         field('value', $._expression),
       )),
-      prec(1, field('leader', $.leader_caret)),
+      prec(1, field('leader', '^')),
     ),
 
     // prec.right inside; item-level prec(15) beats unary (8) / expression_statement (-1).
@@ -328,6 +328,15 @@ module.exports = grammar({
         seq('{', repeat(choice($._item, '\n')), '}'),
         $._expression,
       ),
+    )),
+
+    // `& { … }` / `& name = { … }` — effect block (auto-unwrap result/option).
+    effect_block_statement: $ => prec.right(seq(
+      field('leader', '&'),
+      optional(seq(field('name', $.ident), '=')),
+      '{',
+      repeat(choice($._item, '\n')),
+      '}',
     )),
 
     import_statement: $ => seq(
@@ -567,22 +576,23 @@ function commaSep1(rule) {
 }
 
 /* Dual-use leaders (glyph also expression token):
+ *   leader_tilde (~)
  *   leader_percent (%)
  *   leader_colon (:)
  *   leader_bang (!)
+ *   leader_caret (^)
  *   leader_star (*)
  *   leader_lt (<)
  *   leader_gt (>)
  *   leader_pipe (|)
  *   leader_plus (+)
  *   leader_minus (-)
+ *   leader_ampersand (&)
  *   leader_slash (/)
  * Leader-only (error outside statement start in echo_lexer):
- *   leader_tilde (~)
  *   leader_dollar ($)
  *   leader_hash (#)
  *   leader_at (@)
  *   leader_question (?)
- *   leader_caret (^)
  *   leader_backslash (\)
  */
