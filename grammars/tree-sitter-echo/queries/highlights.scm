@@ -4,26 +4,41 @@
 ; Line comments (; → EOL)
 (comment) @comment
 
+; Operators / punctuation (expression dual-use surface)
+; Keep before the leader captures: later patterns win on the same range.
+[
+"=" "==" "!=" "===" "!=="
+"<" ">" "<=" ">=" "<<" ">>"
+"+" "-" "*" "/" "%"
+"&&" "||" "&" "^" "|" "~" "!" ".."
+"." "," ":"
+"(" ")" "[" "]" "{" "}"
+] @operator
+
 ; Leader-only tokens (named rules)
-(leader_tilde) @keyword
 (leader_dollar) @keyword
 (leader_hash) @keyword
 (leader_at) @keyword
 (leader_question) @keyword
-(leader_caret) @keyword
 (leader_backslash) @keyword
 
 ; Dual-use leaders as statement introducers (anonymous glyph in context)
+; leader_tilde (~)
 ; leader_percent (%)
 ; leader_colon (:)
 ; leader_bang (!)
+; leader_caret (^)
 ; leader_star (*)
 ; leader_lt (<)
 ; leader_gt (>)
 ; leader_pipe (|)
 ; leader_plus (+)
 ; leader_minus (-)
+; leader_ampersand (&)
 ; leader_slash (/)
+(bind_statement leader: "~" @keyword)
+(return_statement leader: "^" @keyword)
+(effect_block_statement leader: "&" @keyword)
 (struct_statement leader: "%" @keyword)
 (match_arm leader: "%" @keyword)
 (else_if_statement leader: ":" @keyword)
@@ -70,15 +85,3 @@
 (receiver) @variable.builtin
 (self_field field: (ident) @property)
 (width_cast type: (ident) @type)
-
-; Operators / punctuation (expression dual-use surface)
-; Listed before more-specific leader captures win via query order in editors
-; that last-match-wins; leaders above already mark statement glyphs.
-[
-"=" "==" "!=" "===" "!=="
-"<" ">" "<=" ">="
-"+" "-" "*" "/" "%"
-"&&" "||" "!" ".."
-"." "," ":"
-"(" ")" "[" "]" "{" "}"
-] @operator

@@ -122,6 +122,10 @@
             "named": false
           },
           {
+            "type": "&",
+            "named": false
+          },
+          {
             "type": "&&",
             "named": false
           },
@@ -146,6 +150,10 @@
             "named": false
           },
           {
+            "type": "<<",
+            "named": false
+          },
+          {
             "type": "<=",
             "named": false
           },
@@ -163,6 +171,18 @@
           },
           {
             "type": ">=",
+            "named": false
+          },
+          {
+            "type": ">>",
+            "named": false
+          },
+          {
+            "type": "^",
+            "named": false
+          },
+          {
+            "type": "|",
             "named": false
           },
           {
@@ -538,8 +558,8 @@
             "named": true
           },
           {
-            "type": "leader_tilde",
-            "named": true
+            "type": "~",
+            "named": false
           }
         ]
       }
@@ -794,6 +814,110 @@
     }
   },
   {
+    "type": "effect_block_statement",
+    "named": true,
+    "fields": {
+      "leader": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "&",
+            "named": false
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "ident",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "bind_statement",
+          "named": true
+        },
+        {
+          "type": "break_statement",
+          "named": true
+        },
+        {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
+          "type": "effect_block_statement",
+          "named": true
+        },
+        {
+          "type": "else_if_statement",
+          "named": true
+        },
+        {
+          "type": "else_statement",
+          "named": true
+        },
+        {
+          "type": "error_return_statement",
+          "named": true
+        },
+        {
+          "type": "export_statement",
+          "named": true
+        },
+        {
+          "type": "expression_statement",
+          "named": true
+        },
+        {
+          "type": "if_statement",
+          "named": true
+        },
+        {
+          "type": "import_statement",
+          "named": true
+        },
+        {
+          "type": "loop_statement",
+          "named": true
+        },
+        {
+          "type": "match_statement",
+          "named": true
+        },
+        {
+          "type": "return_statement",
+          "named": true
+        },
+        {
+          "type": "struct_extend_statement",
+          "named": true
+        },
+        {
+          "type": "struct_statement",
+          "named": true
+        },
+        {
+          "type": "task_join_statement",
+          "named": true
+        },
+        {
+          "type": "task_spawn_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "else_if_statement",
     "named": true,
     "fields": {
@@ -927,6 +1051,10 @@
           "named": true
         },
         {
+          "type": "effect_block_statement",
+          "named": true
+        },
+        {
           "type": "else_if_statement",
           "named": true
         },
@@ -1014,6 +1142,10 @@
         },
         {
           "type": "continue_statement",
+          "named": true
+        },
+        {
+          "type": "effect_block_statement",
           "named": true
         },
         {
@@ -1579,6 +1711,10 @@
           "named": true
         },
         {
+          "type": "effect_block_statement",
+          "named": true
+        },
+        {
           "type": "else_if_statement",
           "named": true
         },
@@ -1772,6 +1908,10 @@
         },
         {
           "type": "continue_statement",
+          "named": true
+        },
+        {
+          "type": "effect_block_statement",
           "named": true
         },
         {
@@ -2466,6 +2606,10 @@
           "named": true
         },
         {
+          "type": "effect_block_statement",
+          "named": true
+        },
+        {
           "type": "else_if_statement",
           "named": true
         },
@@ -2665,6 +2809,10 @@
         },
         {
           "type": "continue_statement",
+          "named": true
+        },
+        {
+          "type": "effect_block_statement",
           "named": true
         },
         {
@@ -3209,8 +3357,8 @@
         "required": true,
         "types": [
           {
-            "type": "leader_caret",
-            "named": true
+            "type": "^",
+            "named": false
           }
         ]
       },
@@ -3356,6 +3504,10 @@
           "named": true
         },
         {
+          "type": "effect_block_statement",
+          "named": true
+        },
+        {
           "type": "else_if_statement",
           "named": true
         },
@@ -3453,6 +3605,10 @@
         },
         {
           "type": "continue_statement",
+          "named": true
+        },
+        {
+          "type": "effect_block_statement",
           "named": true
         },
         {
@@ -3586,6 +3742,10 @@
           "named": true
         },
         {
+          "type": "effect_block_statement",
+          "named": true
+        },
+        {
           "type": "else_if_statement",
           "named": true
         },
@@ -3703,6 +3863,10 @@
         },
         {
           "type": "duration",
+          "named": true
+        },
+        {
+          "type": "effect_block_statement",
           "named": true
         },
         {
@@ -3902,6 +4066,10 @@
           "named": true
         },
         {
+          "type": "effect_block_statement",
+          "named": true
+        },
+        {
           "type": "else_if_statement",
           "named": true
         },
@@ -4037,6 +4205,11 @@
     }
   },
   {
+    "type": "true_atom",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "unary_expression",
     "named": true,
     "fields": {
@@ -4156,6 +4329,10 @@
           },
           {
             "type": "-",
+            "named": false
+          },
+          {
+            "type": "~",
             "named": false
           }
         ]
@@ -4301,6 +4478,10 @@
     "named": false
   },
   {
+    "type": "&",
+    "named": false
+  },
+  {
     "type": "&&",
     "named": false
   },
@@ -4349,6 +4530,10 @@
     "named": false
   },
   {
+    "type": "<<",
+    "named": false
+  },
+  {
     "type": "<=",
     "named": false
   },
@@ -4373,11 +4558,19 @@
     "named": false
   },
   {
+    "type": ">>",
+    "named": false
+  },
+  {
     "type": "[",
     "named": false
   },
   {
     "type": "]",
+    "named": false
+  },
+  {
+    "type": "^",
     "named": false
   },
   {
@@ -4418,10 +4611,6 @@
     "named": true
   },
   {
-    "type": "leader_caret",
-    "named": true
-  },
-  {
     "type": "leader_dollar",
     "named": true
   },
@@ -4431,10 +4620,6 @@
   },
   {
     "type": "leader_question",
-    "named": true
-  },
-  {
-    "type": "leader_tilde",
     "named": true
   },
   {
@@ -4462,11 +4647,11 @@
     "named": true
   },
   {
-    "type": "true_atom",
-    "named": true
+    "type": "{",
+    "named": false
   },
   {
-    "type": "{",
+    "type": "|",
     "named": false
   },
   {
@@ -4475,6 +4660,10 @@
   },
   {
     "type": "}",
+    "named": false
+  },
+  {
+    "type": "~",
     "named": false
   }
 ]
