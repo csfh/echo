@@ -2729,6 +2729,72 @@ export const stdModules: StdModule[] = [
     ],
   },
   {
+    path: "std/git",
+    name: "git",
+    title: "Git packs",
+    summary: "Read git pack headers and split receive-pack and upload-pack bodies.",
+    group: "Data",
+    docsPath: "/docs/std/git",
+    exports: [
+      {
+        name: "pack_valid",
+        role: "Check a pack header",
+        call: "git.pack_valid(raw)",
+        description:
+          "Checks that raw starts with a PACK version 2 or 3 header and is at least 32 bytes long. Only the header is read. The trailer checksum and the object data are not verified, so a damaged pack with an intact header still returns 1.",
+        params: "raw: bytes or string holding the pack.",
+        returns: "1 when the header is valid, otherwise 0.",
+        example:
+          '/ std/git\n/ std/bytes\n\n$ ok = git.pack_valid(bytes.from_str("nope"))\n; ok is 0',
+      },
+      {
+        name: "pack_count",
+        role: "Read the object count from a pack header",
+        call: "git.pack_count(raw)",
+        description: "Reads the object count stored in the pack header.",
+        params: "raw: bytes or string holding the pack.",
+        returns: "The count, or -1 when the header is not a valid PACK version 2 or 3 header.",
+        example:
+          '/ std/git\n/ std/bytes\n\n$ n = git.pack_count(bytes.from_str("nope"))\n; n is -1',
+      },
+      {
+        name: "index_pack",
+        role: "Summarize a pack",
+        call: "git.index_pack(raw)",
+        description:
+          "Reads the pack header and trailer and returns a summary struct with ok, count, checksum, and objects. ok is 1 when the header is valid, the same test as pack_valid. count is the header object count. checksum is the stored 20-byte trailer in hex and is not recomputed. objects is always an empty list in this prerelease, so object ids are not produced yet.",
+        params: "raw: bytes or string holding the pack.",
+        returns:
+          "Struct with ok, count, checksum, and objects. An invalid header gives ok 0, count 0, an empty checksum, and an empty list.",
+        example:
+          '/ std/git\n/ std/fs\n\n| fs.read("objects.pack") {\n    $ raw {\n        $ idx = git.index_pack(raw)\n    }\n    ! e { }\n}',
+      },
+      {
+        name: "receive_pack_split",
+        role: "Split a receive-pack request body",
+        call: "git.receive_pack_split(raw)",
+        description:
+          "Splits a git-receive-pack body at the first occurrence of PACK. commands holds the text before it and pack holds the bytes from it, empty when PACK is absent. ref_name and new_oid come from the first update command whose new id has 40 characters and whose name starts with refs/.",
+        params: "raw: bytes or string holding the request body.",
+        returns:
+          "Struct with commands, pack, ref_name, and new_oid. ref_name and new_oid are empty strings when no update command matches.",
+        example:
+          '/ std/git\n/ std/bytes\n\n$ body = bytes.from_str("0000000000000000000000000000000000000000 0123456789abcdef0123456789abcdef01234567 refs/heads/main")\n$ rp = git.receive_pack_split(body)\n; rp.ref_name is refs/heads/main',
+      },
+      {
+        name: "upload_pack_wants",
+        role: "List the object ids a client wants",
+        call: "git.upload_pack_wants(raw)",
+        description:
+          "Collects the object ids from want lines in a git-upload-pack body. It reads pkt-line framing first and falls back to plain want lines when no framed line matches. Only 40-character ids are returned.",
+        params: "raw: bytes or string holding the request body.",
+        returns: "List of object id strings. The list is empty when nothing matches.",
+        example:
+          '/ std/git\n\n$ wants = git.upload_pack_wants("want 0123456789abcdef0123456789abcdef01234567\\n")\n; wants holds one id',
+      },
+    ],
+  },
+  {
     path: "std/log",
     name: "log",
     title: "Logging",

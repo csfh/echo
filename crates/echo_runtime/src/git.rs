@@ -46,7 +46,8 @@ fn pack_checksum(bytes: &[u8]) -> String {
     hex_encode(&bytes[bytes.len() - 20..])
 }
 
-/// 1 if `bytes` is a PACK v2/v3 with a trailer.
+/// 1 if `bytes` starts with a PACK v2/v3 header and is at least 32 bytes long.
+/// Header check only: the trailer checksum and object data are not verified.
 #[unsafe(no_mangle)]
 pub extern "C" fn echo_runtime_git_pack_valid(raw: i64) -> i64 {
     let bytes = payload(raw);
@@ -63,7 +64,12 @@ pub extern "C" fn echo_runtime_git_pack_count(raw: i64) -> i64 {
     pack_header(&bytes).map(|(_, n)| i64::from(n)).unwrap_or(-1)
 }
 
-/// Index a pack: `{ ok, count, checksum, objects }` (`objects` = oid hex list).
+/// Index a pack: `{ ok, count, checksum, objects }`.
+///
+/// `ok` is 1 when the header is valid (same test as `pack_valid`). `count` is
+/// the header object count. `checksum` is the stored trailer (last 20 bytes) in
+/// hex, not recomputed. `objects` is always empty today: entries are not
+/// enumerated, so object ids are not produced (docs/stdlib.md, std/git).
 #[unsafe(no_mangle)]
 pub extern "C" fn echo_runtime_git_index_pack(raw: i64) -> i64 {
     let bytes = payload(raw);
@@ -87,8 +93,10 @@ pub extern "C" fn echo_runtime_git_index_pack(raw: i64) -> i64 {
     out
 }
 
-/// Split a `git-receive-pack` body into pkt-line commands + trailing PACK.
-/// `{ commands, pack }` — `commands` is the text before `0000` / PACK.
+/// Split a `git-receive-pack` body at the first `PACK` magic.
+/// `{ commands, pack, ref_name, new_oid }`: `commands` is the text before it,
+/// `pack` the bytes from it (empty when absent), and `ref_name` / `new_oid` come
+/// from the first update command with a 40-char new id and a `refs/` name.
 #[unsafe(no_mangle)]
 pub extern "C" fn echo_runtime_git_receive_pack_split(raw: i64) -> i64 {
     let bytes = payload(raw);
@@ -251,6 +259,40 @@ mod tests {
         let idx = echo_runtime_git_index_pack(h);
         assert_eq!(crate::struct_get_value(idx, "ok"), 1);
         assert_eq!(crate::struct_get_value(idx, "count"), 0);
+    }
+
+    /// Pins today's behavior: only the header is checked, so a pack whose
+    /// object data is destroyed still reports valid. Update with the docs if
+    /// verification is added.
+    #[test]
+    fn pack_valid_checks_header_only() {
+        let mut pack = minimal_pack();
+        pack.extend_from_slice(&[0xffu8; 16]); // garbage where object data would be
+        let h = bytes_to_handle(pack);
+        assert_eq!(echo_runtime_git_pack_valid(h), 1);
+        let idx = echo_runtime_git_index_pack(h);
+        assert_eq!(crate::struct_get_value(idx, "ok"), 1);
+    }
+
+    /// Pins the documented gap: `objects` is empty even for a valid pack.
+    #[test]
+    fn index_pack_objects_are_empty_today() {
+        let idx = echo_runtime_git_index_pack(bytes_to_handle(minimal_pack()));
+        let objects = crate::struct_get_value(idx, "objects");
+        assert_eq!(crate::list_len_value(objects), 0);
+    }
+
+    #[test]
+    fn receive_pack_reads_ref_and_new_oid() {
+        let oid = "0123456789abcdef0123456789abcdef01234567";
+        let old = "0".repeat(40);
+        let mut body = format!("{old} {oid} refs/heads/main").into_bytes();
+        body.extend_from_slice(&minimal_pack());
+        let h = echo_runtime_git_receive_pack_split(bytes_to_handle(body));
+        let name = crate::struct_get_value(h, "ref_name");
+        let new = crate::struct_get_value(h, "new_oid");
+        assert_eq!(string_as_str(name).unwrap(), "refs/heads/main");
+        assert_eq!(string_as_str(new).unwrap(), oid);
     }
 
     #[test]

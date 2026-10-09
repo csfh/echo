@@ -472,7 +472,7 @@ decision, recorded on the `\ ` line and in this inventory when durable.
 | `std/net/udp/` | **Done** — folder: `% socket` + free reify surface (struct by ref) |
 | `std/net/http` serve / handle_connection | **Done** — accept loop + `+ handle_connection`; **Content-Length body** via `http_request_complete`; **stream** via `read_headers` / `handle_connection_stream` / chunked `write_*` |
 | `std/store` | **Done** — memory + S3-compatible get/put/head/CAS/range |
-| `std/git` | **Done** — pack valid/count/index + receive-pack split / upload-pack wants |
+| `std/git` | **Partial** — header check, count, receive-pack split, upload-pack wants. **Gaps:** `pack_valid` / `index_pack` read only the header (no trailer or object verification), and `index_pack().objects` is always empty. e26 `run/git/001`; runtime tests pin both. |
 | `std/str` | **Done** — conversions + text ops + byte `get`/`slice` |
 | `std/bytes` | **Done** — `get`/`slice`/`cat`/`from_int`/`from_str` / `contains`/`starts_with`/`ends_with` |
 | `std/list` | **Done** — `len` / `is_empty` / result `get` / `contains` / `sum_ints` / `sort_ints` / `map` / `filter` / `fold` |

@@ -257,6 +257,7 @@ without a roadmap update):
 | `std/net` (tcp/, udp/ folders) | **TCP/UDP I/O done** | `std/net/tcp/{conn,listener,socket}`, `udp/socket` | e26 `run/net` |
 | `std/net/http` | parse + format + **serve** + `handle_connection` | `std/net/http.echo` | e26 `run/http` + app |
 | `std/json` JSON values | **Open design.** Values are untagged ints, so true/false/null parse to 1/0/0 and top-level `0`/`false`/`null` fail to parse. Needs a tagged JSON value (bool, null) and its `?` / `==` rules. | [`stdlib.md`](stdlib.md) § JSON value gap | e26 `run/json/003` pins today's lossy mapping |
+| `std/git` pack verification | **Partial.** `pack_valid` / `index_pack` check only the header (a pack with destroyed object data still reports valid), and `index_pack().objects` is always empty. Needs trailer verification and oid enumeration. | [`stdlib.md`](stdlib.md), `crates/echo_runtime/src/git.rs` | e26 `run/git/001`; runtime tests pin today's behavior |
 | App HTTP demo | Finite dispatch + live TCP smoke | [`examples/app/main.echo`](../examples/app/main.echo) | run |
 | App HTTP server | Long-running `http.serve` | [`examples/app/server.echo`](../examples/app/server.echo) | manual |
 | App surface tour | Surface exercise | [`examples/app/surface.echo`](../examples/app/surface.echo) | — |
