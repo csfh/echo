@@ -2118,7 +2118,8 @@ export const stdModules: StdModule[] = [
         name: "parse",
         role: "Parse JSON text to a product value",
         call: "json.parse(s)",
-        description: "Parses JSON text into a product value.",
+        description:
+          "Parses JSON text into a product value. Echo values are untagged integers, so true parses to 1 and false and null parse to 0. A top-level 0, false, or null document returns the error arm, because 0 also signals failure.",
         params: "s: JSON text.",
         returns: 'Result. Ok arm: parsed value. Err arm: "json parse failed".',
         example: "/ std/json\n\n| json.parse('{\"n\":1}') {\n    $ o { }\n    ! e { }\n}",
@@ -2127,7 +2128,8 @@ export const stdModules: StdModule[] = [
         name: "stringify",
         role: "Serialize a product value to JSON text",
         call: "json.stringify(v)",
-        description: "Serializes a product value to JSON text.",
+        description:
+          "Serializes a product value to JSON text. Integers 0 and 1 are written as the numbers 0 and 1, never as null or booleans.",
         params: "v: product or value to encode.",
         returns: 'Result. Ok arm: JSON string. Err arm: "json stringify failed".',
         example: "/ std/json\n\n| json.stringify({ n: 1 }) {\n    $ s { }\n    ! e { }\n}",
